@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.CarsokPayBillMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokPayBill" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="bill_no" property="billNo" jdbcType="VARCHAR" />
+    <result column="bill_money" property="billMoney" jdbcType="DECIMAL" />
+    <result column="bill_status" property="billStatus" jdbcType="VARCHAR" />
+    <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
+    <result column="gmt_pay" property="gmtPay" jdbcType="TIMESTAMP" />
+    <result column="enable" property="enable" jdbcType="SMALLINT" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="bill_commission" property="billCommission" jdbcType="DECIMAL" />
+    <result column="account_id" property="accountId" jdbcType="VARCHAR" />
+    <result column="account_real_name" property="accountRealName" jdbcType="VARCHAR" />
+    <result column="pay_money" property="payMoney" jdbcType="DECIMAL" />
+    <result column="body" property="body" jdbcType="VARCHAR" />
+    <result column="pay_way" property="payWay" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_no, bill_no, bill_money, bill_status, gmt_modify, gmt_pay, enable, memo, 
+    bill_commission, account_id, account_real_name, pay_money, body, pay_way, description
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_pay_bill
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from carsok_pay_bill
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.uton.carsokApi.model.CarsokPayBill" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into carsok_pay_bill (order_no, bill_no, bill_money, 
+      bill_status, gmt_modify, gmt_pay, 
+      enable, memo, bill_commission, 
+      account_id, account_real_name, pay_money, 
+      body, pay_way, description
+      )
+    values (#{orderNo,jdbcType=VARCHAR}, #{billNo,jdbcType=VARCHAR}, #{billMoney,jdbcType=DECIMAL}, 
+      #{billStatus,jdbcType=VARCHAR}, #{gmtModify,jdbcType=TIMESTAMP}, #{gmtPay,jdbcType=TIMESTAMP}, 
+      #{enable,jdbcType=SMALLINT}, #{memo,jdbcType=VARCHAR}, #{billCommission,jdbcType=DECIMAL}, 
+      #{accountId,jdbcType=VARCHAR}, #{accountRealName,jdbcType=VARCHAR}, #{payMoney,jdbcType=DECIMAL}, 
+      #{body,jdbcType=VARCHAR}, #{payWay,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.CarsokPayBill" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into carsok_pay_bill
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="billNo != null" >
+        bill_no,
+      </if>
+      <if test="billMoney != null" >
+        bill_money,
+      </if>
+      <if test="billStatus != null" >
+        bill_status,
+      </if>
+      <if test="gmtModify != null" >
+        gmt_modify,
+      </if>
+      <if test="gmtPay != null" >
+        gmt_pay,
+      </if>
+      <if test="enable != null" >
+        enable,
+      </if>
+      <if test="memo != null" >
+        memo,
+      </if>
+      <if test="billCommission != null" >
+        bill_commission,
+      </if>
+      <if test="accountId != null" >
+        account_id,
+      </if>
+      <if test="accountRealName != null" >
+        account_real_name,
+      </if>
+      <if test="payMoney != null" >
+        pay_money,
+      </if>
+      <if test="body != null" >
+        body,
+      </if>
+      <if test="payWay != null" >
+        pay_way,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="billNo != null" >
+        #{billNo,jdbcType=VARCHAR},
+      </if>
+      <if test="billMoney != null" >
+        #{billMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="billStatus != null" >
+        #{billStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtModify != null" >
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtPay != null" >
+        #{gmtPay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enable != null" >
+        #{enable,jdbcType=SMALLINT},
+      </if>
+      <if test="memo != null" >
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="billCommission != null" >
+        #{billCommission,jdbcType=DECIMAL},
+      </if>
+      <if test="accountId != null" >
+        #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="accountRealName != null" >
+        #{accountRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="payMoney != null" >
+        #{payMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="body != null" >
+        #{body,jdbcType=VARCHAR},
+      </if>
+      <if test="payWay != null" >
+        #{payWay,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.CarsokPayBill" >
+    update carsok_pay_bill
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="billNo != null" >
+        bill_no = #{billNo,jdbcType=VARCHAR},
+      </if>
+      <if test="billMoney != null" >
+        bill_money = #{billMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="billStatus != null" >
+        bill_status = #{billStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtModify != null" >
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtPay != null" >
+        gmt_pay = #{gmtPay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enable != null" >
+        enable = #{enable,jdbcType=SMALLINT},
+      </if>
+      <if test="memo != null" >
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="billCommission != null" >
+        bill_commission = #{billCommission,jdbcType=DECIMAL},
+      </if>
+      <if test="accountId != null" >
+        account_id = #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="accountRealName != null" >
+        account_real_name = #{accountRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="payMoney != null" >
+        pay_money = #{payMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="body != null" >
+        body = #{body,jdbcType=VARCHAR},
+      </if>
+      <if test="payWay != null" >
+        pay_way = #{payWay,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.uton.carsokApi.model.CarsokPayBill" >
+    update carsok_pay_bill
+    set order_no = #{orderNo,jdbcType=VARCHAR},
+      bill_no = #{billNo,jdbcType=VARCHAR},
+      bill_money = #{billMoney,jdbcType=DECIMAL},
+      bill_status = #{billStatus,jdbcType=VARCHAR},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      gmt_pay = #{gmtPay,jdbcType=TIMESTAMP},
+      enable = #{enable,jdbcType=SMALLINT},
+      memo = #{memo,jdbcType=VARCHAR},
+      bill_commission = #{billCommission,jdbcType=DECIMAL},
+      account_id = #{accountId,jdbcType=VARCHAR},
+      account_real_name = #{accountRealName,jdbcType=VARCHAR},
+      pay_money = #{payMoney,jdbcType=DECIMAL},
+      body = #{body,jdbcType=VARCHAR},
+      pay_way = #{payWay,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectOrderBills" resultMap="BaseResultMap">
+     select 
+    <include refid="Base_Column_List" />
+    from carsok_pay_bill
+    where order_no = #{param1} 
+  </select>
+  <select id="selectBillForUpdate" resultMap="BaseResultMap">
+  select 
+    <include refid="Base_Column_List" />
+    from carsok_pay_bill
+    where bill_no=#{param1} for update
+  </select>
+  
+    <select id="selectBill" resultMap="BaseResultMap">
+  select 
+    <include refid="Base_Column_List" />
+    from carsok_pay_bill
+    where bill_no=#{param1} 
+  </select>
+</mapper>

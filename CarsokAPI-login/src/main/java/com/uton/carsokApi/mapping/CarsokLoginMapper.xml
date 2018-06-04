@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.CarsokLoginMapper" >
+    <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokLoginToken" >
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="accounts" jdbcType="INTEGER" property="accounts" />
+        <result column="token" jdbcType="VARCHAR" property="token" />
+        <result column="login_time" jdbcType="VARCHAR" property="loginTime" />
+        <result column="loginout_time" jdbcType="VARCHAR" property="loginOutTime" />
+        <result column="ip_address" jdbcType="TIMESTAMP" property="ipAddress" />
+        <result column="address_msg" jdbcType="TIMESTAMP" property="addressMsg" />
+    </resultMap>
+    <insert id="insert">
+        INSERT INTO carsok_login_token
+        (accounts,token,login_time,ip_address,address_msg)
+        VALUES
+        (#{account},#{token},#{loginTime},#{ipAddress},#{addressMsg})
+    </insert>
+    <update id="update">
+        UPDATE carsok_login_token SET
+        loginout_time = #{loginOutTime}
+        where token = #{token}
+    </update>
+    <select id="selectAllLoginToken" resultMap="BaseResultMap">
+        select id,accounts,token,login_time,loginout_time,ip_address,address_msg
+        FROM carsok_login_token WHERE accounts = #{accounts}
+    </select>
+</mapper>

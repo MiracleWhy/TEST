@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.AllyMapper">
+
+    <!--加号页面，新的盟友列表查询-->
+    <select id="getNewFriendList" resultType="com.uton.carsokApi.controller.response.AllyResponse">
+        SELECT
+            car.id,
+            car.account_code AS carAccountCode,
+            car.friend_account AS friendAccount,
+            ca.account_code AS accountCode,
+            ca.merchant_image_path AS merchantImagePath,
+            ca.merchant_name AS merchantName,
+            car.apply_message AS applyMessage,
+            car.relation_status AS relationStatus
+        FROM
+            carsok_ally_relation car
+        LEFT JOIN carsok_acount ca ON ca.account_code = car.account_code
+        WHERE
+            car.friend_account = #{accountCode}
+        AND car.relation_status = 1
+        AND car.is_del = 1;
+    </select>
+
+    <!--推荐好友列表（按照登录人所在地域推荐）-->
+    <select id="getLocalFriendList" resultType="com.uton.carsokApi.controller.response.AllyResponse">
+        SELECT
+		car.id,
+		car.account_code AS carAccountCode,
+		car.friend_account AS friendAccount,
+		ca.merchant_image_path AS merchantImagePath,
+		ca.account_code AS accountCode,
+		ca.merchant_name AS merchantName,
+		ca.contact_name AS contactName,
+		ca.merchant_address AS merchantAddress,
+		IFNULL(car.relation_status,0) AS relationStatus,
+		ca.val
+        FROM
+        (SELECT
+            ca.*,
+            COUNT(cp.id) AS val
+            FROM
+            carsok_acount ca
+            LEFT JOIN  carsok_product cp ON ca.id = cp.account_id AND cp.is_del = 0 AND cp.on_shelf_status = 1 AND cp.sale_status = 0
+                    WHERE ca.city=(SELECT city FROM carsok_acount WHERE account_code = #{accountCode}) AND account_code != #{accountCode}
+            GROUP BY ca.id) ca
+        LEFT JOIN carsok_ally_relation car ON  ca.account_code = car.account_code
+        WHERE (car.relation_status IN(0,3) OR car.relation_status IS NULL);
+    </select>
+
+    <!--车商联盟首页好友列表展示查询-->
+    <select id="getFriendList" resultType="com.uton.carsokApi.controller.response.AllyResponse">
+         SELECT
+            car.id,
+            car.account_code AS carAccountCode,
+            car.friend_account AS friendAccount,
+            ca.merchant_image_path AS merchantImagePath,
+            ca.account_code AS accountCode,
+            ca.merchant_name AS merchantName,
+            ca.contact_name AS contactName,
+            ca.merchant_address AS merchantAddress,
+            car.relation_status AS relationStatus,
+            ca.val
+        FROM
+            carsok_ally_relation car
+        LEFT JOIN
+			(SELECT
+        ca.*,
+        COUNT(cp.id) AS val
+        FROM
+        carsok_acount ca
+        LEFT JOIN  carsok_product cp ON ca.id = cp.account_id AND cp.is_del = 0 AND cp.on_shelf_status = 1 AND cp.sale_status = 0
+        GROUP BY ca.id) ca ON (ca.account_code = car.account_code OR ca.account_code = car.friend_account) AND ca.account_code != #{accountCode}
+
+        WHERE
+            (car.account_code = #{accountCode}
+        OR car.friend_account = #{accountCode})
+        AND car.relation_status IN (1, 2)
+        AND car.is_del = 1
+    </select>
+
+    <!--按条件搜索好友查询-->
+    <select id="searchFriendList" resultType="com.uton.carsokApi.controller.response.AllyResponse">
+        SELECT car.id,
+        car.account_code AS carAccountCode,
+        car.friend_account AS friendAccount,
+        ca.merchant_image_path AS merchantImagePath,
+        ca.account_code AS accountCode,
+        ca.merchant_name AS merchantName,
+        ca.contact_name AS contactName,
+        ca.merchant_address AS merchantAddress,
+        IFNULL(car.relation_status,0) AS relationStatus,
+        (SELECT COUNT(*) FROM carsok_product WHERE account_id = ca.id AND is_del = 0 AND on_shelf_status = 1 AND sale_status = 0) AS val
+        FROM
+        carsok_acount ca
+        LEFT JOIN carsok_ally_relation car ON (ca.account_code = car.account_code OR ca.account_code = car.friend_account) AND (car.account_code = #{accountCode} OR car.friend_account = #{accountCode})
+        WHERE 1=1
+        <if test="searchName != '' and searchName != null">
+        AND ca.merchant_name LIKE CONCAT('%', #{searchName}, '%')
+        OR ca.mobile = #{searchName}
+        </if>
+        GROUP BY ca.id
+    </select>
+
+    <!--新增好友关系-->
+    <insert id="addNewFriend" parameterType="com.uton.carsokApi.controller.request.AllyRequest">
+        insert into carsok_ally_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="allyRequest.accountCode != null">
+                account_code,
+            </if>
+            <if test="allyRequest.friendAccount != null">
+                friend_account,
+            </if>
+            <if test="allyRequest.relationStatus != null">
+                relation_status,
+            </if>
+            <if test="allyRequest.applyMessage != null">
+                apply_message,
+            </if>
+            <if test="allyRequest.createTime != null">
+                create_time,
+            </if>
+            <if test="allyRequest.updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="allyRequest.accountCode != null">
+                #{allyRequest.accountCode},
+            </if>
+            <if test="allyRequest.friendAccount != null">
+                #{allyRequest.friendAccount},
+            </if>
+            <if test="allyRequest.relationStatus != null">
+                #{allyRequest.relationStatus},
+            </if>
+            <if test="allyRequest.applyMessage != null">
+                #{allyRequest.applyMessage},
+            </if>
+            <if test="allyRequest.createTime != null">
+                #{allyRequest.createTime},
+            </if>
+            <if test="allyRequest.updateTime != null">
+                #{allyRequest.updateTime},
+            </if>
+        </trim>
+    </insert>
+
+    <!--更新好友关系-->
+    <update id="updateFriendRelation" parameterType="com.uton.carsokApi.controller.request.AllyRequest">
+        update carsok_ally_relation
+        <set>
+            <if test="allyRequest.relationStatus != null">
+                relation_status = #{allyRequest.relationStatus},
+            </if>
+            <if test="allyRequest.applyMessage != null">
+                apply_message = #{allyRequest.applyMessage},
+            </if>
+            <if test="allyRequest.updateTime != null">
+                update_time =#{allyRequest.updateTime},
+            </if>
+        </set>
+        where id = #{allyRequest.id}
+    </update>
+
+    <!--查询是否存在好友关系-->
+    <select id="getRelation" parameterType="com.uton.carsokApi.controller.request.AllyRequest" resultType="com.uton.carsokApi.controller.response.AllyResponse">
+        SELECT
+            id,
+            account_code AS accountCode,
+            friend_account AS friendAccount,
+            relation_status AS relationStatus,
+            apply_message AS applyMessage
+
+        FROM carsok_ally_relation
+        <where>
+            <if test="accountCode != null and friendAccount != null">
+                (
+                account_code = #{accountCode}
+                AND friend_account = #{friendAccount}
+                )
+                OR (
+                account_code = #{friendAccount}
+                AND friend_account = #{accountCode}
+                )
+            </if>
+            <if test="id != null">
+                id=#{id}
+            </if>
+        </where>
+    </select>
+
+    <!--联盟消息查询-->
+    <select id="getMessageList" resultType="com.uton.carsokApi.controller.response.ContentPushResponse">
+        SELECT
+            ccp.id,
+            ccp.title,
+            ccp.content,
+            ccp.push_status AS pushStatus,
+            ccp.create_time AS createTime
+        FROM
+            carsok_content_push ccp
+        WHERE
+            ccp.enable = 1
+         AND ccp.content_type = 'allyMessage'
+         AND ccp.push_to = #{accountCode}
+    </select>
+
+    <!--插入联盟消息-->
+    <insert id="addMessage" parameterType="com.uton.carsokApi.controller.response.ContentPushResponse">
+        INSERT INTO carsok_content_push
+        (
+        title,
+        content,
+        push_to,
+        content_type,
+        create_time
+        )VALUES (
+        #{title},
+        #{content},
+        #{pushTo},
+        #{contentType},
+        #{createTime}
+        )
+    </insert>
+
+    <!--删除联盟消息-->
+    <update id="updateMessageById">
+      UPDATE carsok_content_push
+      SET enable = 2
+      WHERE id=#{id}
+    </update>
+
+    <!--更新联盟消息已读状态，1为未读，0为已读-->
+    <update id="updateMessageStatusById">
+        UPDATE carsok_content_push
+        SET push_status = 0
+        WHERE id=#{id}
+    </update>
+
+    <!--消息通知，查询是否有未读消息-->
+    <select id="getMessageCount" resultType="java.lang.Integer">
+      SELECT COUNT(*) FROM carsok_content_push
+      WHERE enable = 1
+      AND push_status = 1
+      AND content_type = 'allyMessage'
+      AND push_to = #{accountCode}
+    </select>
+
+    <!--查询是否有新的好友申请-->
+    <select id="getNewFriendCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_ally_relation
+        WHERE relation_status = 1
+        AND friend_account = #{accountCode}
+    </select>
+
+    <select id="getMerchantName" resultType="java.lang.String">
+        SELECT merchant_name AS merchantName FROM carsok_acount WHERE account_code = #{accountCode}
+    </select>
+
+    <select id="getAllyList" resultType="java.lang.String">
+        select friend_account as phone from carsok_ally_relation where relation_status=2 and is_del=1 and  account_code=#{phone}
+        union all
+        select account_code as phone from carsok_ally_relation where relation_status=2 and is_del=1 and  friend_account=#{phone}
+    </select>
+    
+    <select id="getProductsInAlly">
+        select * from carsok_product cp left join carsok_acount ca on cp.account_id=ca.id where ca.account in (select friend_account as phone from carsok_ally_relation where relation_status=2 and is_del=1 and  account_code=#{phone}
+        union all
+        select account_code as phone from carsok_ally_relation where relation_status=2 and is_del=1 and  friend_account=#{phone})
+    </select>
+    
+    <select id="getCustomerIntentionCarInAlly">
+        select * from carsok_customer_intention_car ccic left join carsok_customer cc on ccic.customer_id=cc.id
+        left join carsok_acount ca on cc.account_id=ca.id
+        where cc.level not in ("D 已成交","F0 战败待确认","F 战败")
+        and ca.account in (select friend_account as phone from carsok_ally_relation where relation_status=2 and is_del=1 and  account_code=#{phone}
+        union all
+        select account_code as phone from carsok_ally_relation where relation_status=2 and is_del=1 and  friend_account=#{phone})
+    </select>
+
+</mapper>

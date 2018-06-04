@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.CustomerMessageMapper" >
+    <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.Customer" >
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="account_id" property="accountId" jdbcType="INTEGER" />
+        <result column="child_id" property="childId" jdbcType="INTEGER" />
+        <result column="in_time" property="inTime" jdbcType="TIMESTAMP" />
+        <result column="out_time" property="outTime" jdbcType="TIMESTAMP" />
+        <result column="people_num" property="peopleNum" jdbcType="INTEGER" />
+        <result column="salesadviser" property="salesAdviser" jdbcType="VARCHAR" />
+        <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
+        <result column="customer_phone" property="customerPhone" jdbcType="VARCHAR" />
+        <result column="customer_status" property="customerStatus" jdbcType="INTEGER" />
+        <result column="information_sources" property="informationSources" jdbcType="VARCHAR" />
+        <result column="Intentional_vehicle" property="IntentionalVehicle" jdbcType="VARCHAR" />
+        <result column="customer_level" property="customerLevel" jdbcType="VARCHAR" />
+        <result column="customer_track" property="customerTrack" jdbcType="VARCHAR" />
+        <result column="customer_budget" property="customerBudget" jdbcType="VARCHAR" />
+        <result column="customer_region" property="customerRegion" jdbcType="VARCHAR" />
+        <result column="customer_come" property="customerCome" jdbcType="INTEGER" />
+        <result column="brand" property="brand" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="BaseResultMap2" type="com.uton.carsokApi.model.CustomerFlow" >
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="account_id" property="accountId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="customer_flow_message" property="customerFlowMessage" jdbcType="VARCHAR" />
+        <result column="push_time" property="pushTime" jdbcType="TIMESTAMP" />
+        <result column="cust_come" property="custCome" jdbcType="INTEGER" />
+        <result column="account_id" property="accountId" jdbcType="INTEGER" />
+        <result column="child_id" property="childId" jdbcType="INTEGER" />
+    </resultMap>
+    <resultMap id="BaseResult3" type="com.uton.carsokApi.model.StoreRemind">
+        <result column="accountPhone" property="accountPhone" jdbcType="VARCHAR" />
+        <result column="childPhone" property="childPhone" jdbcType="VARCHAR" />
+        <result column="customerPhone" property="customerPhone" jdbcType="VARCHAR" />
+        <result column="customerName" property="customerName" jdbcType="VARCHAR" />
+        <result column="mendianId" property="mendianId" jdbcType="INTEGER" />
+    </resultMap>
+    <select id="selectCustListBySearchOrMonth" resultMap="BaseResultMap">
+        SELECT id,customer_name,customer_phone,Intentional_vehicle,in_time,customer_level from carsok_customer_manage
+        <if test="childId == 0">
+            where account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            where account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="select != null or select != '' ">
+            AND ( customer_name LIKE CONCAT('%',#{select},'%')
+            OR customer_phone LIKE CONCAT('%',#{select},'%')
+            OR Intentional_vehicle LIKE CONCAT('%',#{select},'%') )
+        </if>
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectCustAllMsgById" resultMap="BaseResultMap">
+        SELECT * from carsok_customer_manage WHERE id = ${id}
+    </select>
+
+    <select id="seletCustFlowList" resultMap="BaseResultMap2">
+        SELECT * from carsok_customer_flowmsg WHERE customer_id = ${id}
+    </select>
+
+    <select id="selectCustList" resultMap="BaseResultMap">
+        SELECT id,customer_name,customer_phone,Intentional_vehicle,in_time,customer_level FROM carsok_customer_manage
+        <if test="childId == 0">
+            where account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            WHERE account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="times == 1">
+            and DATE_FORMAT(in_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="times == 2">
+            and in_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="times == 3">
+            and DATE_FORMAT(in_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="khjb != '' and khjb != null">
+            and customer_level LIKE CONCAT('%',#{khjb},'%')
+        </if>
+        <if test="dfzt != '' and dfzt != null and dfzt != 0">
+            and customer_status = #{dfzt}
+        </if>
+        <if test="gmys != '' and gmys != null ">
+            and customer_budget = #{gmys}
+        </if>
+        <if test="type == 1">
+            and 1 = 1
+        </if>
+        <if test="type == 2">
+            AND three_if = 0
+            AND seven_if = 0
+            AND DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 3 DAY) >= DATE_FORMAT(NOW(),'%Y-%m-%d')
+        </if>
+        <if test="type == 3">
+            AND ((three_if = 0 AND seven_if = 0
+            AND DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 4 DAY) >= DATE_FORMAT(NOW(),'%Y-%m-%d')
+            AND DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 7 DAY) >= DATE_FORMAT(NOW(),'%Y-%m-%d'))
+            OR (three_if = 1
+            AND seven_if = 0
+            AND DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 7 DAY) >= DATE_FORMAT(NOW(),'%Y-%m-%d')))
+        </if>
+        <if test="type == 4">
+            AND ((three_if = 0
+            AND seven_if = 0
+            AND DATE_FORMAT(NOW(),'%Y-%m-%d') > DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 3 DAY))
+            OR (three_if = 1
+            AND seven_if = 0
+            AND DATE_FORMAT(NOW(),'%Y-%m-%d') > DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 7 DAY)))
+        </if>
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectThreeOrSevenCount" resultType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_manage
+        <where>
+            <if test="childId == 0">
+                and account_id = #{accountId}
+            </if>
+            <if test="childId != 0">
+                and account_id = #{accountId} and child_id = #{childId}
+            </if>
+            <if test="type == 1">
+                and 1 = 1
+            </if>
+            <if test="type == 2">
+                AND three_if = 0
+                AND seven_if = 0
+                AND DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 3 DAY) >= DATE_FORMAT(NOW(),'%Y-%m-%d')
+            </if>
+            <if test="type == 3">
+                AND ((three_if = 0 AND seven_if = 0
+                AND DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 4 DAY) >= DATE_FORMAT(NOW(),'%Y-%m-%d')
+                AND DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 7 DAY) >= DATE_FORMAT(NOW(),'%Y-%m-%d'))
+                OR (three_if = 1
+                AND seven_if = 0
+                AND DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 7 DAY) >= DATE_FORMAT(NOW(),'%Y-%m-%d')))
+            </if>
+            <if test="type == 4">
+                AND ((three_if = 0
+                AND seven_if = 0
+                AND DATE_FORMAT(NOW(),'%Y-%m-%d') > DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 3 DAY))
+                OR (three_if = 1
+                AND seven_if = 0
+                AND DATE_FORMAT(NOW(),'%Y-%m-%d') > DATE_ADD(DATE_FORMAT(in_time,'%Y-%m-%d'), INTERVAL 7 DAY)))
+            </if>
+        </where>
+    </select>
+</mapper>

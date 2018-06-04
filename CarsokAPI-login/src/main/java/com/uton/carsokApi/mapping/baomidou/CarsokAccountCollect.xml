@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokAccountCollectMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokAccountCollect">
+		<id column="id" property="id" />
+		<result column="account_id" property="accountId" />
+		<result column="child_id" property="childId" />
+		<result column="collect_account_id" property="collectAccountId" />
+		<result column="enable" property="enable" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, account_id AS accountId, child_id AS childId, collect_account_id AS collectAccountId, enable, create_time AS createTime, update_time AS updateTime
+    </sql>
+
+	<!--获取车行收藏列表-->
+	<select id="getAccountCollectList" resultType="com.uton.carsokApi.controller.response.AccountCollectListResponse">
+		SELECT
+		cac.id,
+		cac.collect_account_id AS collectAccountId,
+		ca.merchant_name AS merchantName,
+		ca.is_merchant_audit AS isMerchantAudit,
+		ca.merchant_image_path AS picPath,
+		ca.province,
+		ca.city,
+		ca.account_code AS accountCode,
+		(SELECT enable FROM carsok_account_tofront WHERE tofront_account_id = cac.collect_account_id) AS isTofront
+		FROM
+		carsok_account_collect cac
+		LEFT JOIN carsok_acount ca ON cac.collect_account_id = ca.id
+		WHERE ca.id IS NOT NULL
+		AND cac.account_id = #{param.accountId}
+		<if test="param.childId == null">
+			AND cac.child_id IS NULL
+		</if>
+		<if test="param.childId != null">
+			AND cac.child_id = #{param.childId}
+		</if>
+		<if test="param.searchName != null and param.searchName != ''">
+			AND ca.merchant_name LIKE CONCAT('%', #{param.searchName}, '%')
+		</if>
+		ORDER BY cac.create_time DESC
+	</select>
+
+	<!--查询收藏列表总条数-->
+	<select id="getListCount" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+		carsok_account_collect cac
+		LEFT JOIN carsok_acount ca ON cac.collect_account_id = ca.id
+		WHERE ca.id IS NOT NULL
+		AND cac.account_id = #{accountId}
+		<if test="childId == null">
+			AND cac.child_id IS NULL
+		</if>
+		<if test="childId != null">
+			AND cac.child_id = #{childId}
+		</if>
+		<if test="searchName != null and searchName != ''">
+			AND ca.merchant_name LIKE CONCAT('%', #{searchName}, '%')
+		</if>
+	</select>
+
+	<!--查看车行是否被收藏-->
+	<select id="isCollectAccount" resultType="java.lang.Integer">
+		SELECT
+		id
+		FROM
+		carsok_account_collect
+		WHERE
+		account_id = #{accountId}
+		AND collect_account_id = #{collectAccountId}
+		<if test="childId == null">
+			AND child_id IS NULL
+		</if>
+		<if test="childId != null">
+			AND child_id = #{childId}
+		</if>
+	</select>
+</mapper>

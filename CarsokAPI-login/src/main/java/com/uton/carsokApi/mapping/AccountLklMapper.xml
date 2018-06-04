@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.AccountLklMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.AccountLkl" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="account_id" property="accountId" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="mer_name" property="merName" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="area_name" property="areaName" jdbcType="VARCHAR" />
+    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+    <result column="account_no" property="accountNo" jdbcType="VARCHAR" />
+    <result column="account_bank_name" property="accountBankName" jdbcType="VARCHAR" />
+    <result column="apply_status" property="applyStatus" jdbcType="VARCHAR" />
+    <result column="open_status" property="openStatus" jdbcType="VARCHAR" />
+    <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="gmt_open" property="gmtOpen" jdbcType="TIMESTAMP" />
+    <result column="apply_image" property="applyImage" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, account_id, real_name, mer_name, address, area_name, gmt_create, account_no, 
+    account_bank_name, apply_status, open_status, gmt_modify, memo, gmt_open,apply_image
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_account_lkl
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from carsok_account_lkl
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.uton.carsokApi.model.AccountLkl" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into carsok_account_lkl (account_id, real_name, mer_name, 
+      address, area_name, gmt_create, 
+      account_no, account_bank_name, apply_status, 
+      open_status, gmt_modify, memo, 
+      gmt_open,apply_image)
+    values (#{accountId,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, #{merName,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{areaName,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{accountNo,jdbcType=VARCHAR}, #{accountBankName,jdbcType=VARCHAR}, #{applyStatus,jdbcType=VARCHAR}, 
+      #{openStatus,jdbcType=VARCHAR}, #{gmtModify,jdbcType=TIMESTAMP}, #{memo,jdbcType=VARCHAR}, 
+      #{gmtOpen,jdbcType=TIMESTAMP},#{applyImage})
+  </insert>
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.AccountLkl" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into carsok_account_lkl
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="accountId != null" >
+        account_id,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="merName != null" >
+        mer_name,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="areaName != null" >
+        area_name,
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create,
+      </if>
+      <if test="accountNo != null" >
+        account_no,
+      </if>
+      <if test="accountBankName != null" >
+        account_bank_name,
+      </if>
+      <if test="applyStatus != null" >
+        apply_status,
+      </if>
+      <if test="openStatus != null" >
+        open_status,
+      </if>
+      <if test="gmtModify != null" >
+        gmt_modify,
+      </if>
+      <if test="memo != null" >
+        memo,
+      </if>
+      <if test="gmtOpen != null" >
+        gmt_open,
+      </if>
+      <if test="applyImage != null" >
+        apply_image
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="accountId != null" >
+        #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="merName != null" >
+        #{merName,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="areaName != null" >
+        #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null" >
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="accountNo != null" >
+        #{accountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="accountBankName != null" >
+        #{accountBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="openStatus != null" >
+        #{openStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtModify != null" >
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memo != null" >
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtOpen != null" >
+        #{gmtOpen,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyImage != null" >
+        #{applyImage,jdbcType=TIMESTAMP}
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.AccountLkl" >
+    update carsok_account_lkl
+    <set >
+      <if test="accountId != null" >
+        account_id = #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="merName != null" >
+        mer_name = #{merName,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="areaName != null" >
+        area_name = #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="accountNo != null" >
+        account_no = #{accountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="accountBankName != null" >
+        account_bank_name = #{accountBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        apply_status = #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="openStatus != null" >
+        open_status = #{openStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtModify != null" >
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memo != null" >
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtOpen != null" >
+        gmt_open = #{gmtOpen,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyImage != null" >
+        apply_image = #{applyImage,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+     where account_id = #{accountId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.uton.carsokApi.model.AccountLkl" >
+    update carsok_account_lkl
+    set account_id = #{accountId,jdbcType=VARCHAR},
+      real_name = #{realName,jdbcType=VARCHAR},
+      mer_name = #{merName,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      area_name = #{areaName,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      account_no = #{accountNo,jdbcType=VARCHAR},
+      account_bank_name = #{accountBankName,jdbcType=VARCHAR},
+      apply_status = #{applyStatus,jdbcType=VARCHAR},
+      open_status = #{openStatus,jdbcType=VARCHAR},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      memo = #{memo,jdbcType=VARCHAR},
+      gmt_open = #{gmtOpen,jdbcType=TIMESTAMP},
+      apply_image=#{applyImage}
+    where account_id = #{accountId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByAccountIdForUpdate" resultMap="BaseResultMap">
+  select 
+    <include refid="Base_Column_List" />
+    from carsok_account_lkl
+    where account_id  = #{param1,jdbcType=VARCHAR}
+  </select>
+</mapper>

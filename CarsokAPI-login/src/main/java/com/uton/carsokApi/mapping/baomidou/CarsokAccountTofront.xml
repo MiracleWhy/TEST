@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokAccountTofrontMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokAccountTofront">
+		<id column="id" property="id" />
+		<result column="tofront_account_id" property="tofrontAccountId" />
+		<result column="account_order_id" property="accountOrderId" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="new_order" property="newOrder" />
+		<result column="enable" property="enable" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, tofront_account_id AS tofrontAccountId, account_id AS accountId, child_id AS childId, account_order_id AS accountOrderId, start_time AS startTime, end_time AS endTime, new_order AS newOrder, enable, create_time AS createTime, update_time AS updateTime
+    </sql>
+
+	<!--车行置顶记录查询-->
+	<select id="accountTofront" resultType="com.uton.carsokApi.controller.response.AccountTofrontResponse">
+		SELECT
+			cat.id,
+			ca.merchant_name AS mechantName,
+			ca.account_code AS accountCode,
+			ca.merchant_image_path AS merchanImagePath,
+			(SELECT plan_name FROM  carsok_tofront_plan WHERE id = cato.tofront_plan_id) AS planName,
+			cat.start_time AS startTime,
+			cat.end_time AS endTime,
+			cat.enable
+		FROM
+			carsok_account_tofront cat
+		LEFT JOIN carsok_acount ca ON cat.tofront_account_id = ca.id
+		LEFT JOIN carsok_account_tofront_order cato ON cat.account_order_id = cato.id
+		WHERE cat.account_id = #{accountId}
+		AND cat.child_id = #{childId}
+	</select>
+</mapper>

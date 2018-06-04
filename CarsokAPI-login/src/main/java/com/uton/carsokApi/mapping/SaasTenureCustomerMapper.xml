@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.SaasTenureCustomerMapper">
+    <!--<select id="getRoleName" resultType="java.lang.String">-->
+        <!--SELECT b.roleName-->
+        <!--FROM carsok_role_manage a-->
+        <!--LEFT JOIN carsok_role b-->
+        <!--ON b.id = a.roleId-->
+        <!--WHERE a.childId = #{childId}-->
+    <!--</select>-->
+    <select id="getRoleName" resultType="java.lang.String">
+        SELECT p.power_name
+        FROM carsok_account_power p
+        LEFT JOIN carsok_account_power_manage pm
+        ON pm.power_name = p.power_name
+        WHERE p.child_id = #{childId}
+    </select>
+    <select id="findCarList" resultType="com.uton.carsokApi.controller.response.FindListResponse" >
+        SELECT tc.id AS tenureCarId, tc.tenure_carname AS tenureCarName, DATE_FORMAT(tc.sale_time,'%Y-%m-%d') AS saleTime, t.name AS customerName, t.mobile AS customerMobile, IF(tc.is_done=1,'已完善','待完善') AS showType, '' AS delayDays, IF(IFNULL(cca.child_account_name,'')='','主账号',cca.child_account_name) AS belongTo
+        FROM carsok_customer_tenure_car tc
+        LEFT JOIN carsok_customer t
+        ON t.id = tc.customer_id
+        LEFT JOIN carsok_acount ca ON ca.id = tc.account_id
+        LEFT JOIN carsok_child_account cca ON cca.id = tc.child_id
+        WHERE tc.account_id = #{accountId}
+        <if test="roleType == 1">
+            AND tc.child_id = #{childId}
+        </if>
+        <if test="selects != '' and selects != null">
+            AND (
+              t.name LIKE CONCAT('%',#{selects},'%')
+              OR t.mobile LIKE CONCAT('%',#{selects},'%')
+              OR tc.tenure_carname LIKE CONCAT('%',#{selects},'%')
+            )
+        </if>
+        <if test="completeStatus == 1">
+            AND tc.is_done = 0
+        </if>
+        <if test="completeStatus == 2">
+            AND tc.is_done = 1
+        </if>
+        <if test="times == 1">
+            AND DATE_FORMAT(tc.sale_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="times == 2">
+            AND tc.sale_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="times == 3">
+            AND DATE_FORMAT(tc.sale_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="buyStatusList != null">
+            AND tc.purchase_status IN
+            <foreach collection="buyStatusList" close=")" open="(" separator="," item="item">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY tc.create_time DESC
+    </select>
+    <select id="selectOtherInfoByCarId" resultType="com.uton.carsokApi.controller.response.FindListResponse" >
+        SELECT
+            tc.id AS tenureCarId,
+            tc.tenure_carname AS tenureCarName,
+            DATE_FORMAT( tc.sale_time, '%Y-%m-%d' ) AS saleTime,
+            t.name AS customerName,
+            t.mobile AS customerMobile,
+            '' AS delayDays,
+            IF(IFNULL(cca.child_account_name,'')='','主账号',cca.child_account_name) AS belongTo
+        FROM
+            carsok_customer_tenure_car tc
+        LEFT JOIN carsok_customer t ON t.id = tc.customer_id
+        LEFT JOIN carsok_child_account cca ON cca.id = tc.child_id
+        WHERE tc.id = #{carId}
+    </select>
+    <select id="selectOtherInfoByCustomerId" resultType="com.uton.carsokApi.controller.response.FindListResponse" >
+        SELECT
+            tc.id AS tenureCarId,
+            tc.tenure_carname AS tenureCarName,
+            DATE_FORMAT( tc.sale_time, '%Y-%m-%d' ) AS saleTime,
+            t.name AS customerName,
+            t.mobile AS customerMobile,
+            '' AS delayDays,
+            IF(IFNULL(cca.child_account_name,'')='','主账号',cca.child_account_name) AS belongTo
+        FROM
+            carsok_customer_tenure_car tc
+        LEFT JOIN carsok_customer t ON t.id = tc.customer_id
+        LEFT JOIN carsok_child_account cca ON cca.id = tc.child_id
+        WHERE t.id = #{customerId}
+        GROUP BY t.mobile
+    </select>
+
+    <select id="getOutDatePushList" resultType="com.uton.carsokApi.model.PushContent">
+        SELECT id, title, content, create_time AS createTime
+        FROM carsok_content_push
+        WHERE push_to = #{pushTo}
+        AND content_type = #{contentType}
+        <!--<if test="timeParam != null and timeParam != ''">-->
+        <!--AND create_time>#{timeParam}-->
+        <!--</if>-->
+        AND enable=1
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="getChildAcountList" resultType="com.uton.carsokApi.model.ChildAccount">
+        SELECT id, child_account_mobile AS childAccountMobile, child_account_name AS childAccountName, account_phone AS accountPhone, alias
+        FROM carsok_child_account
+    </select>
+
+    <select id="getAcountList" resultType="com.uton.carsokApi.model.Acount">
+        SELECT id, account_code AS accountCode, account, nick, mobile, real_name AS realName, merchant_name AS merchantName
+        FROM carsok_acount
+    </select>
+
+    <delete id="clearReadyTaskPush">
+        DELETE FROM carsok_content_push
+        WHERE content_type = 'taskReady'
+    </delete>
+
+    <!--<select id="getOldData" resultType="com.uton.carsokApi.controller.request.moveOldDataRequest">-->
+        <!--SELECT-->
+            <!--a.tenure_carname AS tenureCarname,-->
+            <!--a.tenure_vin AS tenureVin,-->
+            <!--a.sale_time AS saleTime,-->
+            <!--a.tenure_carprice AS tenureCarprice,-->
+            <!--a.car_males AS carMiles,-->
+            <!--a.tenure_carnum AS tenureCarnum,-->
+            <!--a.tenure_compulsory AS tenureCompulsory,-->
+            <!--a.tenure_business AS tenureBusiness,-->
+            <!--a.tenure_maintain AS tenureMaintain,-->
+            <!--a.tenure_Warranty AS tenureWarranty,-->
+            <!--d.id AS customerId,-->
+            <!--a.account_id AS accountId,-->
+            <!--a.child_id AS childId,-->
+            <!--c.id AS productId-->
+        <!--FROM carsok_customer_trnure_car a-->
+        <!--LEFT JOIN carsok_customer_tenure b-->
+        <!--ON b.tenurecar_id = a.id-->
+        <!--LEFT JOIN carsok_customer d-->
+        <!--ON d.mobile = b.cust_phone-->
+        <!--LEFT JOIN carsok_product c-->
+        <!--ON c.id = a.product_id-->
+        <!--WHERE 1=1-->
+        <!--AND a.sale_time &gt; DATE_FORMAT('2017-12-18','%Y-%m-%d')-->
+        <!--AND a.sale_time &lt; DATE_FORMAT(NOW(),'%Y-%m-%d')-->
+        <!--ORDER BY a.sale_time DESC-->
+    <!--</select>-->
+    <!--<select id="getOldQiankeData" resultType="com.uton.carsokApi.controller.request.moveOldDataCarsokCustomerManage">-->
+        <!--SELECT  a.id,-->
+                <!--a.account_id AS accountId,-->
+                <!--a.child_id AS childId,-->
+                <!--a.in_time AS inTime,-->
+                <!--a.out_time AS outTime,-->
+                <!--a.people_num AS peopleNum,-->
+                <!--a.customer_name AS customerName,-->
+                <!--a.customer_phone AS customerPhone,-->
+                <!--a.information_sources AS informationSources,-->
+                <!--a.Intentional_vehicle AS IntentionalVehicle,-->
+                <!--a.customer_budget AS customerBudget,-->
+                <!--a.customer_region AS customerRegion,-->
+                <!--a.create_time AS createTime,-->
+                <!--a.update_time AS updateTime-->
+        <!--FROM carsok_customer_manage a-->
+        <!--LEFT JOIN carsok_acount b-->
+        <!--ON b.id = a.account_id-->
+        <!--WHERE a.create_time &gt; DATE_FORMAT('2017-11-1','%Y-%m-%d')-->
+        <!--AND b.account IN (13905514444, 18815799728, 18133331761, 15656066302, 13608068874, 18408226559, 15942399888, 17753265372, 15192797392, 15865501607, 13455991607, 15963267890, 13791110000, 13156376607, 15318893079, 13969718111, 13864222008, 15689997567, 15692321370, 18153258713, 18153251997, 15066812128, 15265220997, 18366267815, 18669783677, 15689958707, 18561877775, 18330135880, 18633068768, 15533600600, 17662022026)-->
+        <!--ORDER BY b.account, a.create_time-->
+    <!--</select>-->
+    <!--<select id="getDecOldBaoyouCustomerData" resultType="com.uton.carsokApi.controller.request.DecBaoyouDataComplete">-->
+        <!--SELECT cc.id AS customerId,-->
+        <!--c.id,-->
+        <!--c.cust_name,-->
+        <!--c.cust_phone,-->
+        <!--c.cust_sex,-->
+        <!--c.cust_age,-->
+        <!--c.cust_birthday,-->
+        <!--c.cust_vocation,-->
+        <!--c.cust_beforecar,-->
+        <!--c.create_time-->
+        <!--FROM carsok_customer_tenure_car a-->
+        <!--LEFT JOIN carsok_product p-->
+        <!--ON p.id = a.product_id-->
+        <!--LEFT JOIN carsok_customer_trnure_car b-->
+        <!--ON b.product_id = a.product_id-->
+        <!--LEFT JOIN carsok_customer_tenure c-->
+        <!--ON c.tenurecar_id = b.id-->
+        <!--LEFT JOIN carsok_customer cc-->
+        <!--ON cc.id = a.customer_id-->
+        <!--WHERE a.is_new_record = 1-->
+        <!--AND a.is_done = 0-->
+        <!--AND c.id IS NOT NULL-->
+        <!--GROUP BY cc.id-->
+        <!--ORDER BY c.cust_phone DESC-->
+    <!--</select>-->
+    <!--<select id="selectphoneC" parameterType="com.uton.carsokApi.model.CarsokCustomer" resultType="com.uton.carsokApi.model.CarsokCustomer">-->
+        <!--SELECT *-->
+        <!--FROM carsok_customer-->
+        <!--WHERE mobile = #{mobile}-->
+        <!--GROUP BY mobile-->
+    <!--</select>-->
+    <!--<update id="updateCarsokCustomerById" parameterType="com.uton.carsokApi.model.CarsokCustomer">-->
+        <!--UPDATE carsok_customer-->
+        <!--SET-->
+        <!--<if test="mobile != null and mobile != ''">-->
+            <!--mobile = #{mobile},-->
+        <!--</if>-->
+        <!--<if test="name != null and name != ''">-->
+            <!--name = #{name},-->
+        <!--</if>-->
+        <!--sex = #{sex},-->
+        <!--birthday = #{birthday},-->
+        <!--age = #{age},-->
+        <!--create_time = #{createTime},-->
+        <!--update_time = #{updateTime}-->
+        <!--WHERE-->
+        <!--id = #{id}-->
+    <!--</update>-->
+
+    <!--<select id="getNovOldData" resultType="com.uton.carsokApi.controller.request.NovBaoyouData">-->
+        <!--SELECT-->
+        <!--a.tenure_carname AS tenureCarname,-->
+        <!--a.tenure_vin AS tenureVin,-->
+        <!--a.sale_time AS saleTime,-->
+        <!--a.tenure_carprice AS tenureCarprice,-->
+        <!--a.car_males AS carMiles,-->
+        <!--a.tenure_carnum AS tenureCarnum,-->
+        <!--a.tenure_compulsory AS tenureCompulsory,-->
+        <!--a.tenure_business AS tenureBusiness,-->
+        <!--a.tenure_maintain AS tenureMaintain,-->
+        <!--a.tenure_Warranty AS tenureWarranty,-->
+        <!--a.account_id AS accountId,-->
+        <!--a.child_id AS childId,-->
+        <!--c.id AS productId,-->
+        <!--b.cust_name AS custName,-->
+        <!--b.cust_phone AS custPhone,-->
+        <!--b.cust_sex AS custSex,-->
+        <!--b.cust_age AS custAge,-->
+        <!--b.cust_birthday AS custBirthday,-->
+        <!--b.cust_vocation AS custVocation,-->
+        <!--b.cust_beforecar AS custBeforecar,-->
+        <!--b.create_time AS createTime-->
+        <!--FROM carsok_customer_trnure_car a-->
+        <!--LEFT JOIN carsok_customer_tenure b-->
+        <!--ON b.tenurecar_id = a.id-->
+        <!--LEFT JOIN carsok_product c-->
+        <!--ON c.id = a.product_id-->
+        <!--LEFT JOIN carsok_acount ca-->
+        <!--ON ca.id = a.account_id-->
+        <!--WHERE ca.account IN (13905514444, 18815799728, 18133331761, 15656066302, 13608068874, 18408226559, 15942399888, 17753265372, 15192797392, 15865501607, 13455991607, 15963267890, 13791110000, 13156376607, 15318893079, 13969718111, 13864222008, 15689997567, 15692321370, 18153258713, 18153251997, 15066812128, 15265220997, 18366267815, 18669783677, 15689958707, 18561877775, 18330135880, 18633068768, 15533600600, 17662022026)-->
+        <!--AND a.sale_time &gt; DATE_FORMAT('2017-11-1','%Y-%m-%d')-->
+        <!--AND a.sale_time &lt; DATE_FORMAT('2017-11-30','%Y-%m-%d')-->
+        <!--ORDER BY a.sale_time DESC-->
+    <!--</select>-->
+
+    <!--<update id="updateTaskLevel">-->
+        <!--UPDATE carsok_tenure_task-->
+        <!--SET type = #{level}-->
+        <!--WHERE id = #{taskId}-->
+    <!--</update>-->
+    <!--<update id="clearTaskScheduledTime">-->
+        <!--UPDATE carsok_tenure_task-->
+        <!--SET scheduled_time = NULL-->
+        <!--WHERE id = #{taskId}-->
+    <!--</update>-->
+</mapper>

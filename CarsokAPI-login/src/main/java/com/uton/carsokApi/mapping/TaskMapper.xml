@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.TaskMapper">
+	
+	<insert id="insert" parameterType="com.uton.carsokApi.model.Task">
+		INSERT INTO carsok_task(
+			id
+			,record_id
+			,type
+			,create_time
+			,update_time
+		) VALUES (
+			#{id},
+			#{recordId},
+			#{type},
+			#{createTime},
+			#{updateTime}
+		) 
+	</insert>
+</mapper>

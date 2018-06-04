@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+http://www.springframework.org/schema/aop 
+http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+">
+
+	<!-- 配置数据源 -->
+	<bean name="dataSourceA" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://101.201.115.9:3306/carsok" />
+		<property name="username" value="root" />
+		<property name="password" value="123456" />
+        <property name="initialSize" value="1" />
+    	<property name="minIdle" value="1" />
+    	<property name="maxActive" value="10" />
+    	<property name="maxWait" value="100" />
+		<property name="filters" value="stat" />  <!-- 数据库监控 -->
+	</bean>
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!--basePackage指定要扫描的包，在此包之下的映射器都会被搜索到。可指定多个包，包与包之间用逗号或分号分隔 -->
+		<property name="basePackage" value="com.uton.carsokApi" />
+	</bean>
+	
+	<bean id="paginationInterceptor" class="com.uton.carsokApi.pagination.PaginationInterceptor">
+		<property name="dialect" >
+			<bean  class="com.uton.carsokApi.pagination.dialect.MySQLDialect" />
+		</property>
+		<property name="paginationSqlRegEx"  value=".*ForPage.*" />
+	</bean>
+	
+	<!-- mybatis -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceA" />
+		<property name="mapperLocations" value="${junit.mapper}" />
+		<!-- 加载配置mybatis 全局配置文件 -->
+        <property name="configLocation" value="classpath:/xmlConfig/mybatis-config.xml"></property>   
+	</bean>
+	<!-- 配置事务管理器 org.springframework.jdbc.datasource.DataSourceTransactionManager -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceA" />
+	</bean>
+
+	<!-- 注解方式配置事物 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+</beans>

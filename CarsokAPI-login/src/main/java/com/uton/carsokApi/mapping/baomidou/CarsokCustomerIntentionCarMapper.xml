@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokCustomerIntentionCarMapper">
+
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokCustomerIntentionCar">
+		<id column="id" property="id" />
+		<result column="customer_id" property="customerId" />
+		<result column="brand" property="brand" />
+		<result column="series" property="series" />
+		<result column="model" property="model" />
+	</resultMap>
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, customer_id AS customerId, brand, series, model
+    </sql>
+</mapper>

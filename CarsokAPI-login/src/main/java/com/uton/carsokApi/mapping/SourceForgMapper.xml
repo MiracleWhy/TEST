@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.SourceForgMapper" >
+
+    <select id="oneCount"  resultType="java.lang.Double">
+        select count(*) from carsok_customer where enable=1 and child_id=#{id} and source=#{source} AND in_time is not NULL
+        <if test="type == 4" >
+            AND  YEAR(in_time) = #{date}
+        </if>
+        <if test="type == 3" >
+            AND  DATE_FORMAT( in_time, '%Y-%m' ) =  date_format(#{date},'%Y-%m')
+        </if>
+        <if test="type == 2" >
+            AND  in_time BETWEEN  #{date} and DATE_ADD(#{date}, INTERVAL 6 day)
+        </if>
+        <if test="type == 1" >
+            AND  DATE_FORMAT( in_time, '%Y-%m-%d' ) =  DATE_FORMAT( #{date}, '%Y-%m-%d' )
+        </if>
+
+    </select>
+    <select id="chain"  resultType="java.lang.Double">
+        select count(*) from carsok_customer where enable=1 and child_id=#{id} and source=#{source} AND in_time is not NULL
+        <if test="type == 4" >
+            AND  YEAR(in_time) = #{date}-1
+        </if>
+        <if test="type == 3" >
+            AND  DATE_FORMAT( in_time , '%Y-%m' ) =date_format(DATE_SUB(#{date}, INTERVAL 1 MONTH),'%Y-%m')
+        </if>
+        <if test="type == 2" >
+            AND  in_time BETWEEN  DATE_SUB(#{date}, INTERVAL 7 day) and DATE_SUB(#{date}, INTERVAL 1 day)
+        </if>
+        <if test="type == 1" >
+            AND  DATE_FORMAT(in_time, '%Y-%m-%d' ) =  date_sub(#{date},interval 1 day)
+        </if>
+
+    </select>
+    <select id="source" resultType="java.lang.String">
+        select distinct  source from carsok_customer
+    </select>
+    <select id="countAllOne" resultType="java.lang.Integer">
+        select count(*) from carsok_customer where child_id=#{id} and enable=1 AND in_time is not NULL
+        <if test="type == 4" >
+            AND  YEAR(in_time) = #{date}
+        </if>
+        <if test="type == 3" >
+            AND  DATE_FORMAT( in_time, '%Y-%m' ) =  date_format(#{date},'%Y-%m')
+        </if>
+        <if test="type == 2" >
+            AND  in_time BETWEEN  #{date} and DATE_ADD(#{date}, INTERVAL 6 day)
+        </if>
+        <if test="type == 1" >
+            AND  DATE_FORMAT( in_time, '%Y-%m-%d' ) = DATE_FORMAT( #{date}, '%Y-%m-%d' )
+        </if>
+    </select>
+    <select id="countAll" resultType="java.lang.Integer">
+        select count(*) from carsok_customer where account_id=#{id} and enable=1 AND in_time is not NULL
+        and(
+        child_id IN <foreach collection="child" open="(" separator="," close=")" item="childs">
+        #{childs}
+    </foreach>or child_id=NULL)
+        <if test="type == 4" >
+            AND  YEAR(in_time) = #{date}
+        </if>
+        <if test="type == 3" >
+            AND  DATE_FORMAT( in_time, '%Y-%m' ) =  date_format(#{date},'%Y-%m')
+        </if>
+        <if test="type == 2" >
+            AND  in_time BETWEEN  #{date} and DATE_ADD(#{date}, INTERVAL 6 day)
+        </if>
+        <if test="type == 1" >
+            AND  DATE_FORMAT( in_time, '%Y-%m-%d' ) = DATE_FORMAT( #{date}, '%Y-%m-%d' )
+        </if>
+    </select>
+
+    <select id="accountCount"  resultType="java.lang.Double">
+        select count(*) from carsok_customer where enable=1 and account_id=#{id} and source=#{source} AND in_time is not
+        NULL
+        and(
+        child_id IN
+        <foreach collection="child" open="(" separator="," close=")" item="childs">#{childs}
+        </foreach> OR child_id=null)
+
+        <if test="type == 4" >
+            AND  YEAR(in_time) = #{date}
+        </if>
+        <if test="type == 3" >
+            AND  DATE_FORMAT( in_time, '%Y-%m' ) =  date_format(#{date},'%Y-%m')
+        </if>
+        <if test="type == 2" >
+            AND  in_time BETWEEN  #{date} and DATE_ADD(#{date}, INTERVAL 6 day)
+        </if>
+        <if test="type == 1" >
+            AND  DATE_FORMAT( in_time, '%Y-%m-%d' ) =  DATE_FORMAT( #{date}, '%Y-%m-%d' )
+        </if>
+
+    </select>
+    <select id="accountChains"  resultType="java.lang.Double">
+        select count(*) from carsok_customer where enable=1 and account_id=#{id} and source=#{source} AND in_time is not NULL
+        and
+        (child_id IN
+        <foreach collection="child" open="(" separator="," close=")" item="childs">
+            #{childs}
+        </foreach> or child_id=null)
+        <if test="type == 4" >
+            AND  YEAR(in_time) = #{date}-1
+        </if>
+        <if test="type == 3" >
+            AND  DATE_FORMAT( in_time , '%Y-%m' ) =date_format(DATE_SUB(#{date}, INTERVAL 1 MONTH),'%Y-%m')
+        </if>
+        <if test="type == 2" >
+            AND  in_time BETWEEN  DATE_SUB(#{date}, INTERVAL 7 day) and DATE_SUB(#{date}, INTERVAL 1 day)
+        </if>
+        <if test="type == 1" >
+            AND  DATE_FORMAT(in_time, '%Y-%m-%d' ) =  date_sub(#{date},interval 1 day)
+        </if>
+    </select>
+    <select id="nullCount"  resultType="java.lang.Double">
+        select count(*) from carsok_customer where enable=1 and account_id=#{id} AND in_time is not NULL AND
+        (source = " "
+        OR source is null)
+        and
+        (child_id IN
+        <foreach collection="child" open="(" separator="," close=")" item="childs">
+            #{childs}
+        </foreach> or child_id=null)
+        <if test="type == 4" >
+            AND  YEAR(in_time) = #{date}
+        </if>
+        <if test="type == 3" >
+            AND  DATE_FORMAT( in_time, '%Y-%m' ) =  date_format(#{date},'%Y-%m')
+        </if>
+        <if test="type == 2" >
+            AND  in_time BETWEEN  #{date} and DATE_ADD(#{date}, INTERVAL 6 day)
+        </if>
+        <if test="type == 1" >
+            AND  DATE_FORMAT( in_time, '%Y-%m-%d' ) = DATE_FORMAT( #{date}, '%Y-%m-%d' )
+        </if>
+
+    </select>
+    <select id="nullChains"  resultType="java.lang.Double">
+        select count(*) from carsok_customer where enable=1 and account_id=#{id}  AND in_time is not NULL AND
+        (source = " "
+        OR source is null) and
+        (child_id IN
+        <foreach collection="child" open="(" separator="," close=")" item="childs">
+            #{childs}
+        </foreach> or child_id=null)
+        <if test="type == 4" >
+            AND  YEAR(in_time) = #{date}-1
+        </if>
+        <if test="type == 3" >
+            AND  DATE_FORMAT( in_time , '%Y-%m' ) =date_format(DATE_SUB(#{date}, INTERVAL 1 MONTH),'%Y-%m')
+        </if>
+        <if test="type == 2" >
+            AND  in_time BETWEEN  DATE_SUB(#{date}, INTERVAL 7 day) and DATE_SUB(#{date}, INTERVAL 1 day)
+        </if>
+        <if test="type == 1" >
+            AND  DATE_FORMAT(in_time, '%Y-%m-%d' ) =  date_sub(#{date},interval 1 day)
+        </if>
+    </select>
+
+</mapper>

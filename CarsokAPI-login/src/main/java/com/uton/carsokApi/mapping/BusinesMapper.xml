@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.BusinesMapper" >
+
+	<resultMap id="BussinesMap" type="com.uton.carsokApi.model.Bussines" >
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="car_industry" property="carIndustry" jdbcType="VARCHAR" />
+		<result column="revisit" property="revisit" jdbcType="DATE" />
+		<result column="person_in_charge" property="personInCharge" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="telephone" property="telephone" jdbcType="VARCHAR" />
+		<result column="first_visittime" property="firstVisittime" jdbcType="DATE" />
+		<result column="vehicle_scale" property="vehicleScale" jdbcType="VARCHAR" />
+		<result column="interest_level" property="interestLevel" jdbcType="VARCHAR" />
+		<result column="empnumber" property="empnumber" jdbcType="VARCHAR" />
+		<result column="purchase_budget" property="purchaseBudget" jdbcType="VARCHAR" />
+		<result column="saas" property="saas" jdbcType="VARCHAR" />
+		<result column="shopboor_picture" property="shopboorPicture" jdbcType="VARCHAR" />
+		<result column="is_deal_ok" property="isdealok" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="acount_id" property="acountId" jdbcType="INTEGER" />
+		<result column="chil_acount_id" property="chilAcountId" jdbcType="INTEGER" />
+		<result column="remarks" property="remarks" jdbcType="VARCHAR" />
+		<result column="is_add_child" property="isAddChild" jdbcType="VARCHAR" />
+		<result column="is_commercial_msg" property="isCommercialMsg" jdbcType="VARCHAR" />
+		<result column="is_pos" property="isPos" jdbcType="VARCHAR" />
+		<result column="carsokApi_function" property="carsokApiFunction" jdbcType="VARCHAR" />
+		<result column="is_tps" property="isTps" jdbcType="VARCHAR" />
+		<result column="region" property="region" jdbcType="VARCHAR" />
+	</resultMap>
+	<insert id="insertCustomer" parameterType="com.uton.carsokApi.model.Bussines">
+		<selectKey resultType="java.lang.Integer" keyProperty="id"
+				   order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO carsok_bussines
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="carIndustry != null">
+				car_industry,
+			</if>
+			<if test="revisit != null">
+				revisit,
+			</if>
+			<if test="personInCharge != null">
+				person_in_charge,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="telephone != null">
+				telephone,
+			</if>
+			<if test="firstVisittime!= null">
+				first_visittime,
+			</if>
+			<if test=" vehicleScale != null">
+				vehicle_scale,
+			</if>
+			<if test="interestLevel!= null">
+				interest_level,
+			</if>
+			<if test="empnumber != null">
+				empnumber,
+			</if>
+			<if test="purchaseBudget!= null">
+				purchase_budget,
+			</if>
+			<if test="saas != null">
+				saas,
+			</if>
+			<if test="shopboorPicture != null">
+				shopboor_picture,
+			</if>
+			<if test="isdealok != null">
+				is_deal_ok,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="acountId != null">
+				acount_id,
+			</if>
+			<if test="chilAcountId != null">
+				chil_acount_id,
+			</if>
+			<if test="remarks != null">
+				remarks,
+			</if>
+			<if test="isAddChild != null">
+				is_add_child,
+			</if>
+			<if test="isCommercialMsg != null">
+				is_commercial_msg,
+			</if>
+			<if test="isPos != null">
+				is_pos,
+			</if>
+			<if test="carsokApiFunction != null">
+				carsokApi_function,
+			</if>
+			<if test="isTps != null">
+				is_tps,
+			</if>
+			<if test="creater != null">
+				creater,
+			</if>
+			<if test="region != null">
+				region,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="carIndustry != null">
+				#{carIndustry,jdbcType=VARCHAR},
+			</if>
+			<if test="revisit != null">
+				#{revisit},
+			</if>
+
+			<if test="personInCharge != null">
+				#{personInCharge,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="telephone != null">
+				#{telephone,jdbcType=TIMESTAMP},
+			</if>
+			<if test="firstVisittime != null">
+				#{firstVisittime},
+			</if>
+			<if test="vehicleScale != null">
+				#{vehicleScale,jdbcType=VARCHAR},
+			</if>
+			<if test="interestLevel != null">
+				#{interestLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="empnumber != null">
+				#{empnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="purchaseBudget != null">
+				#{purchaseBudget,jdbcType=VARCHAR},
+			</if>
+			<if test="saas != null">
+				#{saas,jdbcType=VARCHAR},
+			</if>
+			<if test="shopboorPicture != null">
+				#{shopboorPicture,jdbcType=VARCHAR},
+			</if>
+			<if test="isdealok != null">
+				#{isdealok,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=VARCHAR},
+			</if>
+			<if test="acountId != null">
+				#{acountId,jdbcType=VARCHAR},
+			</if>
+			<if test="chilAcountId != null">
+				#{chilAcountId,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+				#{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="isAddChild != null">
+				#{isAddChild,jdbcType=VARCHAR},
+			</if>
+			<if test="isCommercialMsg != null">
+				#{isCommercialMsg,jdbcType=VARCHAR},
+			</if>
+			<if test="isPos != null">
+				#{isPos,jdbcType=VARCHAR},
+			</if>
+			<if test="carsokApiFunction != null">
+				#{carsokApiFunction,jdbcType=VARCHAR},
+			</if>
+			<if test="isTps != null">
+				#{isTps,jdbcType=VARCHAR},
+			</if>
+			<if test="creater != null">
+				#{creater,jdbcType=VARCHAR},
+			</if>
+			<if test="region != null">
+				#{region,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateBussines" parameterType="com.uton.carsokApi.model.Bussines" >
+		update carsok_bussines
+		<set>
+			<if test="telephone != null">
+			telephone=#{telephone,jdbcType=VARCHAR},
+			</if>
+			<if test="saas != null">
+			saas=#{saas,jdbcType=VARCHAR},
+			</if>
+			<if test="saas != null">
+			empnumber=#{empnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="vehicleScale != null">
+			vehicle_scale=#{vehicleScale,jdbcType=VARCHAR},
+			</if>
+			<if test="shopboorPicture != null">
+			shopboor_picture=#{shopboorPicture,jdbcType=VARCHAR},
+			</if>
+			<if test="personInCharge != null">
+			person_in_charge = #{personInCharge,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+			address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="revisit != null">
+			revisit = #{revisit,jdbcType=DATE},
+			</if>
+			update_time=now(),
+			<if test="interestLevel != null">
+			interest_level = #{interestLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="purchaseBudget != null">
+			purchase_budget = #{purchaseBudget,jdbcType=VARCHAR},
+			</if>
+			<if test="isdealok != null">
+			is_deal_ok = #{isdealok,jdbcType=VARCHAR},
+			</if>
+			<if test="isAddChild != null">
+			is_add_child = #{isAddChild,jdbcType=VARCHAR},
+			</if>
+			<if test="isCommercialMsg != null">
+			is_commercial_msg = #{isCommercialMsg,jdbcType=VARCHAR},
+			</if>
+			<if test="isPos != null">
+			is_pos = #{isPos,jdbcType=VARCHAR},
+			</if>
+			<if test="carsokApiFunction != null">
+			carsokApi_function = #{carsokApiFunction,jdbcType=VARCHAR},
+			</if>
+			<if test="isTps != null">
+			is_tps = #{isTps,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+			remarks = #{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="creater != null">
+			creater = #{creater,jdbcType=VARCHAR}
+			</if>
+		</set>
+		<if test=" id != null and id != ''">
+			where id = #{id,jdbcType=INTEGER}
+		</if>
+	</update>
+
+	<select id="selectCountByMonth" resultType="java.lang.Integer">
+		SELECT IFNULL(count(*),0) AS count from carsok_bussines
+		<if test="childId == 0">
+			WHERE acount_id = #{accountId}
+		</if>
+		<if test="childId!= 0">
+			WHERE acount_id = #{accountId} and chil_acount_id = #{childId}
+		</if>
+		<if test="months != null and month != ''">
+			and DATE_FORMAT(update_time, '%Y-%m') = DATE_FORMAT(#{months}, '%Y-%m')
+		</if>
+
+	</select>
+
+
+	<select id="selectMonthCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		SELECT count(*) from carsok_bussines WHERE DATE_FORMAT(update_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+		<if test="childId == 0">
+			AND acount_id = #{accountId}
+		</if>
+		<if test="childId != 0">
+			AND acount_id = #{accountId} and chil_acount_id = #{childId}
+		</if>
+
+	</select>
+
+	<select id="selectWeekCount" resultType="java.lang.Integer">
+		SELECT IFNULL(count(*),0) AS count
+		from carsok_bussines
+		where update_time
+		BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d')
+		AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+		<if test="childId == 0">
+			AND acount_id = #{accountId}
+		</if>
+		<if test="childId != 0">
+			AND acount_id = #{accountId} and chil_acount_id = #{childId}
+		</if>
+
+	</select>
+
+
+	<select id="selectDayCount" resultType="java.lang.Integer">
+		SELECT IFNULL(count(*),0) AS count  from carsok_bussines WHERE DATE_FORMAT(update_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+		<if test="childId == 0">
+			AND acount_id = #{accountId}
+		</if>
+		<if test="childId != 0">
+			AND acount_id = #{accountId} and chil_acount_id = #{childId}
+		</if>
+	</select>
+	<select id="selectAll" resultType="java.lang.Integer">
+		SELECT IFNULL(count(*),0) AS count  from carsok_bussines
+		WHERE
+		<if test="childId == 0">
+			acount_id = #{accountId}
+		</if>
+		<if test="childId != 0">
+			acount_id = #{accountId} and chil_acount_id = #{childId}
+		</if>
+	</select>
+
+
+	<select id="selectBussinesMsg" resultMap="BussinesMap">
+		SELECT * from carsok_bussines
+		<if test="times == 2">
+			WHERE DATE_FORMAT(update_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+		</if>
+		<if test="times ==1">
+			where update_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+		</if>
+		<if test="times == 0">
+			WHERE DATE_FORMAT(update_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+		</if>
+		<if test="childId == 0">
+			AND acount_id = #{accountId}
+		</if>
+		<if test="childId != 0">
+			AND acount_id = #{accountId} and chil_acount_id = #{childId}
+		</if>
+
+		ORDER BY id DESC
+		LIMIT #{p1},#{p2}
+	</select>
+
+	<select id="selectBussinesMsgByMonth" resultMap="BussinesMap">
+		SELECT * from carsok_bussines
+		<if test="times == 2">
+			WHERE DATE_FORMAT(update_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+		</if>
+		<if test="times ==1">
+			where update_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+		</if>
+		<if test="times == 0">
+			WHERE  DATE_FORMAT(update_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+		</if>
+		<if test="times == 4">
+			WHERE  DATE_FORMAT(update_time, '%Y-%m') = DATE_FORMAT(#{months}, '%Y-%m')
+		</if>
+		<if test="childId == 0">
+			AND acount_id = #{accountId}
+		</if>
+		<if test="childId != 0">
+			AND acount_id = #{accountId} and chil_acount_id = #{childId}
+		</if>
+
+		ORDER BY id DESC
+		LIMIT #{p1},#{p2}
+	</select>
+
+	<select id="selectBySearchKey" resultType="java.lang.Integer">
+		SELECT count(*) from carsok_bussines
+		<if test="childId == 0">
+			WHERE acount_id = #{accountId}
+		</if>
+		<if test="childId != 0">
+			WHERE acount_id = #{accountId} and chil_acount_id = #{childId}
+		</if>
+		AND car_industry LIKE CONCAT('%',#{selects},'%')
+		OR telephone LIKE CONCAT('%',#{selects},'%')
+		OR person_in_charge LIKE CONCAT('%',#{selects},'%')
+	</select>
+
+	<select id="queryBusinesListBysearchkey" resultMap="BussinesMap">
+		SELECT * from carsok_bussines
+		<if test="childId == 0">
+			where acount_id = #{accountId}
+		</if>
+		<if test="childId != 0">
+			where acount_id = #{accountId} and chil_acount_id = #{childId}
+		</if>
+		<if test=" month != null and month != ''">
+			AND DATE_FORMAT(update_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+		</if>
+		<if test="selects != null and selects != '' ">
+			AND  car_industry LIKE CONCAT('%',#{selects},'%')
+			OR telephone LIKE CONCAT('%',#{selects},'%')
+			OR person_in_charge LIKE CONCAT('%',#{selects},'%')
+			OR address LIKE CONCAT('%',#{selects},'%')
+		</if>
+		ORDER BY id DESC
+		LIMIT #{p1},#{p2}
+	</select>
+
+	<select id="selecByid" resultMap="BussinesMap" parameterType="java.lang.Integer">
+		select * from carsok_bussines where id=#{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="selecByPicture" resultType="java.lang.String" parameterType="java.lang.String">
+		select shopboor_picture from carsok_bussines where id=#{id,jdbcType=INTEGER}
+	</select>
+
+
+	<update id="updatePicture" parameterType="java.lang.String" >
+		UPDATE carsok_bussines SET shopboor_picture = #{code,jdbcType=VARCHAR}
+			where id = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="selectCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM carsok_bussines
+		<if test="childId == 0">
+			WHERE acount_id = #{accountId}
+		</if>
+		<if test="childId != 0">
+			WHERE acount_id = #{accountId} and chil_acount_id = #{childId}
+		</if>
+		<if test="times == 1">
+			AND DATE_FORMAT(update_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+		</if>
+		<if test="times == 2">
+			AND update_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+		</if>
+		<if test="times == 3">
+			AND DATE_FORMAT(update_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+		</if>
+		<if test="month != null and month != ''">
+			AND DATE_FORMAT(update_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+		</if>
+		<if test="selects != null and selects != ''">
+			AND (car_industry LIKE CONCAT('%',#{selects},'%')
+			OR telephone LIKE CONCAT('%',#{selects},'%')
+			OR person_in_charge LIKE CONCAT('%',#{selects},'%')
+			OR region LIKE CONCAT('%',#{selects},'%')
+			OR creater LIKE CONCAT('%',#{selects},'%'))
+		</if>
+	</select>
+
+	<select id="selectBusinessList" resultType="com.uton.carsokApi.model.Bussines">
+		SELECT
+		bus.id id,
+		bus.car_industry carIndustry,
+		bus.revisit revisit,
+		bus.person_in_charge personInCharge,
+		bus.address address,
+		bus.telephone telephone,
+		bus.first_visittime firstVisittime,
+		bus.vehicle_scale vehicleScale,
+		bus.interest_level interestLevel,
+		bus.empnumber empnumber,
+		bus.purchase_budget purchaseBudget,
+		bus.saas saas,
+		bus.shopboor_picture shopboorPicture,
+		bus.is_deal_ok isdealok,
+		bus.create_time createTime,
+		bus.update_time updateTime,
+		bus.acount_id acountId,
+		bus.chil_acount_id chilAcountId,
+		bus.remarks remarks,
+		bus.is_add_child isAddChild,
+		bus.is_commercial_msg isCommercialMsg,
+		bus.is_pos isPos,
+		bus.carsokApi_function carsokApiFunction,
+		bus.is_tps isTps,
+		bus.region region,
+		bus.creater nowCreater
+		FROM
+		carsok_bussines bus
+		LEFT JOIN carsok_child_account child ON bus.chil_acount_id = child.id
+		<if test="childId == 0">
+			WHERE bus.acount_id = #{accountId}
+		</if>
+		<if test="childId != 0">
+			WHERE bus.acount_id = #{accountId} and bus.chil_acount_id = #{childId}
+		</if>
+		<if test="times == 1">
+			AND DATE_FORMAT(bus.update_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+		</if>
+		<if test="times == 2">
+			AND bus.update_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+		</if>
+		<if test="times == 3">
+			AND DATE_FORMAT(bus.update_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+		</if>
+		<if test="month != null and month != ''">
+			AND DATE_FORMAT(bus.update_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+		</if>
+		<if test="selects != null and selects != ''">
+			AND (bus.car_industry LIKE CONCAT('%',#{selects},'%')
+			OR bus.telephone LIKE CONCAT('%',#{selects},'%')
+			OR bus.person_in_charge LIKE CONCAT('%',#{selects},'%')
+			OR bus.region LIKE CONCAT('%',#{selects},'%')
+			OR bus.creater LIKE CONCAT('%',#{selects},'%'))
+		</if>
+		ORDER BY id DESC
+		LIMIT #{p1},#{p2}
+	</select>
+
+	<insert id="addFollowupInfo" parameterType="com.uton.carsokApi.model.FollowupInfoModel">
+		insert into carsok_bussines_followup
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bussinesId != null" >
+				bussines_id,
+			</if>
+			<if test="followupInfo != null" >
+				followup_info,
+			</if>
+			<if test="followupPerson != null" >
+				followup_person,
+			</if>
+			<if test="integrationPerson != null" >
+				integration_person,
+			</if>
+			<if test="followupType != null" >
+				followup_type,
+			</if>
+			<if test="account != null" >
+				account,
+			</if>
+			<if test="childAccount != null" >
+				child_account,
+			</if>
+			<if test="address != null" >
+				address,
+			</if>
+			create_time,
+			update_time,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bussinesId != null" >
+				#{bussinesId,jdbcType=INTEGER},
+			</if>
+			<if test="followupInfo != null" >
+				#{followupInfo,jdbcType=VARCHAR},
+			</if>
+			<if test="followupPerson != null" >
+				#{followupPerson,jdbcType=VARCHAR},
+			</if>
+			<if test="integrationPerson != null" >
+				#{integrationPerson,jdbcType=VARCHAR},
+			</if>
+			<if test="followupType != null" >
+				#{followupType,jdbcType=VARCHAR},
+			</if>
+			<if test="account != null" >
+				#{account,jdbcType=VARCHAR},
+			</if>
+			<if test="childAccount != null" >
+				#{childAccount,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null" >
+				#{address,jdbcType=VARCHAR},
+			</if>
+			now(),
+			now(),
+		</trim>
+	</insert>
+
+	<select id="getFollowupInfoList" parameterType="com.uton.carsokApi.model.FollowupInfoModel" resultType="com.uton.carsokApi.model.FollowupInfoModel">
+		SELECT a.id,a.bussines_id AS bussinesId,a.followup_info AS followupInfo,a.followup_person AS followupPerson,a.integration_person AS integrationPerson,a.followup_type AS followupType,a.account,a.child_account AS childAccount,a.create_time AS createTime,a.update_time AS updateTime
+		FROM carsok_bussines_followup a
+		WHERE 1=1
+		AND a.bussines_id = #{bussinesId,jdbcType=INTEGER}
+		AND a.followup_type = #{followupType,jdbcType=VARCHAR}
+		ORDER BY a.create_time DESC
+	</select>
+	<select id="getBussWorker"  resultType="com.uton.carsokApi.model.ChildNameId">
+		select distinct  child_account_name as name, id
+		from carsok_child_account
+		<where>
+			account_phone=#{mobile}
+			<if test="userLeaveName != null">
+				AND	child_account_name  LIKE CONCAT('%',#{userLeaveName},'%')
+			</if>
+		</where>
+		order by CONVERT( child_account_name USING gbk )
+		COLLATE gbk_chinese_ci ASC
+	</select>
+	<select id="selectUpdateUserMove" resultType="java.lang.Integer">
+	SELECT id FROM
+	  carsok_child_account
+	WHERE child_account_name=#{name} and account_phone=#{mobile}
+	</select>
+
+	<update id="updateUserMove">
+
+		update carsok_bussines
+		<set>
+			chil_acount_id = #{childId}
+		</set>
+		where id IN
+		<foreach collection="list" index="index" item="item" open="(" separator=","  close=")" >
+			#{item}
+		</foreach>
+	</update>
+	<select id="getmarketMave"  resultType="com.uton.carsokApi.model.MarketMove">
+		select distinct  child.child_account_name as name,child.child_account_mobile AS mobile,bussines.id AS ID,bussines.vehicle_scale AS carGM,
+		bussines.car_industry AS carname ,bussines.person_in_charge AS leadingofficial,bussines.address AS address
+		from carsok_bussines bussines LEFT JOIN carsok_child_account child ON bussines.chil_acount_id=child.id
+		where
+			bussines.chil_acount_id =#{id}
+
+		order by CONVERT( carname USING gbk )
+		COLLATE gbk_chinese_ci ASC
+		LIMIT #{p1},#{p2}
+	</select>
+	<select id="selectZ" resultType="java.lang.String">
+		select account_phone FROM carsok_child_account
+		WHERE child_account_mobile=#{mobile}
+	</select>
+	<select id="selectZs" resultType="java.lang.String">
+		select account_phone FROM  carsok_child_account WHERE account_phone=#{mobile}
+	</select>
+	<select id="getmarketMaveCount"  resultType="java.lang.Integer">
+		select count(*)
+		from carsok_bussines bussines LEFT JOIN carsok_child_account child ON bussines.chil_acount_id=child.id
+		where
+		bussines.chil_acount_id =#{id}
+	</select>
+	<select id="addNextVisit" resultType="com.uton.carsokApi.model.AddNextVisit">
+		select fol.id,fol.followup_person followupPerson,fol.integration_person integrationPerson,fol.followup_info message,fol.bussines_id bussinesId,bus.address address
+		FROM carsok_bussines_followup fol left JOIN carsok_bussines  bus ON fol.bussines_id=bus.id
+		WHERE fol.bussines_id=#{id} AND fol.followup_type=#{followupType};
+
+			</select>
+	<select id="selectFowType" resultType="java.lang.String">
+		SELECT followup_type FROM  carsok_bussines_followup group by followup_type
+	</select>
+	<select id="selectaddNextVisit" resultType="com.uton.carsokApi.model.AddNextVisit">
+		select fol.id,fol.followup_person followupPerson,fol.integration_person integrationPerson,fol.followup_info message,fol.bussines_id bussinesId,fol.address address,fol.create_time createTime,fol.update_time updateTime
+		FROM carsok_bussines_followup fol left JOIN carsok_bussines  bus ON fol.bussines_id=bus.id
+		WHERE fol.bussines_id=#{id} AND fol.followup_type=#{followupType};
+
+	</select>
+	<select id="findPageCondition" resultType="com.uton.carsokApi.model.CarsokPmsForfigure">
+		select id,pic_url picUrl,types,create_time createTime,title from carsok_pms_forfigure where deletepic=1
+		ORDER BY CREATE_Time DESC limit #{page},#{size}
+
+	</select>
+	<select id="findPicture" resultType="java.lang.String">
+		select pic_url  from carsok_pms_forfigure where id=#{id}
+	</select>
+
+</mapper>

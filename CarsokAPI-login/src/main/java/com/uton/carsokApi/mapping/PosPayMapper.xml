@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.PosPayMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.PosPay" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pos_id" property="posId" jdbcType="INTEGER" />
+    <result column="product_id" property="productId" jdbcType="INTEGER" />
+    <result column="pay_bar_code" property="payBarCode" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="order_price" property="orderPrice" jdbcType="DECIMAL" />
+    <result column="receipt_type" property="receiptType" jdbcType="INTEGER" />
+    <result column="pay_bar_code_pic_path" property="payBarCodePicPath" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="SMALLINT" />
+    <result column="summit_time" property="summitTime" jdbcType="TIMESTAMP" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap type="com.uton.carsokApi.model.PosPayDetail" id="PayDetailResultMap">
+  	<id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, pos_id, product_id, pay_bar_code, amount, order_price, receipt_type, pay_bar_code_pic_path, 
+    status, summit_time, pay_time, create_time, update_time
+  </sql>
+  
+  <select id="selectByModel" resultMap="BaseResultMap" parameterType="com.uton.carsokApi.model.PosPay" >
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_pos_pay
+    <where>
+		<if test="id != null ">
+		and
+			id = #{id}
+		</if>
+	</where>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from carsok_pos_pay
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+ 
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.uton.carsokApi.model.PosPay" >
+    insert into carsok_pos_pay
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posId != null" >
+        pos_id,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="payBarCode != null" >
+        pay_bar_code,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="orderPrice != null" >
+        order_price,
+      </if>
+      <if test="receiptType != null" >
+        receipt_type,
+      </if>
+      <if test="payBarCodePicPath != null" >
+        pay_bar_code_pic_path,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="summitTime != null" >
+        summit_time,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posId != null" >
+        #{posId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="payBarCode != null" >
+        #{payBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="orderPrice != null" >
+        #{orderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="receiptType != null" >
+        #{receiptType,jdbcType=INTEGER},
+      </if>
+      <if test="payBarCodePicPath != null" >
+        #{payBarCodePicPath,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=SMALLINT},
+      </if>
+      <if test="summitTime != null" >
+        #{summitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.PosPay" >
+    update carsok_pos_pay
+    <set >
+      <if test="posId != null" >
+        pos_id = #{posId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        product_id = #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="payBarCode != null" >
+        pay_bar_code = #{payBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="orderPrice != null" >
+        order_price = #{orderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="receiptType != null" >
+        receipt_type = #{receiptType,jdbcType=INTEGER},
+      </if>
+      <if test="payBarCodePicPath != null" >
+        pay_bar_code_pic_path = #{payBarCodePicPath,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=SMALLINT},
+      </if>
+      <if test="summitTime != null" >
+        summit_time = #{summitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+ 	
+ 	<select id="selectToPayList" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+	   	SELECT * from carsok_pos_pay WHERE 
+	   	  pos_id = (SELECT id from carsok_account_pos WHERE account_id = #{acountId,jdbcType=INTEGER}) 
+	   	  AND status = 2
+   </select>
+   
+   <select id="selectPayedList" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+   		SELECT * from carsok_pos_pay WHERE 
+	   	  pos_id = (SELECT id from carsok_account_pos WHERE account_id = #{acountId,jdbcType=INTEGER}) 
+	   	  AND status = 3
+   </select>
+ 	
+ 	<select id="selectPayedDetail" resultMap="PayDetailResultMap" parameterType="java.lang.Integer" > 
+ 		select * from carsok_pos_pay_detail where pid = #{id,jdbcType=INTEGER}
+ 	</select>
+</mapper>

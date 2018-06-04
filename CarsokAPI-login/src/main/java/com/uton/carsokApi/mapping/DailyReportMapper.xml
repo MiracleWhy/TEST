@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.DailyReportMapper">
+    <!--获取日/月卖车数及日/月收入-->
+    <select id="getSelledCarCountAndSum" resultType="java.util.Map">
+        SELECT
+            count(*) AS selledCount,
+            IFNULL(sum(saled_price), 0) AS selledAmount
+        FROM
+            carsok_product
+        WHERE
+            account_id = #{accountId}
+        AND sale_status= 1
+        AND is_del = 0
+        AND DATE_FORMAT(update_time, '%Y-%m-%d') BETWEEN #{startDate} AND #{endDate}
+    </select>
+    <!--收车-->
+    <select id="selectAcqCarMsg" resultType="com.uton.carsokApi.model.AcqCarMsg">
+        SELECT a.id,a.collectionType AS carName,a.first_up_time AS firstUpTime,a.closeingPrice,IFNULL(b.real_name,'主账号') AS acqer,b.mobile AS acqerPhone  from carsok_acquisition_car a LEFT  JOIN
+        carsok_acount b on a.account_id=b.id where a.account_id=${accountId} AND a.child_id=0 AND isDeal=1 AND date_format(a.create_time,'%Y-%m-%d')=#{date}
+        UNION ALL
+        SELECT a.id,a.collectionType AS carName,a.first_up_time AS firstUpTime,a.closeingPrice,IFNULL(b.child_account_name,'未记录') AS acqer,b.child_account_mobile AS acqerPhone  from carsok_acquisition_car a LEFT  JOIN
+        carsok_child_account b on a.child_id=b.id where a.account_id=${accountId} AND a.child_id!=0 AND isDeal=1 AND date_format(a.create_time,'%Y-%m-%d')=#{date}
+
+    </select>
+    <!--整备-->
+    <select id="selectZbMsg" resultType="com.uton.carsokApi.model.ZbMsg">
+        select f.*,IFNULL(CEILING((UNIX_TIMESTAMP(f.taskTime) - UNIX_TIMESTAMP(h.create_time))/(60*60*24)),0) AS zbDay from (select e.*,carsok_pruduct_oldcar.first_up_time AS firstUpTime,miles  from (select d.*,IFNULL(carsok_zb_task_zby.zbMoney,0) AS zbMoney from (select a.id,b.product_name AS carName,a.taskAccount AS accountPhone,a.taskTime from carsok_zb_task a
+        LEFT JOIN carsok_product b ON a.product_id=b.id where a.taskStatus=5 and date_format(taskTime,'%Y-%m-%d')=#{date} and b.account_id=${accountId} and is_del = 0) d
+        LEFT JOIN carsok_zb_task_zby  on carsok_zb_task_zby.tid=d.id) e LEFT JOIN carsok_pruduct_oldcar on e.id=carsok_pruduct_oldcar.pruduct_id) f LEFT JOIN  carsok_zb_task_sxy h ON f.id=h.tid
+    </select>
+    <!--接待-->
+    <select id="getReceptionList" resultType="com.uton.carsokApi.controller.request.DRReceptionResponse">
+        SELECT B.id,
+        B.child_account_name AS name,
+        '接待员' AS roleName,
+        child_id AS childId,
+        COUNT(*) AS recpCount ,
+        B.child_account_mobile AS receperPhone
+        FROM carsok_customer A
+        LEFT JOIN carsok_child_account B
+        ON A.child_id=B.id
+        WHERE DATE_FORMAT(in_time,'%Y-%m-%d')= #{date}
+        AND account_id=#{accountId}
+        AND child_id!=0
+        GROUP BY child_id
+        union all
+        SELECT B.id,
+        '主账号' AS name,
+        '接待员' AS roleName,
+        0 AS childId,
+        COUNT(*) AS recpCount ,
+        B.mobile AS receperPhone
+        FROM carsok_customer A
+        LEFT JOIN carsok_acount B on A.account_id=B.id
+        WHERE DATE_FORMAT(in_time,'%Y-%m-%d')= #{date}
+        AND account_id=#{accountId}
+        AND child_id=0
+    </select>
+    <!--接待详情-->
+    <select id="getReceptionDetail" resultType="com.uton.carsokApi.controller.request.DRReceptionDetailResponse">
+        select id as id ,
+        name as customerName,
+        mobile as customerPhone,
+        source as customerType
+        from carsok_customer
+        where child_id=${childId}
+        and account_id=${accountId}
+        and DATE_FORMAT(in_time,'%Y-%m-%d')= #{date}
+    </select>
+
+
+    <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.DailyReport" >
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="result" property="result" jdbcType="VARCHAR" />
+        <result column="reporter" property="reporter" jdbcType="VARCHAR" />
+        <result column="reporterName" property="reporterName" jdbcType="VARCHAR" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="is_read" property="isRead" jdbcType="INTEGER" />
+        <result column="report_date" property="reportDate" jdbcType="TIMESTAMP" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="enable" property="enable" jdbcType="INTEGER" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="childPhone" property="childPhone" jdbcType="VARCHAR" />
+        <result column="roleName" property="roleName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap5" type="com.uton.carsokApi.model.ZbRole" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="value" property="value" jdbcType="VARCHAR" />
+        <result column="property" property="property" jdbcType="VARCHAR" />
+    </resultMap>
+    <insert id="insertDailyReport" parameterType="com.uton.carsokApi.model.DailyReport" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO carsok_dailyreport
+        (result,reporter,title,is_read,report_date,create_time,update_time,enable)
+        VALUES(#{result},#{reporter},#{title},#{isRead},#{reportDate},#{createTime},#{updateTime},#{enable})
+    </insert>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        from carsok_dailyreport
+        WHERE reporter = #{reporter}
+        and enable = 1
+    </select>
+
+    <select id="selectDailyReport" resultMap="BaseResultMap">
+        SELECT *
+        from carsok_dailyreport
+        WHERE reporter = #{reporter}
+        AND enable = 1
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectDailyReportMsg" resultMap="BaseResultMap">
+        SELECT cd.*,cca.child_account_name as reporterName
+        FROM carsok_dailyreport cd
+        LEFT JOIN carsok_child_account cca ON cca.child_account_mobile = cd.reporter
+        WHERE cd.id = #{id}
+    </select>
+
+    <select id="selectCountByAccount" resultType="java.lang.Integer">
+        SELECT count(*)
+        from carsok_dailyreport
+        WHERE 1 = 1
+        <if test="childLists == null or childLists.size() == 0">
+            AND 1 = 0
+        </if>
+        <if test="childLists.size()>0">
+            AND reporter IN
+            <foreach collection="childLists" item="childList" separator="," open="("
+                     close=")">
+                #{childList}
+            </foreach>
+        </if>
+        AND enable = 1
+    </select>
+
+    <select id="selectDailyReportByAccount" resultMap="BaseResultMap">
+        SELECT cd.reporter as childPhone,cd.id,cca.child_account_name AS reporterName,cd.title,cd.is_read,cd.result,cd.create_time
+        FROM carsok_dailyreport cd
+        LEFT JOIN carsok_child_account cca ON cca.child_account_mobile = cd.reporter
+        WHERE 1 = 1
+        <if test="childLists == null or childLists.size() == 0">
+            AND 1 = 0
+        </if>
+        <if test="childLists.size()>0">
+            AND cd.reporter IN
+            <foreach collection="childLists" item="childList" separator="," open="("
+                     close=")">
+                #{childList}
+            </foreach>
+        </if>
+        AND cd.enable = 1
+        ORDER BY cd.id DESC
+        limit #{p1},#{p2}
+    </select>
+
+    <select id="selectDailyReportByAccountZjl" resultMap="BaseResultMap">
+        SELECT cd.reporter as childPhone,cd.create_time,cd.id,cca.child_account_name AS reporterName,cd.title,cd.result,(case when cz.zjl_phone is not null then 1 else 0 end ) AS is_read
+        FROM carsok_dailyreport cd
+        LEFT JOIN carsok_child_account cca ON cca.child_account_mobile = cd.reporter
+        LEFT JOIN carsok_dailyreport_zjl cz
+        ON cz.dailyreport_id = cd.id AND cz.zjl_phone = #{zjlPhone}
+        WHERE 1 = 1
+        <if test="childLists == null or childLists.size() == 0">
+            AND 1 = 0
+        </if>
+        <if test="childLists.size()>0">
+            AND cd.reporter IN
+            <foreach collection="childLists" item="childList" separator="," open="("
+                     close=")">
+                #{childList}
+            </foreach>
+        </if>
+        AND cd.enable = 1
+        ORDER BY cd.id DESC
+        limit #{p1},#{p2}
+    </select>
+
+    <update id="updateIsRead">
+        UPDATE carsok_dailyreport
+        SET is_read = 1
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insertZjlIsRead">
+        INSERT INTO carsok_dailyreport_zjl
+        (
+        dailyreport_id,
+        zjl_phone,
+        creat_time
+        )
+        VALUES
+        (
+        #{id},
+        #{zjlPhone},
+        now()
+        )
+    </insert>
+
+    <select id="selectCountByScreen" resultType="java.lang.Integer">
+        SELECT count(DISTINCT(cd.id))
+        FROM carsok_dailyreport cd
+        LEFT JOIN carsok_child_account cca ON cca.child_account_mobile = cd.reporter
+        LEFT JOIN carsok_zb_childrole czc ON czc.childId = cca.id
+        <where>
+            <if test="roleName != null and roleName != '' ">
+                and czc.roleName = #{roleName}
+            </if>
+            <if test="childPhone != null and childPhone != ''">
+                and cd.reporter = #{childPhone}
+            </if>
+            <if test="childPhone == null or childPhone == ''">
+                and cd.reporter in
+                <foreach collection="childLists" item="childList" separator="," open="("
+                         close=")">
+                    #{childList}
+                </foreach>
+            </if>
+            <if test="reportDate != null">
+                and DATE_FORMAT(cd.report_date, '%Y-%m-%d') = (DATE_FORMAT(#{reportDate}, '%Y-%m-%d'))
+            </if>
+        </where>
+    </select>
+
+    <select id="selectReportedList" resultType="com.uton.carsokApi.model.ChildAccount">
+        SELECT DISTINCT cd.reporter AS childAccountMobile, cca.id, cca.child_account_name AS childAccountName, cca.account_phone AS accountPhone, cca.alias, cca.create_time AS createTime, cca.update_time AS updateTime
+        FROM carsok_dailyreport cd
+        LEFT JOIN carsok_child_account cca ON cca.child_account_mobile = cd.reporter
+        LEFT JOIN carsok_zb_childrole czc ON czc.childId = cca.id
+        WHERE cd.reporter in
+        <foreach collection="childLists" item="childList" separator="," open="(" close=")">
+            #{childList}
+        </foreach>
+        <if test="reportDate == null or reportDate == ''">
+            and DATE_FORMAT(cd.report_date, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+        </if>
+        <if test="reportDate != null">
+            and DATE_FORMAT(cd.report_date, '%Y-%m-%d') = (DATE_FORMAT(#{reportDate}, '%Y-%m-%d'))
+        </if>
+    </select>
+
+    <select id="selectReportedCount" resultType="java.lang.String">
+        SELECT COUNT(DISTINCT cd.reporter)
+        FROM carsok_dailyreport cd
+        LEFT JOIN carsok_child_account cca ON cca.child_account_mobile = cd.reporter
+        LEFT JOIN carsok_zb_childrole czc ON czc.childId = cca.id
+        WHERE cd.reporter in
+        <foreach collection="childLists" item="childList" separator="," open="(" close=")">
+            #{childList}
+        </foreach>
+        <if test="reportDate == null or reportDate == ''">
+            and DATE_FORMAT(cd.report_date, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+        </if>
+        <if test="reportDate != null">
+            and DATE_FORMAT(cd.report_date, '%Y-%m-%d') = DATE_FORMAT(#{reportDate}, '%Y-%m-%d')
+        </if>
+    </select>
+
+    <select id="selectMsgByScreen" resultMap="BaseResultMap">
+        SELECT cd.*,cca.child_account_mobile as childPhone,cca.child_account_name as reporterName,czc.roleName as roleName
+        FROM carsok_dailyreport cd
+        LEFT JOIN carsok_child_account cca ON cca.child_account_mobile = cd.reporter
+        LEFT JOIN carsok_zb_childrole czc ON czc.childId = cca.id
+        <where>
+            <if test="roleName != null and roleName != '' ">
+                and czc.roleName = #{roleName}
+            </if>
+            <if test="childPhone != null and childPhone != ''">
+                and cd.reporter = #{childPhone}
+            </if>
+            <if test="childPhone == null or childPhone == ''">
+                and cd.reporter in
+                <foreach collection="childLists" item="childList" separator="," open="("
+                         close=")">
+                    #{childList}
+                </foreach>
+            </if>
+            <if test="reportDate != null ">
+                and DATE_FORMAT(cd.report_date, '%Y-%m-%d') = (DATE_FORMAT(#{reportDate}, '%Y-%m-%d'))
+            </if>
+        </where>
+        GROUP BY cd.id
+        ORDER BY cd.id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+
+    <select id="selectMsgByScreenZjl" resultMap="BaseResultMap">
+        SELECT cd.id,cd.result,cd.reporter,cd.title,cd.report_date,cd.create_time,cd.update_time,cd.enable,cca.child_account_mobile as childPhone,cca.child_account_name as reporterName,czc.roleName as roleName,(case when cz.zjl_phone is not null then 1 else 0 end ) AS is_read
+        FROM carsok_dailyreport cd
+        LEFT JOIN carsok_child_account cca ON cca.child_account_mobile = cd.reporter
+        LEFT JOIN carsok_dailyreport_zjl cz
+        ON cz.dailyreport_id = cd.id AND cz.zjl_phone = #{zjlPhone}
+        LEFT JOIN carsok_zb_childrole czc ON czc.childId = cca.id
+        <where>
+            <if test="roleName != null and roleName != '' ">
+                and czc.roleName = #{roleName}
+            </if>
+            <if test="childPhone != null and childPhone != ''">
+                and cd.reporter = #{childPhone}
+            </if>
+            <if test="childPhone == null or childPhone == ''">
+                and cd.reporter in
+                <foreach collection="childLists" item="childList" separator="," open="("
+                         close=")">
+                    #{childList}
+                </foreach>
+            </if>
+            <if test="reportDate != null ">
+                and DATE_FORMAT(cd.report_date, '%Y-%m-%d') = (DATE_FORMAT(#{reportDate}, '%Y-%m-%d'))
+            </if>
+        </where>
+        GROUP BY cd.id
+        ORDER BY cd.id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+
+    <select id="selectRoleList" resultMap="BaseResultMap5">
+        select * from carsok_zb_role
+    </select>
+
+    <insert id="insetDailyReportZan" parameterType="com.uton.carsokApi.model.DailyReportZan" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO carsok_dailyreport_zan
+        (report_type,fabulous_phone,account_phone,department_type,car_id,getfabulous_phone,create_time,update_time,enable)
+        VALUES
+        (#{reportType},#{fabulousPhone},#{accountPhone},#{departmentType},#{carId},#{getfabulousPhone},#{createTime},#{updateTime},#{enable})
+    </insert>
+
+    <select id="selectCarIdByAccountPhone" resultType="com.uton.carsokApi.model.DailyReportZan">
+        SELECT id,car_id as carId FROM carsok_dailyreport_zan
+        where account_phone = #{accountPhone}
+        and department_type = #{departmentType}
+        and fabulous_phone = #{fabulousPhone}
+        and enable = 1
+    </select>
+
+
+    <select id="selectChildAccountMobile" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT cca.child_account_mobile
+        FROM carsok_dailyreport cd
+        LEFT JOIN carsok_child_account cca ON cca.child_account_mobile = cd.reporter
+        WHERE cd.id = #{id}
+    </select>
+
+    <select id="selectAccountMobile" parameterType="java.lang.String" resultType="java.lang.String">
+        select account_phone from carsok_child_account
+        where child_account_mobile=#{mobile}
+    </select>
+
+    <insert id="insertDailyReportZan" parameterType="com.uton.carsokApi.model.DailyReportZan">
+        <selectKey resultType="java.lang.Integer" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO carsok_dailyreport_zan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportType != null">
+                report_type,
+            </if>
+            <if test="fabulousPhone != null">
+                fabulous_phone,
+            </if>
+            <if test="accountPhone != null">
+                account_phone,
+            </if>
+            <if test="departmentType != null">
+                department_type,
+            </if>
+            <if test="childPhone != null">
+                child_phone,
+            </if>
+            create_time,
+            <if test="enable!= null">
+                enable
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportType != null">
+                #{reportType,jdbcType=VARCHAR},
+            </if>
+            <if test="fabulousPhone != null">
+                #{fabulousPhone},
+            </if>
+
+            <if test="accountPhone != null">
+                #{accountPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentType != null">
+                #{departmentType,jdbcType=VARCHAR},
+            </if>
+            <if test="childPhone != null">
+                #{childPhone,jdbcType=TIMESTAMP},
+            </if>
+            now(),
+            <if test="enable != null">
+                #{enable,jdbcType=INTEGER},
+            </if>
+
+        </trim>
+    </insert>
+
+    <update id="updateZanStatus" parameterType="java.lang.Integer">
+        DELETE from carsok_dailyreport_zan
+        where id = #{id}
+    </update>
+
+    <select id="selectZanListByDepartmentType" resultType="com.uton.carsokApi.model.DailyReportZan">
+        SELECT
+        IFNULL(IF(IF(ca.account IS NULL,cac.child_account_name,ca.nick) IS NULL,'主帐号',cac.child_account_name),ca.nick) AS fabulousPhone,
+        IFNULL(IF(IF(ca2.account IS NULL,cac2.child_account_name,ca2.nick) IS NULL,'主帐号',cac2.child_account_name),ca2.nick) AS getfabulousPhone
+        FROM carsok_dailyreport_zan cdz
+        LEFT JOIN carsok_child_account cac ON cac.child_account_mobile = cdz.fabulous_phone
+        LEFT JOIN carsok_acount ca ON ca.account = cdz.fabulous_phone
+        LEFT JOIN carsok_child_account cac2 ON cac2.child_account_mobile = cdz.getfabulous_phone
+        LEFT JOIN carsok_acount ca2 ON ca2.account = cdz.getfabulous_phone
+        WHERE cdz.account_phone = #{accountPhone}
+        AND cdz.department_type = #{departmentType}
+        AND DATE_FORMAT(cdz.create_time, '%Y-%m-%d') = (DATE_FORMAT(#{createTime}, '%Y-%m-%d'))
+        GROUP BY fabulousPhone,getfabulousPhone
+    </select>
+
+    <select id="selectCarSharedNum" resultType="java.lang.String">
+        SELECT COUNT(DISTINCT sharer)
+        FROM carsok_share_record
+        WHERE account_id = #{accountId}
+        AND share_type IN ('CarShare')
+        AND DATE_FORMAT(create_time, '%Y-%m-%d') = #{searchDay}
+    </select>
+
+    <select id="selectWordSharedNum" resultType="java.lang.String">
+        SELECT COUNT(DISTINCT sharer)
+        FROM carsok_share_record
+        WHERE account_id = #{accountId}
+        AND share_type IN ('ArticalShare')
+        AND DATE_FORMAT(create_time, '%Y-%m-%d') = #{searchDay}
+    </select>
+
+    <select id="selectPaintSharedNum" resultType="java.lang.String">
+        SELECT COUNT(DISTINCT sharer)
+        FROM carsok_share_record
+        WHERE account_id = #{accountId}
+        AND share_type IN ('ScrawlShare')
+        AND DATE_FORMAT(create_time, '%Y-%m-%d') = #{searchDay}
+    </select>
+
+    <select id="selectNewGleefulNum" resultType="java.lang.String">
+        SELECT COUNT(*)
+        FROM carsok_gleeful_report
+        WHERE account_id = #{accountId}
+        AND DATE_FORMAT(create_time, '%Y-%m-%d') = #{searchDay}
+    </select>
+
+    <select id="selectCheckedCarNum" resultType="java.lang.String">
+        SELECT
+            COUNT(*)
+        FROM
+            carsok_dailycheck_dispatcher a
+        LEFT JOIN (SELECT * FROM carsok_dailycheck_result WHERE DATE_FORMAT(check_date, '%Y-%m-%d') = #{searchDay}) AS d ON a.product_id = d.product_id
+        WHERE
+            a.account_id = #{accountId}
+        AND DATE_FORMAT(a.create_time, '%Y-%m-%d') = #{searchDay}
+        AND d.is_check = 1
+    </select>
+
+    <select id="selectAllCarNum" resultType="java.lang.String">
+        SELECT COUNT(*)
+        FROM carsok_dailycheck_dispatcher
+        WHERE account_id = #{accountId}
+        AND DATE_FORMAT(create_time, '%Y-%m-%d') = #{searchDay}
+        ORDER BY checker
+    </select>
+
+    <select id="selectPaihangList" resultType="com.uton.carsokApi.model.OtherShareContent">
+        SELECT * FROM (
+        SELECT cca.child_account_mobile AS sharer,
+        cca.child_account_name AS sharerName,
+        IF(COUNT(csr.sharer) IS NULL,0,COUNT(csr.sharer)) shareCount
+        FROM carsok_child_account cca
+        LEFT JOIN carsok_share_record csr ON csr.sharer = cca.child_account_mobile
+        AND csr.share_type = #{shareType} AND DATE_FORMAT(csr.create_time, '%Y-%m-%d') = (DATE_FORMAT(#{shareTime}, '%Y-%m-%d'))
+        WHERE cca.account_phone = #{accountPhone}
+        GROUP BY cca.child_account_mobile
+        UNION ALL
+        SELECT IFNULL(csr.sharer,#{accountPhone}) AS sharer,
+        IFNULL(ca.merchant_name,#{merchantName}) AS sharerName,
+        IF(COUNT(csr.sharer)IS NULL,0,COUNT(csr.sharer)) AS shareCount
+        FROM carsok_share_record csr
+        LEFT JOIN carsok_acount ca ON ca.id = csr.account_id
+        WHERE csr.sharer = #{accountPhone}
+        AND csr.share_type = #{shareType}
+        AND DATE_FORMAT(csr.create_time, '%Y-%m-%d') = (DATE_FORMAT(#{shareTime}, '%Y-%m-%d'))
+        AND csr.account_id = #{accountId}) a
+        ORDER BY shareCount DESC
+    </select>
+    <select id="countCarSaleByDate" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_product WHERE account_id=#{accountId}
+        AND sale_status=1
+        <if test="type=='day'">
+            AND DATE_FORMAT(update_time,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        <if test="type=='month'">
+            AND DATE_FORMAT(update_time,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+        </if>
+        AND is_del=0
+    </select>
+    <select id="sumCarSaleAmount" resultType="java.lang.Double">
+        SELECT SUM(saled_price) FROM carsok_product WHERE account_id=#{accountId}
+        AND sale_status=1
+        <if test="type=='day'">
+            AND DATE_FORMAT(update_time,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        <if test="type=='month'">
+            AND DATE_FORMAT(update_time,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+        </if>
+        AND is_del=0
+    </select>
+    <!--<select id="sumCarSaleAmount" resultType="java.lang.Double">-->
+        <!--SELECT SUM(B.saled_price) FROM carsok_customer_tenure_car A-->
+        <!--LEFT JOIN carsok_product B ON A.product_id=B.id-->
+        <!--WHERE A.account_id=#{accountId}-->
+        <!--<choose>-->
+            <!--<when test="children !=null and children.size>0">-->
+                <!--AND (A.child_id IN-->
+                <!--<foreach collection="children" open="(" separator="," close=")" item="child">-->
+                    <!--#{child.id}-->
+                <!--</foreach>-->
+                <!--OR A.child_id=0)-->
+            <!--</when>-->
+            <!--<otherwise>-->
+                <!--AND A.child_id=0-->
+            <!--</otherwise>-->
+        <!--</choose>-->
+        <!--<if test="type=='day'">-->
+            <!--AND DATE_FORMAT(A.sale_time,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')-->
+        <!--</if>-->
+        <!--<if test="type=='month'">-->
+            <!--AND DATE_FORMAT(A.sale_time,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')-->
+        <!--</if>-->
+        <!--AND A.is_new_record=0-->
+    <!--</select>-->
+    <select id="countCollectionByDate" resultType="java.lang.Integer">
+        select COUNT(*) from carsok_acquisition_car where account_id=${accountId}
+        <choose>
+            <when test="children !=null and children.size>0">
+                AND (child_id IN
+                <foreach collection="children" open="(" separator="," close=")" item="child">
+                    #{child.id}
+                </foreach>
+                OR child_id=0)
+            </when>
+            <otherwise>
+                AND child_id=0
+            </otherwise>
+        </choose>
+        <if test="type=='day'">
+            AND DATE_FORMAT(create_time,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        <if test="type=='month'">
+            AND DATE_FORMAT(create_time,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+        </if>
+        AND isDeal=1
+    </select>
+    <select id="sumAcqCostByDate" resultType="java.lang.Double">
+        SELECT SUM(closeingPrice) from carsok_acquisition_car where account_id=${accountId}
+        <choose>
+            <when test="children !=null and children.size>0">
+                AND (child_id IN
+                <foreach collection="children" open="(" separator="," close=")" item="child">
+                    #{child.id}
+                </foreach>
+                OR child_id=0)
+            </when>
+            <otherwise>
+                AND child_id=0
+            </otherwise>
+        </choose>
+        <if test="type=='day'">
+            AND DATE_FORMAT(create_time,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        <if test="type=='month'">
+            AND DATE_FORMAT(create_time,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+        </if>
+        AND isDeal=1
+    </select>
+    <select id="countRestoreByDate" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_zb_task
+        WHERE taskAccount=#{account}
+        AND taskStatus=5
+        <if test="type=='day'">
+            AND DATE_FORMAT(taskTime,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        <if test="type=='month'">
+            AND DATE_FORMAT(taskTime,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+        </if>
+    </select>
+    <select id="sumRestoreCostByDate" resultType="java.lang.Double">
+        SELECT SUM(zbMoney) FROM carsok_zb_task A LEFT JOIN carsok_zb_task_zby B ON A.id=B.tid
+        WHERE A.taskAccount=#{account} AND A.taskStatus=5
+        <if test="type=='day'">
+            AND DATE_FORMAT(taskTime,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        <if test="type=='month'">
+            AND DATE_FORMAT(taskTime,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+        </if>
+    </select>
+    <select id="getReceptionCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)  FROM carsok_customer WHERE account_id=#{accountId}
+        <choose>
+            <when test="children !=null and children.size>0">
+                AND (child_id IN
+                <foreach collection="children" item="child" open="(" separator="," close=")">
+                    #{child.id}
+                </foreach>
+                OR child_id=0)
+            </when>
+            <otherwise>
+                AND child_id=0
+            </otherwise>
+        </choose>
+        <if test="type=='day'">
+            AND DATE_FORMAT(in_time,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        <if test="type=='month'">
+            AND DATE_FORMAT(in_time,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+        </if>
+        AND enable=1
+    </select>
+    <select id="selectCustomerTenureCarList" resultType="com.uton.carsokApi.model.CustomerTenureCar">
+        SELECT  tenure_carname AS tenureCarname,
+        tenure_carprice AS tenureCarprice,
+        product_id AS productId,
+        child_id AS childId
+        FROM carsok_customer_tenure_car
+        WHERE account_id=#{accountId}
+        <if test="children !=null and children.size>0">
+            AND (child_id IN
+            <foreach collection="children" item="child" open="(" separator="," close=")">
+                #{child.id}
+            </foreach>
+            OR child_id=0)
+        </if>
+        <if test="type=='day'">
+            AND DATE_FORMAT(sale_time,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        <if test="type=='month'">
+            AND DATE_FORMAT(sale_time,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+        </if>
+        AND is_new_record=0
+    </select>
+    <select id="queryAcqCostByProductId" resultType="java.lang.Double">
+        SELECT B.buyprice FROM carsok_zb_task A LEFT JOIN carsok_zb_task_manager B ON A.id=B.tid
+        WHERE A.product_id=#{productId} limit 0,1
+    </select>
+    <select id="queryRestoreCostByProductId" resultType="java.lang.Double">
+        SELECT SUM(zbMoney) FROM carsok_zb_task A LEFT JOIN carsok_zb_task_zby B ON A.id=B.tid
+        WHERE A.product_id=#{productId}
+    </select>
+    <select id="queryPicPathByProductId" resultType="java.lang.String">
+        SELECT pic_path FROM carsok_picture  WHERE product_id=#{productId} and type=1
+    </select>
+    <select id="selectQx" resultType="java.lang.String">
+        select power_name FROM  carsok_account_power where child_id=(select id from carsok_child_account where child_account_mobile=#{childPhone})
+    </select>
+</mapper>

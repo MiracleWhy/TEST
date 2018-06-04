@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.SaasAuthorityMapper" >
+    <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.ChildAccount" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="child_account_mobile" property="childAccountMobile" jdbcType="VARCHAR" />
+        <result column="child_account_name" property="childAccountName" jdbcType="VARCHAR" />
+        <result column="account_phone" property="accountPhone" jdbcType="VARCHAR" />
+        <result column="alias" property="alias" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="real_name" property="realName" jdbcType="VARCHAR" />
+        <result column="ccaId" property="ccaId" jdbcType="VARCHAR" />
+        <result column="caId" property="caId" jdbcType="VARCHAR" />
+        <result column="child_head_pic" property="childHeadPic" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="getAuthorityByUserId" resultType="java.lang.String">
+        SELECT power_name FROM carsok_account_power
+        WHERE  child_id=#{childId}
+    </select>
+    <select id="queryPrivilegedChildAccount" resultMap="BaseResultMap">
+        SELECT * FROM carsok_child_account
+        WHERE account_phone=#{accountPhone}
+        AND id IN (
+        SELECT child_id FROM carsok_account_power WHERE
+        <choose>
+            <when test="permissionNames!=null and permissionNames.size>0">
+                power_name IN
+                <foreach collection="permissionNames" open="(" separator="," close=")" item="permissionName">
+                    #{permissionName}
+                </foreach>
+            </when>
+            <otherwise>
+                1=0
+            </otherwise>
+        </choose>
+        )
+    </select>
+
+    <select id="selectQxName" resultType="java.lang.String">
+        select distinct  power_name from carsok_account_power where child_id=(select id from carsok_child_account where child_account_mobile=#{childPhone})
+    </select>
+    <select id="selectChild" resultMap="BaseResultMap">
+        select * FROM  carsok_child_account where account_phone=#{accountPhone} and id in(select child_id from carsok_account_power where power_name IN
+        <foreach collection="powerName" open="(" separator="," close=")" item="permissionName">
+            #{permissionName}
+        </foreach>)
+    </select>
+
+</mapper>

@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.CarDataInfoMapper">
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarDataInfo">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="province" property="province" jdbcType="VARCHAR" />
+		<result column="is_exchange" property="isExchange" jdbcType="TINYINT" />
+		<result column="is_dealer" property="isDealer" jdbcType="TINYINT" />
+		<result column="dealer_name" property="dealerName" jdbcType="VARCHAR" />
+		<result column="dealer_phone" property="dealerPhone" jdbcType="VARCHAR" />
+		<result column="dealer_province" property="dealerProvince"
+			jdbcType="VARCHAR" />
+		<result column="dealer_address" property="dealerAddress"
+			jdbcType="VARCHAR" />
+		<result column="car_brand" property="carBrand" jdbcType="VARCHAR" />
+		<result column="car_series" property="carSeries" jdbcType="VARCHAR" />
+		<result column="car_image" property="carImage" jdbcType="VARCHAR" />
+		<result column="car_model" property="carModel" jdbcType="VARCHAR" />
+		<result column="car_color" property="carColor" jdbcType="VARCHAR" />
+		<result column="supervised_price" property="supervisedPrice"
+			jdbcType="VARCHAR" />
+		<result column="sell_price" property="sellPrice" jdbcType="VARCHAR" />
+		<result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+		<result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
+		<result column="production_status" property="productionStatus"
+			jdbcType="VARCHAR" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="enable" property="enable" jdbcType="TINYINT" />
+		<result column="mileage" property="mileage" jdbcType="VARCHAR" />
+		<result column="card_date" property="cardDate" jdbcType="TIMESTAMP" />
+		<result column="car_description" property="carDescription"
+			jdbcType="VARCHAR" />
+		<result column="other_description" property="otherDescription"
+			jdbcType="VARCHAR" />
+		<result column="other_contact_way" property="otherContactWay"
+			jdbcType="VARCHAR" />
+		<result column="provider" property="provider" jdbcType="VARCHAR" />
+		<result column="third_id" property="thirdId" jdbcType="VARCHAR" />
+		<collection ofType="com.uton.carsokApi.model.CarDataImage"
+			property="images">
+			<result column="url" property="url" />
+			<result column="img_type" property="type" />
+		</collection>
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, phone, province, is_exchange, is_dealer, dealer_name,
+		dealer_phone,
+		dealer_province,
+		dealer_address, car_brand, car_series,
+		car_image, car_model, car_color,
+		supervised_price,
+		sell_price,
+		gmt_create, gmt_modify, production_status, uuid, address, enable,
+		mileage,
+		card_date, car_description, other_description,
+		other_contact_way, provider,
+		third_id
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from car_data_info
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		car_data_info
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.uton.carsokApi.model.CarDataInfo">
+		<selectKey resultType="java.lang.Integer" keyProperty="id"
+			order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into car_data_info (phone, province, is_exchange,
+		is_dealer,
+		dealer_name, dealer_phone,
+		dealer_province, dealer_address, car_brand,
+		car_series, car_image, car_model,
+		car_color, supervised_price,
+		sell_price,
+		gmt_create, gmt_modify, production_status,
+		uuid, address,
+		enable,
+		mileage, card_date, car_description,
+		other_description,
+		other_contact_way, provider,
+		third_id)
+		values
+		(#{phone,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR},
+		#{isExchange,jdbcType=TINYINT},
+		#{isDealer,jdbcType=TINYINT},
+		#{dealerName,jdbcType=VARCHAR}, #{dealerPhone,jdbcType=VARCHAR},
+		#{dealerProvince,jdbcType=VARCHAR}, #{dealerAddress,jdbcType=VARCHAR},
+		#{carBrand,jdbcType=VARCHAR},
+		#{carSeries,jdbcType=VARCHAR},
+		#{carImage,jdbcType=VARCHAR}, #{carModel,jdbcType=VARCHAR},
+		#{carColor,jdbcType=VARCHAR}, #{supervisedPrice,jdbcType=VARCHAR},
+		#{sellPrice,jdbcType=VARCHAR},
+		#{gmtCreate,jdbcType=TIMESTAMP},
+		#{gmtModify,jdbcType=TIMESTAMP},
+		#{productionStatus,jdbcType=VARCHAR},
+		#{uuid,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+		#{enable,jdbcType=TINYINT},
+		#{mileage,jdbcType=VARCHAR},
+		#{cardDate,jdbcType=VARCHAR},
+		#{carDescription,jdbcType=VARCHAR},
+		#{otherDescription,jdbcType=VARCHAR},
+		#{otherContactWay,jdbcType=VARCHAR}, #{provider,jdbcType=VARCHAR},
+		#{thirdId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.uton.carsokApi.model.CarDataInfo">
+		<selectKey resultType="java.lang.Integer" keyProperty="id"
+			order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into car_data_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="province != null">
+				province,
+			</if>
+			<if test="isExchange != null">
+				is_exchange,
+			</if>
+			<if test="isDealer != null">
+				is_dealer,
+			</if>
+			<if test="dealerName != null">
+				dealer_name,
+			</if>
+			<if test="dealerPhone != null">
+				dealer_phone,
+			</if>
+			<if test="dealerProvince != null">
+				dealer_province,
+			</if>
+			<if test="dealerAddress != null">
+				dealer_address,
+			</if>
+			<if test="carBrand != null">
+				car_brand,
+			</if>
+			<if test="carSeries != null">
+				car_series,
+			</if>
+			<if test="carImage != null">
+				car_image,
+			</if>
+			<if test="carModel != null">
+				car_model,
+			</if>
+			<if test="carColor != null">
+				car_color,
+			</if>
+			<if test="supervisedPrice != null">
+				supervised_price,
+			</if>
+			<if test="sellPrice != null">
+				sell_price,
+			</if>
+			<if test="gmtCreate != null">
+				gmt_create,
+			</if>
+			<if test="gmtModify != null">
+				gmt_modify,
+			</if>
+			<if test="productionStatus != null">
+				production_status,
+			</if>
+			<if test="uuid != null">
+				uuid,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="enable != null">
+				enable,
+			</if>
+			<if test="mileage != null">
+				mileage,
+			</if>
+			<if test="cardDate != null">
+				card_date,
+			</if>
+			<if test="carDescription != null">
+				car_description,
+			</if>
+			<if test="otherDescription != null">
+				other_description,
+			</if>
+			<if test="otherContactWay != null">
+				other_contact_way,
+			</if>
+			<if test="provider != null">
+				provider,
+			</if>
+			<if test="thirdId != null">
+				third_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="province != null">
+				#{province,jdbcType=VARCHAR},
+			</if>
+			<if test="isExchange != null">
+				#{isExchange,jdbcType=TINYINT},
+			</if>
+			<if test="isDealer != null">
+				#{isDealer,jdbcType=TINYINT},
+			</if>
+			<if test="dealerName != null">
+				#{dealerName,jdbcType=VARCHAR},
+			</if>
+			<if test="dealerPhone != null">
+				#{dealerPhone,jdbcType=VARCHAR},
+			</if>
+			<if test="dealerProvince != null">
+				#{dealerProvince,jdbcType=VARCHAR},
+			</if>
+			<if test="dealerAddress != null">
+				#{dealerAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="carBrand != null">
+				#{carBrand,jdbcType=VARCHAR},
+			</if>
+			<if test="carSeries != null">
+				#{carSeries,jdbcType=VARCHAR},
+			</if>
+			<if test="carImage != null">
+				#{carImage,jdbcType=VARCHAR},
+			</if>
+			<if test="carModel != null">
+				#{carModel,jdbcType=VARCHAR},
+			</if>
+			<if test="carColor != null">
+				#{carColor,jdbcType=VARCHAR},
+			</if>
+			<if test="supervisedPrice != null">
+				#{supervisedPrice,jdbcType=VARCHAR},
+			</if>
+			<if test="sellPrice != null">
+				#{sellPrice,jdbcType=VARCHAR},
+			</if>
+			<if test="gmtCreate != null">
+				#{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModify != null">
+				#{gmtModify,jdbcType=TIMESTAMP},
+			</if>
+			<if test="productionStatus != null">
+				#{productionStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="uuid != null">
+				#{uuid,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="enable != null">
+				#{enable,jdbcType=TINYINT},
+			</if>
+			<if test="mileage != null">
+				#{mileage,jdbcType=VARCHAR},
+			</if>
+			<if test="cardDate != null">
+				#{cardDate,jdbcType=VARCHAR},
+			</if>
+			<if test="carDescription != null">
+				#{carDescription,jdbcType=VARCHAR},
+			</if>
+			<if test="otherDescription != null">
+				#{otherDescription,jdbcType=VARCHAR},
+			</if>
+			<if test="otherContactWay != null">
+				#{otherContactWay,jdbcType=VARCHAR},
+			</if>
+			<if test="provider != null">
+				#{provider,jdbcType=VARCHAR},
+			</if>
+			<if test="thirdId != null">
+				#{thirdId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.CarDataInfo">
+		update car_data_info
+		<set>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="province != null">
+				province = #{province,jdbcType=VARCHAR},
+			</if>
+			<if test="isExchange != null">
+				is_exchange = #{isExchange,jdbcType=TINYINT},
+			</if>
+			<if test="isDealer != null">
+				is_dealer = #{isDealer,jdbcType=TINYINT},
+			</if>
+			<if test="dealerName != null">
+				dealer_name = #{dealerName,jdbcType=VARCHAR},
+			</if>
+			<if test="dealerPhone != null">
+				dealer_phone = #{dealerPhone,jdbcType=VARCHAR},
+			</if>
+			<if test="dealerProvince != null">
+				dealer_province = #{dealerProvince,jdbcType=VARCHAR},
+			</if>
+			<if test="dealerAddress != null">
+				dealer_address = #{dealerAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="carBrand != null">
+				car_brand = #{carBrand,jdbcType=VARCHAR},
+			</if>
+			<if test="carSeries != null">
+				car_series = #{carSeries,jdbcType=VARCHAR},
+			</if>
+			<if test="carImage != null">
+				car_image = #{carImage,jdbcType=VARCHAR},
+			</if>
+			<if test="carModel != null">
+				car_model = #{carModel,jdbcType=VARCHAR},
+			</if>
+			<if test="carColor != null">
+				car_color = #{carColor,jdbcType=VARCHAR},
+			</if>
+			<if test="supervisedPrice != null">
+				supervised_price = #{supervisedPrice,jdbcType=VARCHAR},
+			</if>
+			<if test="sellPrice != null">
+				sell_price = #{sellPrice,jdbcType=VARCHAR},
+			</if>
+			<if test="gmtCreate != null">
+				gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModify != null">
+				gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+			</if>
+			<if test="productionStatus != null">
+				production_status = #{productionStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="uuid != null">
+				uuid = #{uuid,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="enable != null">
+				enable = #{enable,jdbcType=TINYINT},
+			</if>
+			<if test="mileage != null">
+				mileage = #{mileage,jdbcType=VARCHAR},
+			</if>
+			<if test="cardDate != null">
+				card_date = #{cardDate,jdbcType=VARCHAR},
+			</if>
+			<if test="carDescription != null">
+				car_description = #{carDescription,jdbcType=VARCHAR},
+			</if>
+			<if test="otherDescription != null">
+				other_description = #{otherDescription,jdbcType=VARCHAR},
+			</if>
+			<if test="otherContactWay != null">
+				other_contact_way = #{otherContactWay,jdbcType=VARCHAR},
+			</if>
+			<if test="provider != null">
+				provider = #{provider,jdbcType=VARCHAR},
+			</if>
+			<if test="thirdId != null">
+				third_id = #{thirdId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.uton.carsokApi.model.CarDataInfo">
+		update
+		car_data_info
+		set phone = #{phone,jdbcType=VARCHAR},
+		province =
+		#{province,jdbcType=VARCHAR},
+		is_exchange =
+		#{isExchange,jdbcType=TINYINT},
+		is_dealer =
+		#{isDealer,jdbcType=TINYINT},
+		dealer_name =
+		#{dealerName,jdbcType=VARCHAR},
+		dealer_phone =
+		#{dealerPhone,jdbcType=VARCHAR},
+		dealer_province =
+		#{dealerProvince,jdbcType=VARCHAR},
+		dealer_address =
+		#{dealerAddress,jdbcType=VARCHAR},
+		car_brand =
+		#{carBrand,jdbcType=VARCHAR},
+		car_series =
+		#{carSeries,jdbcType=VARCHAR},
+		car_image =
+		#{carImage,jdbcType=VARCHAR},
+		car_model = #{carModel,jdbcType=VARCHAR},
+		car_color = #{carColor,jdbcType=VARCHAR},
+		supervised_price =
+		#{supervisedPrice,jdbcType=VARCHAR},
+		sell_price =
+		#{sellPrice,jdbcType=VARCHAR},
+		gmt_create =
+		#{gmtCreate,jdbcType=TIMESTAMP},
+		gmt_modify =
+		#{gmtModify,jdbcType=TIMESTAMP},
+		production_status =
+		#{productionStatus,jdbcType=VARCHAR},
+		uuid = #{uuid,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		enable =
+		#{enable,jdbcType=TINYINT},
+		mileage = #{mileage,jdbcType=VARCHAR},
+		card_date = #{cardDate,jdbcType=VARCHAR},
+		car_description =
+		#{carDescription,jdbcType=VARCHAR},
+		other_description =
+		#{otherDescription,jdbcType=VARCHAR},
+		other_contact_way =
+		#{otherContactWay,jdbcType=VARCHAR},
+		provider =
+		#{provider,jdbcType=VARCHAR},
+		third_id = #{thirdId,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<select id="selectSellCount" resultType="java.util.HashMap"
+		parameterType="com.uton.carsokApi.controller.request.ThirdDataSellCountRequest">
+		select count(*) counts ,cdi.third_id id from
+		carsok_order co
+		left join
+		carsok_order_detail cod on co.order_no=cod.order_no
+		inner join
+		car_data_info cdi on cod.product_id=cdi.id
+		where co.type=#{type}
+		and
+		co.pay_status=#{payStatus}
+		and
+		co.order_status=#{orderStatus}
+		and
+		cdi.provider=#{provider}
+		<if test="gmtStart!=null">
+			and co.gmt_create>=#{gmtStart}
+		</if>
+		<if test="gmtEnd!=null">
+			and co.gmt_create&lt;=#{gmtEnd}
+		</if>
+		group by cdi.third_id
+	</select>
+
+	<select id="selectByCondition" resultMap="BaseResultMap"
+		parameterType="com.uton.carsokApi.controller.request.CarDataSearchRequest">
+		select
+		<if test="carStatus==1">
+			cdi.phone,o.gmt_create ,
+		</if>
+		<if test="carStatus==0">
+		cdi.gmt_create,
+		</if>
+		cdi.id,cdi.province,cdi.is_exchange,cdi.is_dealer,cdi.dealer_name,cdi.dealer_phone,
+		cdi.dealer_province,
+		cdi.dealer_address,cdi.car_brand,cdi.car_series,cdi.car_image,cdi.car_model,cdi.car_color,
+		cdi.supervised_price,
+		cdi.sell_price,cdi.gmt_modify,cdi.production_status,cdi.uuid,cdi.address,cdi.enable,
+		cdi.mileage,
+		cdi.card_date,cdi.car_description,cdi.other_description,cdi.other_contact_way,cdi.provider,
+		cdi.third_id , cdimg.url url,cdimg.type img_type from car_data_info
+		cdi left join car_data_image cdimg on cdi.uuid=cdimg.car_uuid
+		<if test="carStatus==1">
+			inner join ( select cod.product_id,co.gmt_create
+			from
+			carsok_order co left join carsok_order_detail cod on
+			co.order_no=cod.order_no where co.type='DATA' and
+			co.order_status='ALREDAY_OVER' and co.pay_status='PAY_SUCCESS'and
+			co.account_id=#{accountId} )
+			o on o.product_id=cdi.id
+			group by cdi.id
+			order by o.gmt_create desc
+		</if>
+		<if test="carStatus==2">
+			inner join ( select cod.product_id,co.gmt_create
+			from
+			carsok_order co left join carsok_order_detail cod on
+			co.order_no=cod.order_no where co.type='DATA' and
+			co.pay_status='WAIT_PAY'and
+			co.account_id=#{accountId} )
+			o on
+			o.product_id=cdi.id
+			group by cdi.id
+			order by o.gmt_create desc
+		</if>
+		<if test="carStatus==0 or carStatus==null ">
+			<where>
+				<if test="keyword!=null and keyword!=''">
+					(cdi.car_brand like CONCAT('%',#{keyword},'%' ) or
+					cdi.car_series like
+					CONCAT('%',#{keyword},'%' )
+					or cdi.car_model like CONCAT('%',#{keyword},'%'))
+				</if>
+				<if test="city!=null and city!=''">
+					and cdi.address=#{city}
+				</if>
+				<if test="province!=null and province!=''">
+					and cdi.province=#{province}
+				</if>
+				<if test="carBrand!=null and carBrand!=''">
+					and cdi.car_brand=#{carBrand}
+				</if>
+				<if test="carType!=null and carType!=''">
+					and cdi.car_series=#{carType}
+				</if>
+				<if test="carDateStart!=null">
+					and cdi.card_date>=#{carDateStart}
+				</if>
+				<if test="carDateEnd!=null">
+					and cdi.card_date&lt;=#{carDateEnd}
+				</if>
+				and not exists
+				(select 1
+				from carsok_order co left join carsok_order_detail cod on
+				co.order_no=cod.order_no where co.type='DATA' and
+				co.order_status='ALREDAY_OVER' and co.pay_status='PAY_SUCCESS'and
+				co.account_id=#{accountId} and cdi.id=cod.product_id )
+			</where>
+			group by cdi.id
+			${orderBy}
+		</if>
+	</select>
+</mapper>

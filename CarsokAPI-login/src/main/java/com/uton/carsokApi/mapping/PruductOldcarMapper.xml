@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.PruductOldcarMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.PruductOldcar" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pruduct_id" property="pruductId" jdbcType="INTEGER" />
+    <result column="c_brand" property="cBrand" jdbcType="VARCHAR" />
+    <result column="c_type" property="cType" jdbcType="VARCHAR" />
+    <result column="c_model" property="cModel" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="miles" property="miles" jdbcType="INTEGER" />
+    <result column="first_up_time" property="firstUpTime" jdbcType="TIMESTAMP" />
+    <result column="browse_num_times" property="browseNumTimes" jdbcType="INTEGER" />
+    <result column="tel_num_times" property="telNumTimes" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="browse_num_times_fake" property="browseNumTimesFake" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, pruduct_id, c_brand, c_type, c_model, province, city, miles, first_up_time, browse_num_times, 
+    tel_num_times, create_time, update_time,browse_num_times_fake
+  </sql>
+  
+  <select id="selectByModel" resultMap="BaseResultMap" parameterType="com.uton.carsokApi.model.PruductOldcar" >
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_pruduct_oldcar
+     <where>
+		<if test="id != null ">
+		and
+			id = #{id}
+		</if>
+		<if test="pruductId != null ">
+		and
+			pruduct_id = #{pruductId}
+		</if>
+	</where>
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from carsok_pruduct_oldcar
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.uton.carsokApi.model.PruductOldcar" >
+    insert into carsok_pruduct_oldcar (id, pruduct_id, c_brand, 
+      c_type, c_model, province, 
+      city, miles, first_up_time, 
+      browse_num_times, tel_num_times, create_time, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{pruductId,jdbcType=INTEGER}, #{cBrand,jdbcType=VARCHAR}, 
+      #{cType,jdbcType=VARCHAR}, #{cModel,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, 
+      #{city,jdbcType=VARCHAR}, #{miles,jdbcType=INTEGER}, #{firstUpTime,jdbcType=TIMESTAMP}, 
+      #{browseNumTimes,jdbcType=INTEGER}, #{telNumTimes,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.PruductOldcar" >
+    insert into carsok_pruduct_oldcar
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="pruductId != null" >
+        pruduct_id,
+      </if>
+      <if test="cBrand != null" >
+        c_brand,
+      </if>
+      <if test="cType != null" >
+        c_type,
+      </if>
+      <if test="cModel != null" >
+        c_model,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="miles != null" >
+        miles,
+      </if>
+      <if test="firstUpTime != null" >
+        first_up_time,
+      </if>
+      <if test="browseNumTimes != null" >
+        browse_num_times,
+      </if>
+      <if test="telNumTimes != null" >
+        tel_num_times,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="pruductId != null" >
+        #{pruductId,jdbcType=INTEGER},
+      </if>
+      <if test="cBrand != null" >
+        #{cBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="cType != null" >
+        #{cType,jdbcType=VARCHAR},
+      </if>
+      <if test="cModel != null" >
+        #{cModel,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="miles != null" >
+        #{miles,jdbcType=INTEGER},
+      </if>
+      <if test="firstUpTime != null" >
+        #{firstUpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="browseNumTimes != null" >
+        #{browseNumTimes,jdbcType=INTEGER},
+      </if>
+      <if test="telNumTimes != null" >
+        #{telNumTimes,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.PruductOldcar" >
+    update carsok_pruduct_oldcar
+    <set >
+      <if test="pruductId != null" >
+        pruduct_id = #{pruductId,jdbcType=INTEGER},
+      </if>
+      <if test="cBrand != null" >
+        c_brand = #{cBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="cType != null" >
+        c_type = #{cType,jdbcType=VARCHAR},
+      </if>
+      <if test="cModel != null" >
+        c_model = #{cModel,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="miles != null" >
+        miles = #{miles,jdbcType=INTEGER},
+      </if>
+      <if test="firstUpTime != null" >
+        first_up_time = #{firstUpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="browseNumTimes != null" >
+        browse_num_times = #{browseNumTimes,jdbcType=INTEGER},
+      </if>
+      <if test="telNumTimes != null" >
+        tel_num_times = #{telNumTimes,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.uton.carsokApi.model.PruductOldcar" >
+    update carsok_pruduct_oldcar
+    set pruduct_id = #{pruductId,jdbcType=INTEGER},
+      c_brand = #{cBrand,jdbcType=VARCHAR},
+      c_type = #{cType,jdbcType=VARCHAR},
+      c_model = #{cModel,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      miles = #{miles,jdbcType=INTEGER},
+      first_up_time = #{firstUpTime,jdbcType=TIMESTAMP},
+      browse_num_times = #{browseNumTimes,jdbcType=INTEGER},
+      tel_num_times = #{telNumTimes,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateVehicleSupervise">
+      update carsok_pruduct_oldcar cpo
+      set cpo.browse_num_times_fake = cpo.browse_num_times_fake+FLOOR(0 + RAND() * (4))
+  </update>
+
+</mapper>

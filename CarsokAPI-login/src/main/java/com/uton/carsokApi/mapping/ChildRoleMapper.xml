@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.ChildRoleMapper">
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.ChildRole" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="childId" property="childId" jdbcType="INTEGER" />
+    <result column="roleName" property="roleName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, childId, roleName
+  </sql>
+  
+  <select id="selectRoleInfo" resultType="com.uton.carsokApi.model.ChildRoleVo" parameterType="java.lang.String">
+  		select 
+		  a.child_account_mobile,
+		  a.child_account_name,
+		  a.alias,
+		  b.roleName,
+		  b.id
+		from
+		  carsok_child_account AS a,
+		  carsok_zb_childrole AS b 
+		where a.account_phone = #{mobile,jdbcType=VARCHAR}
+		  and a.id = b.childId
+  </select>
+  <select id="selectBychildId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  		select * from carsok_zb_childrole where childId = #{childId,jdbcType=INTEGER}
+  </select>
+	<insert id="insert" parameterType="com.uton.carsokApi.model.ChildRole">
+		INSERT INTO carsok_zb_childrole(
+			childId
+			,roleName
+		) VALUES (
+			#{childId},
+			#{roleName}
+		) 
+	</insert>
+	
+	<delete id="removeById" parameterType="java.lang.Integer">
+		delete from carsok_zb_childrole where id = #{id,jdbcType=INTEGER}
+	</delete>
+
+
+	<select id="selectRoleNameByChildPhone" resultType="java.lang.String">
+		SELECT power_name FROM carsok_account_power WHERE child_id =
+		(SELECT id FROM
+		(SELECT id FROM carsok_child_account WHERE child_account_mobile = #{mobile}) zbr)
+	</select>
+</mapper>

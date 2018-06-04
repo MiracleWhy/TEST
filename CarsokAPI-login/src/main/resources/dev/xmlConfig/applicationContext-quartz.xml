@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <bean id="quartzscheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" autowire="no" lazy-init="false">
+        <property name="overwriteExistingJobs" value="true" />
+        <property name="applicationContextSchedulerContextKey" value="applicationContextKey"/>
+		<property name="dataSource" ref="dataSource"/>
+		<property name="transactionManager" ref="transactionManager"/>
+        <property name="configLocation" value="classpath:/properties/quartz.properties" />
+        <property name="triggers">
+            <list>
+                <ref bean="delayCheckTrigger" />
+                <ref bean="runTaskTrigger" />
+                <ref bean="readyTaskPushTrigger" />
+                <ref bean="clearDayViewCountTrigger"/>
+                <!--<ref bean="updateNewOrderTrigger" />-->
+            </list>
+        </property>
+    </bean>
+
+    <bean id="delayCheckJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="durability" value="true" />
+        <property name="jobClass" value="com.uton.carsokApi.service.core.task.DelayCheckJob" />
+    </bean>
+
+    <bean id="delayCheckTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="delayCheckJobDetail"/>
+        <property name="cronExpression" value="0 0 1 * * ?"/>
+    </bean>
+
+    <bean id="runTaskJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="durability" value="true" />
+        <property name="jobClass" value="com.uton.carsokApi.service.core.task.RunTaskJob" />
+    </bean>
+
+    <bean id="runTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="runTaskJobDetail"/>
+        <property name="cronExpression" value="0 30 0 * * ?"/>
+    </bean>
+
+    <bean id="readyTaskPushJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="durability" value="true" />
+        <property name="jobClass" value="com.uton.carsokApi.service.core.task.ReadyTaskPushJob" />
+    </bean>
+
+    <bean id="readyTaskPushTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="readyTaskPushJobDetail"/>
+        <property name="cronExpression" value="0 0 8 * * ?"/>
+    </bean>
+
+    <bean id="clearDayViewCountDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="durability" value="true" />
+        <property name="jobClass" value="com.uton.carsokApi.service.core.task.ClearDayViewJob" />
+    </bean>
+
+    <bean id="clearDayViewCountTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="clearDayViewCountDetail"/>
+        <property name="cronExpression" value="0 0 0 * * ?"/>
+    </bean>
+
+     <!--<bean id="updateNewOrderDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="durability" value="true" />
+        <property name="jobClass" value="com.uton.carsokApi.service.core.task.UpdateNewOrderJob" />
+    </bean>
+   &lt;!&ndash;每60分钟重置车源排序规则&ndash;&gt;
+    <bean id="updateNewOrderTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="updateNewOrderDetail"/>
+        <property name="cronExpression" value="0 0 * * * ?"/>
+    </bean>-->
+
+</beans>

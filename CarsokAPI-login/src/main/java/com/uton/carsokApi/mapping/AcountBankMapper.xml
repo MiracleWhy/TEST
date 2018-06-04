@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.AcountBankMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.AcountBank" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="account_id" property="accountId" jdbcType="INTEGER" />
+    <result column="bank_num" property="bankNum" jdbcType="VARCHAR" />
+    <result column="opened_bank" property="openedBank" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, account_id, bank_num, opened_bank, create_time, update_time
+  </sql>
+  
+  <select id="selectByModel" resultMap="BaseResultMap" parameterType="com.uton.carsokApi.model.AcountBank" >
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_account_bank
+    <where>
+   	 	<if test="id != null ">
+		and
+			id = #{id}
+		</if>
+    	<if test="accountId != null ">
+		and
+			account_id = #{accountId}
+		</if>
+	</where>
+  </select>
+  
+  <delete id="deleteByByModel" parameterType="com.uton.carsokApi.model.AcountBank" >
+    delete from carsok_account_bank
+    <where>
+   	 	<if test="id != null ">
+		and
+			id = #{id}
+		</if>
+    	<if test="accountId != null ">
+		and
+			account_id = #{accountId}
+		</if>
+	</where>
+  </delete>
+ 
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.AcountBank" >
+    insert into carsok_account_bank
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="accountId != null" >
+        account_id,
+      </if>
+      <if test="bankNum != null" >
+        bank_num,
+      </if>
+      <if test="openedBank != null" >
+        opened_bank,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="accountId != null" >
+        #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="bankNum != null" >
+        #{bankNum,jdbcType=VARCHAR},
+      </if>
+      <if test="openedBank != null" >
+        #{openedBank,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.AcountBank" >
+    update carsok_account_bank
+    <set >
+      <if test="accountId != null" >
+        account_id = #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="bankNum != null" >
+        bank_num = #{bankNum,jdbcType=VARCHAR},
+      </if>
+      <if test="openedBank != null" >
+        opened_bank = #{openedBank,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <where>
+   	 	<if test="id != null ">
+		and
+			id = #{id}
+		</if>
+    	<if test="accountId != null ">
+		and
+			account_id = #{accountId}
+		</if>
+	</where>
+  </update>
+  
+</mapper>

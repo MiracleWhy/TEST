@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.PermissionManagementMapper" >
+    <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.Permission">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="child_id" jdbcType="INTEGER" property="childId" />
+        <result column="power_name" jdbcType="VARCHAR" property="powerName" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="power_status" jdbcType="INTEGER" property="powerStatus" />
+    </resultMap>
+
+    <insert id="insertPermission" parameterType="com.uton.carsokApi.model.Permission">
+        insert into carsok_account_power
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="childId != null">
+                child_id,
+            </if>
+            <if test="powerName != null">
+                power_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="powerStatus != null">
+                power_status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="childId != null">
+                #{childId,jdbcType=INTEGER},
+            </if>
+            <if test="powerName != null">
+                #{powerName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="powerStatus != null">
+                #{powerStatus,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deletePermission">
+        delete from carsok_account_power
+        where child_id = #{childId,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectPermissionList" resultMap="BaseResultMap">
+        SELECT * FROM carsok_account_power
+        WHERE child_id = #{childId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectPowerNameByRoleName" resultType="com.uton.carsokApi.controller.response.PermissionResponse">
+        SELECT role_name roleName,power_name powerName FROM carsok_role_power WHERE role_name = #{roleName}
+    </select>
+
+    <select id="selectParentPowerList" resultType="com.uton.carsokApi.model.PermissionManagement">
+        SELECT
+        capm.id AS id,
+        capm.power_name AS powerName,
+        capm.power_value AS powerValue,
+        capm.power_status AS powerStatus,
+        capm.parent_id AS parentId,
+        capm.icon_name as iconName,
+        capm.type as type,
+        capm.show_professionallcon as showProfessionallcon,
+        IF(cap.power_name IS NULL,0,1) AS powerIf
+        FROM carsok_account_power_manage capm
+        LEFT JOIN carsok_account_power cap
+        ON cap.power_name = capm.power_name AND cap.child_id = #{childId}
+        ORDER BY capm.id
+    </select>
+
+    <select id="selectChildPowerList" resultType="com.uton.carsokApi.model.PowerOfParentChild">
+        SELECT cpcp.id AS id,
+        cpcp.child_power_name AS childPowerName,
+        cpcp.child_power_value AS childPowerValue,
+	    cpcp.parent_power_name AS parentPowerName,
+        cpcp.power_status AS powerStatus,
+        IF(cap.power_name IS NULL,0,1) AS powerIf FROM
+        carsok_parent_child_power cpcp
+        LEFT JOIN
+        carsok_account_power cap  ON cap.power_name = cpcp.child_power_name  AND cap.child_id = #{childId}
+		WHERE cpcp.parent_power_name = #{parentPowerName}
+        ORDER BY cpcp.id
+    </select>
+
+    <delete id="deleteAuthoritymanage">
+        delete from carsok_authoritymanage
+        where childId = #{childId,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteRoleManage">
+        delete from carsok_role_manage
+        where childId = #{childId,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insertxygw">
+      insert into carsok_account_power (child_id,power_name,create_time) VALUES (#{childId,jdbcType=INTEGER},'qkyxgw',now())
+    </insert>
+
+    <insert id="inserBYtxygw">
+        insert into carsok_account_power (child_id,power_name,create_time) VALUES (#{childId,jdbcType=INTEGER},'byyxgw',now())
+    </insert>
+</mapper>

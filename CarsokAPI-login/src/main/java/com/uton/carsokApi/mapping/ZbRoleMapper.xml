@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.ZbRoleMapper">
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.ZbRole" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="property" property="property" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, value
+  </sql>
+  
+  <select id="selectAll" resultMap="BaseResultMap">
+  		select * from carsok_zb_role
+  </select>
+  
+  <select id="selectBychildid" resultType="java.lang.String" parameterType="java.lang.Integer">
+  		select roleName from carsok_zb_childrole where childId=#{childId}
+  </select>
+  <select id="selectAllByType" resultMap="BaseResultMap">
+   select * from carsok_zb_role where property=1
+   UNION ALL
+   select a.* from carsok_zb_role a left join carsok_loan_user b on FIND_IN_SET(a.property,b.role_list) where account_id=#{accountId} and a.property!=1
+  </select>
+</mapper>

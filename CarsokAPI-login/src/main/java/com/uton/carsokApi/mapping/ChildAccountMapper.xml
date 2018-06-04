@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.ChildAccountMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.ChildAccount" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="child_account_mobile" property="childAccountMobile" jdbcType="VARCHAR" />
+    <result column="child_account_name" property="childAccountName" jdbcType="VARCHAR" />
+    <result column="account_phone" property="accountPhone" jdbcType="VARCHAR" />
+    <result column="alias" property="alias" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="ccaId" property="ccaId" jdbcType="VARCHAR" />
+    <result column="caId" property="caId" jdbcType="VARCHAR" />
+    <result column="child_head_pic" property="childHeadPic" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, child_account_mobile, child_account_name, account_phone,alias, create_time, update_time,child_head_pic
+  </sql>
+  
+  <select id="selectByModel" resultMap="BaseResultMap" parameterType="com.uton.carsokApi.model.ChildAccount" >
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_child_account
+    <where>
+		<if test="id != null ">
+		and
+			id = #{id}
+		</if>
+		<if test="accountPhone != null ">
+		and
+			account_phone = #{accountPhone}
+		</if>
+		<if test="childAccountMobile != null ">
+		and
+			child_account_mobile = #{childAccountMobile}
+		</if>
+        <if test="childAccountName != null ">
+            and
+            child_account_name = #{childAccountName}
+        </if>
+	</where>
+  </select>
+  <select id="selectBymobile" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		select * from carsok_child_account where child_account_mobile = #{mobile,jdbcType=VARCHAR}
+  </select>
+    <select id="selectChildIdBymobile" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select id from carsok_child_account where child_account_mobile = #{mobile,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByAcountmobile" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select * from carsok_child_account where account_phone = #{mobile,jdbcType=VARCHAR}
+    </select>
+
+   <select id="selectListByModel" resultMap="BaseResultMap" parameterType="com.uton.carsokApi.model.ChildAccount" >
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_child_account
+    <where>
+		<if test="accountPhone != null ">
+		and
+			account_phone = #{accountPhone}
+		</if>
+	</where>
+  </select>
+  
+  <select id="selectListByRole" resultMap="BaseResultMap" parameterType="java.util.Map" >
+		  		select 
+		  * 
+		from
+		  carsok_child_account 
+		where account_phone = #{account} 
+		  and id not in 
+		  (select 
+		    childId 
+		  from
+		    carsok_zb_childrole 
+		  where roleName = #{roleName})
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from carsok_child_account
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.ChildAccount" >
+    insert into carsok_child_account
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="childAccountMobile != null" >
+        child_account_mobile,
+      </if>
+      <if test="childAccountName != null" >
+        child_account_name,
+      </if>
+      <if test="accountPhone != null" >
+        account_phone,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="childHeadPic != null" >
+        child_head_pic,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="childAccountMobile != null" >
+        #{childAccountMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="childAccountName != null" >
+        #{childAccountName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPhone != null" >
+        #{accountPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="childHeadPic != null" >
+        #{childHeadPic,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.ChildAccount" >
+    update carsok_child_account
+    <set >
+      <if test="childAccountMobile != null" >
+        child_account_mobile = #{childAccountMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="childAccountName != null" >
+        child_account_name = #{childAccountName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPhone != null" >
+        account_phone = #{accountPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="alias != null" >
+        alias = #{alias,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="childHeadPic != null" >
+        child_head_pic = #{childHeadPic,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+	<select id="queryAllChildByAccountPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT cca.child_account_mobile,cca.child_account_name,cca.account_phone,cca.id ccaId, ca.id caId
+		FROM carsok_child_account cca
+		INNER JOIN carsok_acount ca ON ca.account = cca.account_phone
+		WHERE cca.account_phone = #{mobile}
+	</select>
+
+	<select id="queryAllChildByChildPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT cca.child_account_mobile,cca.child_account_name,cca.account_phone,ca.real_name
+		FROM carsok_child_account cca
+		INNER JOIN
+			(SELECT account_phone
+			 FROM carsok_child_account cca
+			 WHERE cca.child_account_mobile = #{mobile}) sub ON sub.account_phone = cca.account_phone
+		INNER JOIN carsok_acount ca ON ca.account = cca.account_phone
+	</select>
+
+    <select id="selectAllChild" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT * from carsok_child_account where account_phone = #{accountPhone}
+    </select>
+
+    <select id="selectIdBymobile" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT id from carsok_child_account where child_account_mobile = #{mobile}
+    </select>
+
+    <select id="selectRecordInDailycheck"  resultType="java.lang.Integer">
+    select count(*) from carsok_dailycheck_dispatcher where account_id=#{accountId} and checker=#{childPhone} and enable=1;
+    </select>
+    <select id="selectRecordInGleeful"  resultType="java.lang.Integer">
+    select count(*) from carsok_gleeful_report_dispatcher where account_id=#{accountId} and sharer=#{childPhone} and enable=1;
+    </select>
+    <select id="selectRecordInProduct"  resultType="java.lang.Integer">
+            select count(*) from carsok_product where account_id=#{accountId} and saled_people=#{childPhone};
+    </select>
+    <select id="selectRecordInAcquisition"  resultType="java.lang.Integer">
+            select count(*) from carsok_acquisition_car a inner join carsok_child_account b on a.child_id=b.id where b.child_account_mobile=#{childPhone} and account_id=#{accountId};
+    </select>
+    <select id="selectRecordInCustomerManage"  resultType="java.lang.Integer">
+            select count(*) from carsok_customer_manage a inner join carsok_child_account b on a.child_id=b.id where b.child_account_mobile=#{childPhone} and account_id=#{accountId};
+    </select>
+    <select id="selectRecordInTenure"  resultType="java.lang.Integer">
+    select count(*) from carsok_customer_trnure_car a inner join carsok_child_account b on a.child_id = b.id where b.child_account_mobile=#{childPhone} and account_id=#{accountId};
+    </select>
+    <select id="AllMassage" resultType="com.uton.carsokApi.model.ChildAndSale">
+<!--SELECT  acc.id id,acc.child_account_mobile childAccountMobile ,acc.child_account_name  childAccountName ,acc.account_phone accountPhone,acc.alias alias ,acc.star star,acc.good_evaluate goodEvaluate,acc.describes describes,
+         acc.create_time createTime,acc.update_time updateTime,acc.child_head_pic childHeadPic ,count(acc.child_account_name) counts FROM  carsok_child_account  acc    left join carsok_product pro on pro.saled_people=acc.child_account_mobile where account_phone=#{phone} and pro.sale_status='1'
+GROUP BY id -->
+        SELECT
+        acc.id id,
+        acc.child_account_mobile childAccountMobile,
+        acc.child_account_name childAccountName,
+        acc.account_phone accountPhone,
+        acc.alias alias,
+        acc.star star,
+        acc.good_evaluate goodEvaluate,
+        acc.describes describes,
+        acc.create_time createTime,
+        acc.update_time updateTime,
+        acc.child_head_pic childHeadPic,
+        count( acc.child_account_name ) counts
+        FROM
+        carsok_child_account acc
+        LEFT JOIN carsok_product pro ON pro.saled_people = acc.child_account_mobile
+        WHERE
+        acc.account_phone = #{phone}
+        GROUP BY
+        id
+        ORDER BY id DESC
+    </select>
+    <select id="AccountButler" resultType="com.uton.carsokApi.model.ChildAndSale">
+        SELECT
+            0 id,
+            acc.account childAccountMobile,
+            IFNULL( IFNULL(acc.real_name, acc.nick), acc.merchant_name) childAccountName,
+            acc.mobile accountPhone,
+            0 alias,
+            5 star,
+            '100%' goodEvaluate,
+            '' describes,
+            acc.create_time createTime,
+            acc.update_time updateTime,
+
+            acc.head_portrait_path childHeadPic,
+            count( acc.account ) counts
+        FROM
+            carsok_acount acc
+            LEFT JOIN carsok_product pro ON pro.saled_people = acc.account
+        WHERE
+            acc.account = #{phone}
+        GROUP BY
+            acc.id
+    </select>
+    <select id="oneMassage" resultType="com.uton.carsokApi.model.ChildAndSales">
+        SELECT
+                acc.id id,
+                acc.child_account_mobile childAccountMobile,
+                acc.child_account_name childAccountName,
+                acc.account_phone accountPhone,
+                acc.alias alias,
+                acc.star star,
+                acc.good_evaluate goodEvaluate,
+                acc.describes describes,
+                acc.create_time createTime,
+                acc.update_time updateTime,
+                acc.child_head_pic childHeadPic,
+                count( acc.child_account_name ) counts
+        FROM
+            carsok_child_account acc
+        WHERE
+            acc.id = #{id}
+    </select>
+    <update id="updateMessage" parameterType="com.uton.carsokApi.model.ChildAccount" >
+        update carsok_child_account
+        <set >
+            <if test="childAccountMobile != null" >
+                child_account_mobile = #{childAccountMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="childAccountName != null" >
+                child_account_name = #{childAccountName,jdbcType=VARCHAR},
+            </if>
+            <if test="accountPhone != null" >
+                account_phone = #{accountPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="alias != null" >
+                alias = #{alias,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="childHeadPic != null" >
+                child_head_pic = #{childHeadPic,jdbcType=VARCHAR},
+            </if>
+            <if test="describes != null" >
+                describes = #{describes,jdbcType=VARCHAR},
+            </if>
+            <if test="star != null" >
+                star = #{star,jdbcType=VARCHAR},
+            </if>
+            <if test="goodEvaluate != null" >
+                good_evaluate = #{goodEvaluate,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+<select id="selectSaleCar" resultType="com.uton.carsokApi.model.SelectSaleCar">
+    SELECT
+        pro.id id,
+        old.miles miles,
+        pro.product_name productName,
+        pic.pic_path picture,
+        old.first_up_time firstUpTime,
+        pro.update_time updateTime
+    FROM
+        carsok_customer_tenure_car tc
+        LEFT JOIN carsok_product pro on tc.product_id = pro.id
+        left join carsok_child_account ca on tc.child_id = ca.id
+        LEFT JOIN carsok_pruduct_oldcar old ON pro.id = old.pruduct_id
+        LEFT JOIN carsok_picture pic ON pic.product_id = pro.id
+    WHERE
+        pro.saled_people = ( SELECT child_account_mobile FROM carsok_child_account acc WHERE acc.id = #{id})
+        AND pro.sale_status='1' AND  pic.type='1'
+</select>
+    <select id="selectByChildMobile" resultType="com.uton.carsokApi.model.ChildAccount">
+        select * from carsok_child_account where child_account_mobile = #{mobile,jdbcType=VARCHAR}
+    </select>
+    <select id="selectListByAccountPhone" resultType="com.uton.carsokApi.model.CarsokChildAccount">
+        SELECT id as id,
+        child_account_mobile as childAccountMobile,
+        child_account_name as childAccountName,
+        account_phone as accountPhone,
+        alias as alias,
+        create_time as createTime,
+        update_time as updateTime,
+        child_head_pic as childHeadPic,
+        good_evaluate as goodEvaluate,
+        describes as describes,
+        star as star
+        FROM carsok_child_account WHERE account_phone=#{accountPhone}
+    </select>
+    <select id="selectOneByChildMobile" resultType="com.uton.carsokApi.model.CarsokChildAccount">
+        SELECT id as id,
+        child_account_mobile as childAccountMobile,
+        child_account_name as childAccountName,
+        account_phone as accountPhone,
+        alias as alias,
+        create_time as createTime,
+        update_time as updateTime,
+        child_head_pic as childHeadPic,
+        good_evaluate as goodEvaluate,
+        describes as describes,
+        star as star
+        FROM carsok_child_account WHERE child_account_mobile=#{childMobile}
+    </select>
+
+</mapper>

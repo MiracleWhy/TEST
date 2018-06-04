@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.SharedRecordMapper">
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.SharedRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="share_type" jdbcType="VARCHAR" property="shareType" />
+    <result column="share_id" jdbcType="VARCHAR" property="shareId" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+    <result column="sharer" jdbcType="VARCHAR" property="sharer" />
+    <result column="share_to" jdbcType="VARCHAR" property="shareTo" />
+    <result column="enable" jdbcType="INTEGER" property="enable" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, share_type, share_id, account_id, sharer, share_to, enable, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_share_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from carsok_share_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.uton.carsokApi.model.SharedRecord">
+    insert into carsok_share_record (id, share_type, share_id, 
+      account_id, sharer, share_to, 
+      enable, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{shareType,jdbcType=VARCHAR}, #{shareId,jdbcType=VARCHAR}, 
+      #{accountId,jdbcType=VARCHAR}, #{sharer,jdbcType=VARCHAR}, #{shareTo,jdbcType=VARCHAR}, 
+      1, now(), now()
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.SharedRecord">
+    insert into carsok_share_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="shareType != null">
+        share_type,
+      </if>
+      <if test="shareId != null">
+        share_id,
+      </if>
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="sharer != null">
+        sharer,
+      </if>
+      <if test="shareTo != null">
+        share_to,
+      </if>
+      <if test="enable != null">
+        enable,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="shareType != null">
+        #{shareType,jdbcType=VARCHAR},
+      </if>
+      <if test="shareId != null">
+        #{shareId,jdbcType=VARCHAR},
+      </if>
+      <if test="accountId != null">
+        #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="sharer != null">
+        #{sharer,jdbcType=VARCHAR},
+      </if>
+      <if test="shareTo != null">
+        #{shareTo,jdbcType=VARCHAR},
+      </if>
+      <if test="enable != null">
+        #{enable,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.SharedRecord">
+    update carsok_share_record
+    <set>
+      <if test="shareType != null">
+        share_type = #{shareType,jdbcType=VARCHAR},
+      </if>
+      <if test="shareId != null">
+        share_id = #{shareId,jdbcType=VARCHAR},
+      </if>
+      <if test="accountId != null">
+        account_id = #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="sharer != null">
+        sharer = #{sharer,jdbcType=VARCHAR},
+      </if>
+      <if test="shareTo != null">
+        share_to = #{shareTo,jdbcType=VARCHAR},
+      </if>
+      <if test="enable != null">
+        enable = #{enable,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.uton.carsokApi.model.SharedRecord">
+    update carsok_share_record
+    set share_type = #{shareType,jdbcType=VARCHAR},
+      share_id = #{shareId,jdbcType=VARCHAR},
+      account_id = #{accountId,jdbcType=VARCHAR},
+      sharer = #{sharer,jdbcType=VARCHAR},
+      share_to = #{shareTo,jdbcType=VARCHAR},
+      enable = #{enable,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getSharedRecordList" resultMap="BaseResultMap">
+    select * from carsok_share_record where account_id=#{accountId} and share_id=#{shareId}
+  </select>
+  <select id="getSharerName" resultType="java.lang.String">
+    select child_account_name from carsok_child_account a inner join carsok_acount b on a.account_phone=b.account  where b.id=#{accountId} and a.child_account_mobile=#{sharer}
+  </select>
+</mapper>

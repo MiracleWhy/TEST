@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.BannerMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.Banner" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="pic_url" property="picurl" jdbcType="VARCHAR" />
+    <result column="click_url" property="clickurl" jdbcType="VARCHAR" />
+    <result column="sort_num" property="sortnum" jdbcType="INTEGER" />
+    <result column="pos_type" property="postype" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+	
+	<select id="searchBanners" resultMap="BaseResultMap">
+		select * from carsok_banner_app where pos_type = 1 order by sort_num
+	</select>
+</mapper>

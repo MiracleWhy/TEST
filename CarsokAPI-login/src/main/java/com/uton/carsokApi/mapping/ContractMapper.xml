@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.ContractMapper">
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.Contract" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="contract_url" property="contract_url" jdbcType="VARCHAR" />
+    <result column="contract_num" property="contract_num" jdbcType="VARCHAR" />
+    <result column="car_id" property="car_id" jdbcType="INTEGER" />
+    <result column="contract_type" property="contract_type" jdbcType="INTEGER" />
+  </resultMap>
+    <sql id="Base_Column_List" >
+    id, contract_url, contract_num,contract_type
+  </sql>
+	<select id="querylist" resultMap="BaseResultMap" parameterType="com.uton.carsokApi.model.Contract" >
+		select * from carsok_contract
+		WHERE enable = 1
+		<if test="car_id != null ">
+			and car_id = #{car_id}
+		</if>
+		<if test="contract_type != 0 ">
+			and contract_type = #{contract_type}
+		</if>
+		ORDER BY id DESC
+	</select>
+	
+	<select id="queryByCar" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from carsok_contract 
+		where car_id in 
+		<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+  			#{item}  
+ 		</foreach>
+		AND enable = 1
+	</select>
+	<select id="selectByVin" resultMap="BaseResultMap" >
+		select * from carsok_product cp inner join carsok_contract cc on cp.id=cc.car_id where cp.vin=#{param1} AND cc.enable = 1
+	</select>
+	<select id="selectByCarId" resultMap="BaseResultMap" >
+		select * from carsok_contract cc  where cc.car_id=#{param1} AND cc.enable = 1
+	</select>
+	<select id="queryContractByCarIdAndType" resultMap="BaseResultMap" >
+		select * from carsok_contract cc  where cc.car_id=#{carId}
+		 <if test="type != 0">
+			 AND cc.contract_type = #{type}
+		 </if>
+		AND cc.enable = 1
+	</select>
+
+
+	<select id="querylistContractType" resultType="com.uton.carsokApi.controller.response.ContractResponse">
+		SELECT
+		cct.id as id,
+		contract_url as url,
+		contract_num,
+		cct.car_id AS carId,
+		contract_type as typeInt,
+		concat_ws(
+		'-',
+		cpo.c_brand,
+		cpo.c_model
+		) AS name
+		FROM
+		carsok_contract cct
+		LEFT JOIN carsok_pruduct_oldcar cpo ON cct.car_id = cpo.pruduct_id
+		WHERE car_id IN
+		<foreach item="carId" index="index" collection="carIdList" open="(" separator="," close=")">
+			#{carId}
+		</foreach>
+		AND cct.enable = 1
+	</select>
+	<insert id="saveCarContract" parameterType="com.uton.carsokApi.model.CarContract" useGeneratedKeys="true" keyProperty="id">
+		insert into carsok_car_contract
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				id,
+			</if>
+			<if test="carId != null" >
+				car_id,
+			</if>
+			<if test="contractName != null" >
+				contract_name,
+			</if>
+			<if test="contract != null" >
+				contract,
+			</if>
+			<if test="acountId != null" >
+				acount_id,
+			</if>
+			<if test="createTime != null" >
+				create_time,
+			</if>
+
+			<if test="updateTime != null" >
+				update_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="carId != null" >
+				#{carId,jdbcType=INTEGER},
+			</if>
+			<if test="contractName != null" >
+				#{contractName,jdbcType=VARCHAR},
+			</if>
+			<if test="contract != null" >
+				#{contract,jdbcType=VARCHAR},
+			</if>
+			<if test="acountId != null" >
+				#{acountId,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null" >
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null" >
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<insert id="insertPdfContract">
+		INSERT INTO  carsok_contract (contract_url,contract_num,car_id,contract_type,enable)
+		VALUES (#{contractUrl},#{contractNum},#{carId},#{contractType},#{enable})
+	</insert>
+	<select id="getCarContractList" parameterType="java.lang.Integer" resultType="com.uton.carsokApi.model.CarContract">
+		SELECT a.id, a.car_id AS carId, a.contract_name AS contractName, a.contract, a.acount_id AS acountId, a.create_time AS createTime, a.update_time AS updateTime
+		FROM carsok_car_contract a
+		WHERE a.car_id = #{carId}
+		AND a.enable = 1
+		ORDER BY a.create_time DESC
+		LIMIT #{startNum},#{size}
+	</select>
+
+	<!--根据id删除纸质合同-->
+	<update id="delPaperContract">
+		UPDATE  carsok_car_contract
+		SET enable = 2
+		WHERE id = #{id}
+	</update>
+
+	<!--根据id删除pdf合同-->
+	<update id="delPdfContract">
+		UPDATE  carsok_contract
+		SET enable = 2
+		WHERE id = #{id}
+	</update>
+
+	<select id="carContractByCarId" resultType="com.uton.carsokApi.model.CarContract">
+		SELECT a.id, a.car_id AS carId, a.contract_name AS contractName, a.contract, a.acount_id AS acountId, a.create_time AS createTime, a.update_time AS updateTime
+		FROM carsok_car_contract a
+		WHERE a.car_id = #{carId}
+		AND a.enable = 1
+	</select>
+	<!--纸质合同列表-->
+	<select id="selectCarContractByCarId" resultType="com.uton.carsokApi.controller.response.ContractResponse">
+		SELECT
+		ccc.id as id,
+		contract_url as url,
+		FROM
+		carsok_contract ccc
+		LEFT JOIN carsok_pruduct_oldcar cpo ON ccc.car_id = cpo.pruduct_id
+		WHERE ccc.id IN
+		<foreach item="carId" index="index" collection="carIdList" open="(" separator="," close=")">
+			#{carId}
+		</foreach>
+		AND ccc.account_id = #{accountId}
+	</select>
+	<!--车辆列表-->
+	<select id="selectCarList" resultType="com.uton.carsokApi.controller.response.CarContractResponse">
+		SELECT
+		pruduct_id as carId,
+		concat_ws(
+		'-',
+		cpo.c_brand,
+		cpo.c_model
+		) AS car
+		FROM
+		carsok_pruduct_oldcar
+		WHERE pruduct_id IN
+		<foreach item="carId" index="index" collection="carIdList" open="(" separator="," close=")">
+			#{carId}
+		</foreach>
+	</select>
+</mapper>

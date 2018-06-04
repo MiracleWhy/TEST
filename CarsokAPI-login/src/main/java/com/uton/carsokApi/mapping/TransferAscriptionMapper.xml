@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.TransferAscriptionMapper" >
+    <resultMap id="BaseResult" type="com.uton.carsokApi.model.TransferAscription">
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="transfer_id" property="transferId" jdbcType="INTEGER" />
+        <result column="transfer_before" property="transferBefore" jdbcType="VARCHAR" />
+        <result column="transfer_after" property="transferAfter" jdbcType="VARCHAR" />
+        <result column="transfer_type" property="transferType" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <insert id="insertTransferAscription">
+        INSERT INTO carsok_transfer
+        (transfer_id,transfer_before,transfer_after,transfer_type,create_time)
+        VALUES
+        (#{transferId},#{transferBefore},#{transferAfter},#{transferType},#{createTime})
+    </insert>
+    <select id="selectTransferMsg" resultMap="BaseResult">
+        SELECT
+	    cca.child_account_name AS transfer_before,
+	    cca2.child_account_name AS transfer_after,
+        ct.create_time
+        FROM carsok_transfer ct
+	    LEFT JOIN carsok_child_account cca ON cca.id = ct.transfer_before
+	    LEFT JOIN carsok_child_account cca2 ON cca2.id = ct.transfer_after
+        WHERE transfer_id = #{transferId} and transfer_type = #{transferType}
+    </select>
+    <select id="selectTransferCount" resultType="com.uton.carsokApi.controller.response.TransferCountResponse">
+        SELECT (SELECT COUNT(*) FROM carsok_customer_manage WHERE account_id = #{accountId} AND child_id = #{childId}) mendianCount,
+               (SELECT COUNT(*) FROM carsok_acquisition_car WHERE account_id = #{accountId} AND child_id = #{childId}) shoucheCount ,
+               (SELECT COUNT(*) FROM carsok_customer_trnure_car WHERE account_id = #{accountId} AND child_id = #{childId}) baoyouCount
+    </select>
+    <select id="selectNewTransferCount" resultType="com.uton.carsokApi.controller.response.TransferCountResponse">
+        SELECT (SELECT 0) mendianCount,
+        (SELECT COUNT(*) FROM carsok_acquisition_car WHERE account_id = #{accountId} AND child_id = #{childId}) shoucheCount ,
+        (SELECT COUNT(*) FROM carsok_customer WHERE account_id = #{accountId} AND child_id = #{childId}) baoyouCount
+    </select>
+    <select id="selectModularIds" resultType="java.lang.Integer">
+        SELECT id FROM ${tableName} WHERE account_id = #{accountId} and child_id = #{childId}
+    </select>
+    <update id="transferByModular">
+        UPDATE ${tableName} SET
+        child_id = #{childId}
+        WHERE id IN
+        <foreach collection="idLists" item="idList" separator="," open="("
+                 close=")">
+            #{idList}
+        </foreach>
+    </update>
+
+    <select id="selectChildListByTransfer" resultType="com.uton.carsokApi.model.ChildAccount">
+        SELECT id,
+        child_account_mobile childAccountMobile,
+        child_account_name childAccountName,
+        account_phone accountPhone,
+        alias,
+        create_time createTime,
+        update_time updateTime,
+        child_head_pic childHeadPic
+        FROM carsok_child_account WHERE account_phone = #{accountPhone} AND id != #{childId}
+    </select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokDiffmapMapper">
+
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokDiffmap">
+		<id column="id" property="id" />
+		<result column="prop" property="prop" />
+		<result column="propName" property="propname" />
+		<result column="className" property="classname" />
+		<result column="module" property="module" />
+		<result column="type" property="type" />
+		<result column="format" property="format" />
+		<result column="suffix" property="suffix" />
+	</resultMap>
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, prop, propName AS propname, className AS classname, module, type, format, suffix
+    </sql>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokTenureTaskMapper">
+
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokTenureTask">
+		<id column="id" property="id" />
+		<result column="type" property="type" />
+		<result column="business_id" property="businessId" />
+		<result column="scheduled_time" property="scheduledTime" />
+		<result column="task_status" property="taskStatus" />
+		<result column="actual_finish_time" property="actualFinishTime" />
+		<result column="assignee_account" property="assigneeAccount" />
+		<result column="assignee_child" property="assigneeChild" />
+		<result column="enable" property="enable" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="task_execute_group" property="taskExecuteGroup" />
+		<result column="extra_fields" property="extraFields" />
+		<result column="module" property="module" />
+		<result column="version" property="version" />
+		<result column="updateby_accountId" property="updatebyAccountid" />
+		<result column="updateby_childId" property="updatebyChildid" />
+	</resultMap>
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, type, business_id AS businessId, scheduled_time AS scheduledTime, task_status AS taskStatus, actual_finish_time AS actualFinishTime, assignee_account AS assigneeAccount, assignee_child AS assigneeChild, enable, create_time AS createTime, update_time AS updateTime, task_execute_group AS taskExecuteGroup, extra_fields AS extraFields, module,version, updateby_accountId AS updatebyAccountid, updateby_childId AS updatebyChildid
+    </sql>
+	<select id="queryTaskBySqlStatement" resultMap="BaseResultMap">
+		SELECT * FROM carsok_tenure_task
+		 <where>
+			 ${ew.sqlSegment}
+		 </where>
+	</select>
+</mapper>

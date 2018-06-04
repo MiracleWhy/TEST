@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.CustomerMapper" >
+    <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.Customer" >
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="account_id" property="accountId" jdbcType="INTEGER" />
+        <result column="child_id" property="childId" jdbcType="INTEGER" />
+        <result column="in_time" property="inTime" jdbcType="TIMESTAMP" />
+        <result column="out_time" property="outTime" jdbcType="TIMESTAMP" />
+        <result column="people_num" property="peopleNum" jdbcType="INTEGER" />
+        <result column="salesadviser" property="salesAdviser" jdbcType="VARCHAR" />
+        <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
+        <result column="customer_phone" property="customerPhone" jdbcType="VARCHAR" />
+        <result column="customer_status" property="customerStatus" jdbcType="INTEGER" />
+        <result column="information_sources" property="informationSources" jdbcType="VARCHAR" />
+        <result column="Intentional_vehicle" property="IntentionalVehicle" jdbcType="VARCHAR" />
+        <result column="customer_level" property="customerLevel" jdbcType="VARCHAR" />
+        <result column="customer_track" property="customerTrack" jdbcType="VARCHAR" />
+        <result column="customer_budget" property="customerBudget" jdbcType="VARCHAR" />
+        <result column="customer_region" property="customerRegion" jdbcType="VARCHAR" />
+        <result column="customer_come" property="customerCome" jdbcType="INTEGER" />
+        <result column="brand" property="brand" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="BaseResultMap2" type="com.uton.carsokApi.model.CustomerFlow" >
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="account_id" property="accountId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="customer_flow_message" property="customerFlowMessage" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="push_time" property="pushTime" jdbcType="TIMESTAMP" />
+        <result column="cust_come" property="custCome" jdbcType="INTEGER" />
+        <result column="account_id" property="accountId" jdbcType="INTEGER" />
+        <result column="child_id" property="childId" jdbcType="INTEGER" />
+    </resultMap>
+    <resultMap id="BaseResult3" type="com.uton.carsokApi.model.StoreRemind">
+        <result column="accountPhone" property="accountPhone" jdbcType="VARCHAR" />
+        <result column="childPhone" property="childPhone" jdbcType="VARCHAR" />
+        <result column="customerPhone" property="customerPhone" jdbcType="VARCHAR" />
+        <result column="customerName" property="customerName" jdbcType="VARCHAR" />
+        <result column="mendianId" property="mendianId" jdbcType="INTEGER" />
+    </resultMap>
+    <insert id="insertCustomer" parameterType="com.uton.carsokApi.model.Customer">
+        INSERT INTO carsok_customer_manage
+        (account_id,child_id,in_time,out_time,people_num,salesadviser,customer_name,customer_phone,customer_status,information_sources,
+        Intentional_vehicle,customer_level,customer_track,customer_budget,customer_region,customer_come,brand,update_time)
+        VALUES (#{accountId},#{childId},#{inTime},#{outTime},#{peopleNum},#{salesAdviser},#{customerName},#{customerPhone},
+        #{customerStatus},#{informationSources},#{IntentionalVehicle},#{customerLevel},#{customerTrack},#{customerBudget},#{customerRegion},#{customerCome},#{brand},now())
+    </insert>
+    <insert id="insertFlow">
+        INSERT INTO carsok_customer_flowmsg
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="custId != '' and custId != null">
+                customer_id,
+            </if>
+            <if test="custFlow != '' and custFlow != null">
+                customer_flow_message,
+            </if>
+            create_time,
+            <if test="status != '' and status != null">
+                status,
+            </if>
+            <if test="remind != '' and remind != null">
+                push_time,
+            </if>
+                cust_come,
+            <if test="accountId != '' and accountId != null">
+                account_id,
+            </if>
+            <if test="childId != '' and childId != null">
+                child_id,
+            </if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="custId != '' and custId != null">
+                #{custId},
+            </if>
+            <if test="custFlow != '' and custFlow != null">
+                #{custFlow},
+            </if>
+            NOW(),
+            <if test="status != '' and status != null">
+                #{status},
+            </if>
+            <if test="remind != '' and remind != null">
+                #{remind},
+            </if>
+                #{custCome},
+            <if test="accountId != '' and accountId != null">
+                #{accountId},
+            </if>
+            <if test="childId != '' and childId != null">
+                #{childId},
+            </if>
+        </trim>
+    </insert>
+    <select id="selectCustomerMsg" resultMap="BaseResultMap">
+        SELECT * from carsok_customer_manage
+        <if test="times == 0">
+            where 1=0
+        </if>
+        <if test="times == 1">
+            WHERE DATE_FORMAT(in_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="times == 2">
+            where in_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="times == 3">
+            WHERE DATE_FORMAT(in_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="childId == 0">
+            AND account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="xxly != '' and xxly != null">
+            and information_sources = #{xxly}
+        </if>
+        <if test="khjb != '' and khjb != null">
+            and customer_level = #{khjb}
+        </if>
+        <if test="dfzt != '' and dfzt != null and dfzt != 0">
+            and customer_status = #{dfzt}
+        </if>
+        <if test="gmys != '' and gmys != null ">
+            and customer_budget = #{gmys}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+    <select id="querycustomerListBysearchkey" resultMap="BaseResultMap">
+        SELECT * from carsok_customer_manage
+        <if test="childId == 0">
+            where account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            where account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="month != null ">
+            AND DATE_FORMAT(in_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        </if>
+        <if test="selects != null and selects != '' ">
+            AND ( customer_name LIKE CONCAT('%',#{selects},'%')
+            OR customer_phone LIKE CONCAT('%',#{selects},'%')
+            OR Intentional_vehicle LIKE CONCAT('%',#{selects},'%') )
+        </if>
+        ORDER BY id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+    <select id="selectCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_manage
+        <if test="childId == 0">
+            WHERE account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            WHERE account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="xxly != '' and xxly != null">
+            and information_sources = #{xxly}
+        </if>
+        <if test="khjb != '' and khjb != null">
+            and customer_level = #{khjb}
+        </if>
+        <if test="dfzt != '' and dfzt != null and dfzt != 0">
+            and customer_status = #{dfzt}
+        </if>
+        <if test="gmys != '' and gmys != null ">
+            and customer_budget = #{gmys}
+        </if>
+    </select>
+    <select id="selectDayCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_manage WHERE DATE_FORMAT(in_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        <if test="childId == 0">
+            AND account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="xxly != '' and xxly != null">
+            and information_sources = #{xxly}
+        </if>
+        <if test="khjb != '' and khjb != null">
+            and customer_level = #{khjb}
+        </if>
+        <if test="dfzt != '' and dfzt != null and dfzt != 0">
+            and customer_status = #{dfzt}
+        </if>
+        <if test="gmys != '' and gmys != null ">
+            and customer_budget = #{gmys}
+        </if>
+    </select>
+    <select id="selectWeekCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_manage where in_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        <if test="childId == 0">
+            AND account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="xxly != '' and xxly != null">
+            and information_sources = #{xxly}
+        </if>
+        <if test="khjb != '' and khjb != null">
+            and customer_level = #{khjb}
+        </if>
+        <if test="dfzt != '' and dfzt != null and dfzt != 0">
+            and customer_status = #{dfzt}
+        </if>
+        <if test="gmys != '' and gmys != null ">
+            and customer_budget = #{gmys}
+        </if>
+    </select>
+    <select id="selectMonthCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_manage WHERE DATE_FORMAT(in_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        <if test="childId == 0">
+            AND account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="xxly != '' and xxly != null">
+            and information_sources = #{xxly}
+        </if>
+        <if test="khjb != '' and khjb != null">
+            and customer_level = #{khjb}
+        </if>
+        <if test="dfzt != '' and dfzt != null and dfzt != 0">
+            and customer_status = #{dfzt}
+        </if>
+        <if test="gmys != '' and gmys != null ">
+            and customer_budget = #{gmys}
+        </if>
+    </select>
+    <select id="selectBySearchKey" resultType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_manage
+        <if test="childId == 0">
+            WHERE account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            WHERE account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="month != null">
+            AND DATE_FORMAT(in_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        </if>
+        AND (customer_name LIKE CONCAT('%',#{selects},'%')
+        OR customer_phone LIKE CONCAT('%',#{selects},'%')
+        OR Intentional_vehicle LIKE CONCAT('%',#{selects},'%'))
+    </select>
+
+    <select id="selectAllFlows" resultMap="BaseResultMap2">
+        select * FROM carsok_customer_flowmsg
+        <if test="custId != null and custId != ''">
+            where customer_id = #{custId}
+        </if>
+    </select>
+
+    <update id="updateTrack" parameterType="java.lang.String">
+        UPDATE carsok_customer_manage SET customer_track = #{custTrack}
+        <if test="custPhone != null and custName != null and custPhone != '' and custName != '' and custId != null and custId != ''">
+            where customer_phone = #{custPhone} and customer_name = #{custName} and id = #{custId}
+        </if>
+    </update>
+    <update id="updateStatus" >
+        UPDATE carsok_customer_manage SET customer_status = #{customerStatus},customer_come = #{custCome},update_time=now()
+        <if test=" custId != null and custId != ''">
+            where id = #{custId}
+        </if>
+    </update>
+    <select id="selectMsgByNameOrPhone" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT * from carsok_customer_manage
+        <if test="custPhone != null and custName != null and custPhone != '' and custName != '' and custId != null and custId != ''">
+            where customer_phone = #{custPhone} and customer_name = #{custName} and id = #{custId}
+        </if>
+    </select>
+    <select id="selectFlowMsgByCustomerId" resultMap="BaseResultMap2" parameterType="java.lang.String">
+        SELECT * from carsok_customer_flowmsg
+        <if test="custId != null and custId != ''">
+            where customer_id = #{custId}
+        </if>
+    </select>
+
+
+    <select id="selectCountByMonth" resultType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_manage
+        <if test="childId == 0">
+            WHERE account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            WHERE account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="xxly != '' and xxly != null">
+            and information_sources = #{xxly}
+        </if>
+        <if test="khjb != '' and khjb != null">
+            and customer_level = #{khjb}
+        </if>
+        <if test="dfzt != '' and dfzt != null and dfzt != 0">
+            and customer_status = #{dfzt}
+        </if>
+        <if test="gmys != '' and gmys != null ">
+            and customer_budget = #{gmys}
+        </if>
+        <if test="month != null ">
+            and DATE_FORMAT(in_time, '%Y-%m') = DATE_FORMAT(#{month}, '%Y-%m')
+        </if>
+    </select>
+
+    <select id="selectCustMsgByMonth" resultMap="BaseResultMap">
+        SELECT * from carsok_customer_manage
+        <if test="childId == 0">
+            WHERE account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            WHERE account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="xxly != '' and xxly != null">
+            and information_sources = #{xxly}
+        </if>
+        <if test="khjb != '' and khjb != null">
+            and customer_level = #{khjb}
+        </if>
+        <if test="dfzt != '' and dfzt != null and dfzt != 0">
+            and customer_status = #{dfzt}
+        </if>
+        <if test="gmys != '' and gmys != null ">
+            and customer_budget = #{gmys}
+        </if>
+        <if test="month != null ">
+            and DATE_FORMAT(in_time, '%Y-%m') = DATE_FORMAT(#{month}, '%Y-%m')
+        </if>
+        ORDER BY id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+    <select id="selectScreenCount" resultType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_manage
+        <if test="childId == 0">
+            where account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            where account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="xxly != '' and xxly != null">
+            and information_sources = #{xxly}
+        </if>
+        <if test="khjb != '' and khjb != null">
+            and customer_level = #{khjb}
+        </if>
+        <if test="dfzt != '' and dfzt != null and dfzt != 0">
+            and customer_status = #{dfzt}
+        </if>
+        <if test="gmys != '' and gmys != null ">
+            and customer_budget = #{gmys}
+        </if>
+        <if test="time == 1">
+            and DATE_FORMAT(in_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="time == 2">
+            and in_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="time == 3">
+            and DATE_FORMAT(in_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+    </select>
+    <select id="ScreenMessageAll" resultMap="BaseResultMap">
+        SELECT * from carsok_customer_manage
+        <if test="childId == 0">
+            where account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            where account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="xxly != '' and xxly != null">
+            and information_sources = #{xxly}
+        </if>
+        <if test="khjb != '' and khjb != null">
+            and customer_level = #{khjb}
+        </if>
+        <if test="dfzt != '' and dfzt != null and dfzt != 0">
+            and customer_status = #{dfzt}
+        </if>
+        <if test="gmys != '' and gmys != null ">
+            and customer_budget = #{gmys}
+        </if>
+        <if test="time == 1">
+            and DATE_FORMAT(in_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="time == 2">
+            and in_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="time == 3">
+            and DATE_FORMAT(in_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        ORDER BY id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+    <select id="selectCustomerStatus" resultType="java.lang.Integer">
+        SELECT customer_status from carsok_customer_manage
+        WHERE id = #{custId}
+    </select>
+
+    <select id="selectManyMsg" resultMap="BaseResult3">
+        SELECT cm.id AS mendianId,ca.account AS accountPhone,cca.alias AS childPhone,
+        cm.customer_phone AS customerPhone,cm.customer_name AS customerName
+        FROM carsok_customer_manage cm
+        LEFT JOIN carsok_customer_flowmsg cf ON cf.customer_id = cm.id
+        INNER JOIN carsok_acount ca ON cm.account_id = ca.id
+        LEFT JOIN carsok_child_account cca ON cm.child_id = cca.id
+        WHERE DATE_FORMAT(push_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        GROUP BY customerPhone
+    </select>
+
+
+    <select id="selectByRemindCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) from carsok_customer_manage
+        <if test="childId == 0">
+            where account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            where account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="otherId != null and otherId != ''">
+            and id = #{otherId}
+        </if>
+    </select>
+
+    <select id="selectByRemindMsg" resultMap="BaseResultMap">
+        SELECT * from carsok_customer_manage
+        <if test="childId == 0">
+            where account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            where account_id = #{accountId} and child_id = #{childId}
+        </if>
+        <if test="otherId != null and otherId != ''">
+            and id = #{otherId}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+
+    <select id="selectByCustPhone" resultMap="BaseResultMap">
+        SELECT * from carsok_customer_manage
+        WHERE customer_phone = #{custPhone} and account_id = #{accountId}
+        ORDER by id DESC
+        limit 0,1
+    </select>
+
+    <select id="selectCustIf" resultMap="BaseResultMap">
+        SELECT * from carsok_customer_manage
+        WHERE customer_phone = #{custPhone}
+        <if test="childId == 0">
+            AND account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND account_id = #{accountId} and child_id = #{childId}
+        </if>
+    </select>
+
+    <select id="selectByUpdate" resultMap="BaseResultMap">
+        SELECT * from carsok_customer_manage
+        where id = #{id}
+    </select>
+    <update id="updateCustomerMsg">
+        UPDATE carsok_customer_manage
+        <set>
+            <if test="inTime != null" >
+                in_time = #{inTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="outTime != null" >
+                out_time = #{outTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="peopleNum != null" >
+                people_num = #{peopleNum,jdbcType=INTEGER},
+            </if>
+            <if test="customerName != null" >
+                customer_name = #{customerName,jdbcType=VARCHAR},
+            </if>
+            <if test="customerPhone != null" >
+                customer_phone = #{customerPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="informationSources != null" >
+                information_sources = #{informationSources,jdbcType=VARCHAR},
+            </if>
+            <if test="customerLevel != null" >
+                customer_level = #{customerLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="customerTrack != null" >
+                customer_track = #{customerTrack,jdbcType=VARCHAR},
+            </if>
+            <if test="customerBudget != null" >
+                customer_budget = #{customerBudget,jdbcType=VARCHAR},
+            </if>
+            <if test="customerRegion != null" >
+                customer_region = #{customerRegion,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <select id="selectListByCustPhoneCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM carsok_customer_manage
+        WHERE customer_phone = #{custPhone}
+        <if test="childId == 0">
+            and account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            and account_id = #{accountId} and child_id = #{childId}
+        </if>
+    </select>
+    <select id="selectListByCustPhone" resultMap="BaseResultMap">
+        SELECT * FROM carsok_customer_manage
+        WHERE customer_phone = #{custPhone}
+        <if test="childId == 0">
+            and account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            and account_id = #{accountId} and child_id = #{childId}
+        </if>
+        LIMIT #{p1},#{p2}
+    </select>
+
+    <select id="selectByFollow" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        customer_name,customer_phone,customer_status,customer_come,information_sources,Intentional_vehicle,customer_level,customer_track,
+        in_time,out_time,people_num,customer_budget,customer_region
+        from carsok_customer_manage
+        where id=#{id,jdbcType=INTEGER}
+    </select>
+
+    <update id="updateCustomer" parameterType="com.uton.carsokApi.model.Customer" >
+        update carsok_customer_manage
+        <set>
+
+            customer_phone = #{customerPhone,jdbcType=VARCHAR},
+
+            customer_status = #{customerStatus,jdbcType=INTEGER},
+
+            customer_come = #{customerCome,jdbcType=INTEGER},
+
+            Intentional_vehicle = #{IntentionalVehicle,jdbcType=VARCHAR},
+
+            customer_level = #{customerLevel,jdbcType=VARCHAR},
+
+            customer_track = #{customerTrack,jdbcType=VARCHAR},
+
+            in_time = #{inTime,jdbcType=TIMESTAMP},
+
+            out_time = #{outTime,jdbcType=TIMESTAMP},
+
+            people_num = #{peopleNum,jdbcType=INTEGER},
+
+            customer_budget = #{customerBudget,jdbcType=VARCHAR},
+
+        </set>
+        <if test=" id != null and id != ''">
+            where id = #{id,jdbcType=INTEGER}
+        </if>
+    </update>
+
+    <update id="updateCustomerFlow" parameterType="java.lang.Integer" >
+        update carsok_customer_flowmsg
+        <set>
+            customer_flow_message = "详情中更改客户状态"
+        </set>
+            where customer_id = #{customerId,jdbcType=INTEGER}
+    </update>
+    <update id="updateThreeSevenById">
+        UPDATE carsok_customer_manage
+        <set>
+            <if test="customerStatus == 3">
+                three_if = 1,
+            </if>
+            <if test="customerStatus == 7">
+                seven_if = 1,
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+
+    <select id="queryPotCusVo" resultType="com.uton.carsokApi.controller.response.PotCusVoResponse">
+        SELECT * FROM
+        (SELECT count(*) AS potCusBaseCount FROM carsok_customer WHERE account_id=#{accountId} AND child_id=#{childId}
+        <if test="type==1">
+            <![CDATA[ AND DATE_FORMAT(in_time,'%Y-%m-%d') <= DATE_ADD(DATE_FORMAT(#{endDate},'%Y-%m-%d'),INTERVAL -1 DAY) ]]>
+        </if>
+        <if test="type==2">
+            <![CDATA[ AND DATE_FORMAT(in_time,'%Y-%m-%d') <= DATE_ADD(DATE_FORMAT(#{endDate},'%Y-%m-%d'),INTERVAL -7 DAY) ]]>
+        </if>
+        <if test="type==3">
+            <![CDATA[ AND DATE_FORMAT(in_time,'%Y-%m') <= DATE_FORMAT(DATE_ADD(#{endDate},INTERVAL -1 MONTH) ,'%Y-%m') ]]>
+        </if>
+        <if test="type==4">
+            <![CDATA[ AND DATE_FORMAT(in_time,'%Y') <= DATE_FORMAT(#{endDate},'%Y')-1 ]]>
+        </if>
+        AND level NOT IN ('F 战败')
+        AND enable=1
+        ) A
+        ,
+        (
+        SELECT count(*) AS potCusAddCount FROM carsok_customer WHERE account_id=#{accountId}
+        <if test="childId !=null">
+            AND child_id=#{childId}
+        </if>
+        AND DATE_FORMAT(in_time,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate},'%Y-%m-%d') AND
+        DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        AND enable=1
+        ) B
+        ,
+        (
+        SELECT count(*) AS potCusFaillCount FROM carsok_customer WHERE account_id=#{accountId}
+        <if test="childId !=null">
+            AND child_id=#{childId}
+        </if>
+        AND DATE_FORMAT(in_time,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate},'%Y-%m-%d') AND
+        DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        AND level ='F 战败'
+        AND enable=1
+        ) C
+        ,
+        (
+        SELECT count(*) AS potCusTotalCount FROM carsok_customer WHERE account_id=#{accountId}
+        <if test="childId !=null">
+            AND child_id=#{childId}
+        </if>
+        AND level NOT IN ('F 战败')
+        AND in_time IS NOT NULL
+        AND enable=1
+        ) D
+
+    </select>
+
+
+
+    <select id="queryDailyRegionCountByDate" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_customer WHERE  account_id=#{accountId}
+        AND child_id IN
+        <foreach collection="childAccounts" open="(" separator="," close=")" item="child">
+            #{child.id}
+        </foreach>
+        AND DATE_FORMAT(in_time,'%Y-%m-%d')  BETWEEN DATE_FORMAT(#{startDate},'%Y-%m-%d')
+        AND DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        AND district IS NOT NULL
+        AND district!=''
+        AND enable=1
+    </select>
+    <select id="queryRegionOfSomeCustomers" resultType="com.uton.carsokApi.model.KeyValuePair">
+        SELECT district AS keyStr,COUNT(*) AS val  FROM carsok_customer WHERE  account_id=#{accountId}
+        AND child_id IN
+        <foreach collection="childAccounts" open="(" separator="," close=")" item="child">
+            #{child.id}
+        </foreach>
+        AND DATE_FORMAT(in_time,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate},'%Y-%m-%d') AND DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        AND district IS NOT NULL
+        AND district!=''
+        AND enable=1
+        GROUP BY district
+    </select>
+    <select id="countCustomerNumOfRegion" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_customer WHERE  account_id=#{accountId}
+        AND child_id IN
+        <foreach collection="childAccounts" open="(" separator="," close=")" item="child">
+            #{child.id}
+        </foreach>
+        <if test="type==2">
+            AND DATE_FORMAT(in_time,'%Y-%m-%d')  BETWEEN DATE_FORMAT(DATE_ADD(#{startDate},INTERVAL -7 DAY),'%Y-%m-%d')
+            AND DATE_FORMAT(DATE_ADD(#{endDate},INTERVAL -7 DAY),'%Y-%m-%d')
+        </if>
+        <if test="type==3">
+            AND DATE_FORMAT(in_time,'%Y-%m')  BETWEEN DATE_FORMAT(DATE_ADD(#{startDate},INTERVAL -1 MONTH),'%Y-%m')
+            AND DATE_FORMAT(DATE_ADD(#{endDate},INTERVAL -1 MONTH),'%Y-%m')
+        </if>
+        AND district =#{region}
+    </select>
+    <select id="countPotCusTotalOfOne" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_customer WHERE  account_id=#{accountId}
+        AND child_id=#{childId}
+        AND DATE_FORMAT(in_time,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+    </select>
+</mapper>

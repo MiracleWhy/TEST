@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.MerchantwalletMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.Merchantwallet" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="account_id" property="accountid" jdbcType="INTEGER" />
+    <result column="avail" property="avail" jdbcType="DECIMAL" />
+    <result column="frozen" property="frozen" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+	
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.Merchantwallet" useGeneratedKeys="true" keyProperty="id">
+    insert into carsok_merchant_wallet
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="accountid != null" >
+        account_id,
+      </if>
+      <if test="avail != null" >
+        avail,
+      </if>
+      <if test="frozen != null" >
+        frozen,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="accountid != null" >
+        #{accountid,jdbcType=INTEGER},
+      </if>
+      <if test="avail != null" >
+        #{avail,jdbcType=DECIMAL},
+      </if>
+      <if test="frozen != null" >
+        #{frozen,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+    <select id="selectByModel" resultMap="BaseResultMap" parameterType="com.uton.carsokApi.model.Merchantwallet" >
+    select * from carsok_merchant_wallet
+    <where>
+		<if test="id != null ">
+		and
+			id = #{id}
+		</if>
+		<if test="accountid != null ">
+		and
+			account_id = #{accountid}
+		</if>
+	</where>
+  </select>
+  
+    <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.Merchantwallet" >
+    update carsok_merchant_wallet
+    <set >
+      <if test="avail != null" >
+       avail = #{avail,jdbcType=DECIMAL},
+      </if>
+      <if test="frozen != null" >
+       frozen = #{frozen,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+       update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

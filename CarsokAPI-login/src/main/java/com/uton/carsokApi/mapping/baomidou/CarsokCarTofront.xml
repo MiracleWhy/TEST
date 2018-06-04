@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokCarTofrontMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokCarTofront">
+		<id column="id" property="id" />
+		<result column="tofront_product_id" property="tofrontProductId" />
+		<result column="car_order_id" property="carOrderId" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="new_order" property="newOrder" />
+		<result column="enable" property="enable" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, tofront_product_id AS tofrontProductId, car_order_id AS carOrderId, account_id AS accountId, child_id AS childId, start_time AS startTime, end_time AS endTime, new_order AS newOrder, enable, create_time AS createTime, update_time AS updateTime
+    </sql>
+
+	<!--车源置顶记录查询-->
+	<select id="carTofront" resultType="com.uton.carsokApi.controller.response.CarTofrontResponse">
+		SELECT
+		  cct.id,
+		  cp.product_name AS productName,
+		  cp.product_no AS productNo,
+		  cct.start_time AS startTime,
+		  (SELECT plan_name FROM carsok_tofront_plan WHERE id = ccto.tofront_plan_id) AS planName,
+		  cct.enable
+		FROM
+			carsok_car_tofront cct
+		LEFT JOIN carsok_product cp ON cct.tofront_product_id = cp.id
+		LEFT JOIN carsok_car_tofront_order ccto ON cct.car_order_id = ccto.id
+		WHERE cct.account_id = #{accountId}
+		AND cct.child_id = #{childId}
+		ORDER BY cct.update_time DESC
+	</select>
+</mapper>

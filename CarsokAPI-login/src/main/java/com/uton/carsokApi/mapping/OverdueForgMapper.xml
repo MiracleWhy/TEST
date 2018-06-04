@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.OverdueForgMapper" >
+    <select id="selectChild" resultType="com.uton.carsokApi.model.ChildNameAndId">
+       select id as id,child_account_name AS NAME FROM  carsok_child_account where account_phone=#{accountPhone} and id in(select child_id from carsok_account_power where power_name="yyglz" or power_name="yyyg")
+    </select>
+
+    <select id="dayOverdueOne" resultType="java.lang.Integer">
+    select count(*) FROM carsok_tenure_task where  NOW()>scheduled_time
+</select>
+    <select id="selectOneChildName" resultType="java.lang.String">
+        select child_account_name from carsok_child_account where child_account_mobile=#{phone}
+    </select>
+    <select id="qianke" resultType="java.lang.Integer">
+    SELECT
+    count(*)
+    FROM
+    carsok_tenure_task task
+    LEFT JOIN carsok_customer custom ON task.business_id = custom.id
+    WHERE task.task_status="delay" and task.module='potentialcustomer' and custom.account_id=#{accountId} and custom.child_id=#{childId}
+</select>
+    <select id="allQianke" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_tenure_task task
+        LEFT JOIN carsok_customer custom ON task.business_id = custom.id
+        WHERE task.task_status="delay" and task.module='potentialcustomer' and custom.account_id=#{account}
+    </select>
+
+
+</mapper>

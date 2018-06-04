@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokCarCollectMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokCarCollect">
+		<id column="id" property="id" />
+		<result column="account_id" property="accountId" />
+		<result column="child_id" property="childId" />
+		<result column="collect_product_id" property="collectProductId" />
+		<result column="enable" property="enable" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, account_id AS accountId, child_id AS childId, collect_product_id AS collectProductId, enable, create_time AS createTime, update_time AS updateTime
+    </sql>
+
+	<!--车源收藏列表-->
+	<select id="getCarCollectList" resultType="com.uton.carsokApi.controller.response.CarCollectListResponse">
+		SELECT
+			ccc.id,
+			cp.id AS carId,
+			cp.product_name AS productName,
+			cp.product_no AS productNo,
+			(SELECT pic_path FROM carsok_picture WHERE type = 1 AND product_id = ccc.collect_product_id) AS picPath,
+			DATE_FORMAT((SELECT first_up_time from carsok_pruduct_oldcar cpo WHERE cpo.pruduct_id = cp.id),'%Y-%m') AS firstUpTime,
+			(SELECT miles from carsok_pruduct_oldcar cpo WHERE cpo.pruduct_id = cp.id) AS miles,
+			cp.price,
+			DATE_FORMAT(cp.on_shelf_time,'%Y-%m-%d') AS onShelfTime,
+			(SELECT account_code FROM carsok_acount WHERE id = cp.account_id) AS accountCode,
+			(SELECT is_merchant_audit FROM carsok_acount WHERE id = cp.account_id) AS isMerchantAudit,
+			(SELECT merchant_name FROM carsok_acount WHERE id = cp.account_id) AS merchantName,
+			(SELECT COUNT(*) FROM carsok_bargain WHERE product_id = ccc.collect_product_id) AS bargainCount,
+			(SELECT enable FROM carsok_car_tofront WHERE tofront_product_id = cp.id) AS isTofront
+			FROM
+			carsok_car_collect ccc
+			LEFT JOIN carsok_acount ca ON ccc.account_id = ca.id
+			LEFT JOIN carsok_product cp ON ccc.collect_product_id = cp.id
+		WHERE ca.id = #{param.accountId}
+		<if test="param.searchName != null and param.searchName != ''">
+			AND cp.product_name LIKE CONCAT('%', #{param.searchName}, '%')
+		</if>
+		<if test="param.childId == null">
+			AND ccc.child_id IS NULL
+		</if>
+		<if test="param.childId != null">
+			AND ccc.child_id = #{param.childId}
+		</if>
+		ORDER BY ccc.create_time DESC
+	</select>
+
+	<!--获取列表数据总条数-->
+	<select id="getListCount" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+		carsok_car_collect ccc
+		LEFT JOIN carsok_acount ca ON ccc.account_id = ca.id
+		LEFT JOIN carsok_product cp ON ccc.collect_product_id = cp.id
+		WHERE ca.id = #{accountId}
+		<if test="searchName != null and searchName != ''">
+			AND cp.product_name LIKE CONCAT('%', #{searchName}, '%')
+		</if>
+		<if test="childId == null">
+			AND ccc.child_id IS NULL
+		</if>
+		<if test="childId != null">
+			AND ccc.child_id = #{childId}
+		</if>
+	</select>
+
+	<!--查询车源是否被收藏-->
+	<select id="isCollectCar" resultType="java.lang.Integer">
+		SELECT
+		id
+		FROM
+		carsok_car_collect
+		WHERE
+		account_id = #{accountId}
+		AND collect_product_id = #{collectCarId}
+		<if test="childId == null">
+			AND child_id IS NULL
+		</if>
+		<if test="childId != null">
+			AND child_id = #{childId}
+		</if>
+	</select>
+
+	<!--查询分享车行信息-->
+	<select id="getAcountInfo" resultType="com.uton.carsokApi.controller.response.ShareAccountInfo">
+		SELECT
+		merchant_image_path AS merchantImagePath,
+		merchant_name AS merchantName
+		FROM
+		carsok_acount
+		WHERE
+		id = #{accountId}
+	</select>
+</mapper>

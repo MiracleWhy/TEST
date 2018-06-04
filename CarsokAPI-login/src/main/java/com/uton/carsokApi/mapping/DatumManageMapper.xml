@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.DatumManageMapper">
+    <resultMap id="zbPictureResultMap" type="com.uton.carsokApi.controller.response.ZbPictureResponse">
+        <result column="arcPath" property="arcPath" jdbcType="VARCHAR"/>
+        <result column="dlPath" property="dlPath" jdbcType="VARCHAR"/>
+        <result column="policyPath" property="policyPath" jdbcType="VARCHAR"/>
+        <result column="idcardPath" property="idcardPath" jdbcType="VARCHAR"/>
+        <collection property="zbBillPicResponse" ofType="com.uton.carsokApi.controller.response.ZbBillPicResponse">
+            <id property="id" column="id"/>
+            <result column="bill_name" property="billName"/>
+            <result column="bill_pic" property="billPic"/>
+        </collection>
+    </resultMap>
+    <!--资料管理页信息查询-->
+    <select id="getDatumList" resultType="com.uton.carsokApi.controller.response.DatumManageResponse">
+        SELECT
+            cp.id,
+            cp.product_name AS productName,
+            cp.vin AS vin,
+            cp.on_shelf_time AS onShelfTime,
+            IF(cp.sale_status=1,'已售','在售') AS saleStatus,
+            cpic.pic_path AS picPath
+        FROM
+            carsok_product cp
+        LEFT JOIN carsok_acount ca ON cp.account_id=ca.id
+        LEFT JOIN carsok_picture cpic ON cp.id = cpic.product_id
+        WHERE
+            cp.is_del = 0
+        AND cpic.type = 1
+        AND on_shelf_status = 1
+        <if test="param.accountId != null and param.accountId != ''">
+            AND ca.mobile = #{param.accountId}
+        </if>
+        <if test="param.saleStatus != null and param.saleStatus != ''">
+            AND cp.sale_status = #{param.saleStatus}
+        </if>
+        <if test="param.productName != null and param.productName != ''">
+            AND cp.product_name LIKE CONCAT('%', #{param.productName}, '%')
+        </if>
+        <if test="param.createTime == 1">
+            AND TO_DAYS(cp.on_shelf_time) = TO_DAYS(NOW())
+        </if>
+        <if test="param.createTime == 2">
+            AND YEARWEEK(DATE_FORMAT(cp.on_shelf_time,'%Y-%m-%d'))=YEARWEEK(NOW())
+        </if>
+        <if test="param.createTime == 3">
+            AND DATE_FORMAT(cp.on_shelf_time,'%Y%m')=DATE_FORMAT(CURDATE(),'%Y%m')
+        </if>
+        <if test="param.mouth != null and param.mouth != ''">
+            AND DATE_FORMAT(cp.on_shelf_time,'%Y-%m')= #{param.mouth}
+        </if>
+        ORDER BY cp.on_shelf_time DESC
+    </select>
+
+    <!--查询个状态数据数量-->
+    <select id="getEachCount" resultType="java.lang.Integer">
+        SELECT
+          COUNT(*)
+        FROM
+        carsok_product cp
+        LEFT JOIN carsok_acount ca ON cp.account_id=ca.id
+        LEFT JOIN carsok_picture cpic ON cp.id = cpic.product_id
+        WHERE
+        cp.is_del = 0
+        AND cpic.type = 1
+        AND on_shelf_status = 1
+        <if test="param.accountId != null and param.accountId != ''">
+            AND ca.mobile = #{param.accountId}
+        </if>
+        <if test="param.productName != null and param.productName != ''">
+            AND cp.product_name LIKE CONCAT('%', #{param.productName}, '%')
+        </if>
+        <if test="param.createTime == 1">
+            AND TO_DAYS(cp.on_shelf_time) = TO_DAYS(NOW())
+        </if>
+        <if test="param.createTime == 2">
+            AND YEARWEEK(DATE_FORMAT(cp.on_shelf_time,'%Y-%m-%d'))=YEARWEEK(NOW())
+        </if>
+        <if test="param.createTime == 3">
+            AND DATE_FORMAT(cp.on_shelf_time,'%Y%m')=DATE_FORMAT(CURDATE(),'%Y%m')
+        </if>
+    </select>
+    <!--通过商品id获取车辆图片-->
+    <select id="getCarPictureById" resultType="com.uton.carsokApi.controller.response.CarPictureResponse">
+        SELECT
+            cpic.pic_path AS picPath
+        FROM
+            carsok_product cpro
+        LEFT JOIN carsok_picture cpic ON cpro.id = cpic.product_id
+        WHERE cpro.id = #{productId}
+    </select>
+
+    <!--通过商品id获取整备图片-->
+    <select id="getZbPictureById" resultMap="zbPictureResultMap">
+       SELECT
+            czts.arcPath,
+            czts.dlPath,
+            czts.policyPath,
+            czts.idcardPath,
+            cztzb.id,
+            cztzb.bill_name,
+            cztzb.bill_pic
+        FROM
+            carsok_zb_task czt
+        LEFT JOIN carsok_zb_task_sxy czts ON czt.id = czts.tid
+		LEFT JOIN carsok_zb_task_zby_bill cztzb ON czt.id = cztzb.tid
+        WHERE czt.product_id = #{productId}
+    </select>
+
+    <!--通过商品id获取新增图片-->
+    <select id="getNewPictureById" resultType="com.uton.carsokApi.controller.response.NewPictureResponse">
+        SELECT
+            id,
+            pic_name AS picName,
+            pic_url AS picUrl
+        FROM
+            carsok_new_picture cnp
+        WHERE product_id = #{productId}
+        AND enable = 1
+    </select>
+
+    <!--通过商品id获取pdf合同-->
+    <select id="getcontractPicListById" resultType="com.uton.carsokApi.controller.response.ContractPictureResponse">
+        SELECT
+            ac.contract_url contractUrl,
+            ac.contract_type contractType
+        FROM
+            carsok_contract ac
+        WHERE
+            car_id = #{productId}
+        AND enable = 1
+    </select>
+
+    <!--通过商品id获取纸质合同图片-->
+    <select id="getNewContractPicList" resultType="com.uton.carsokApi.controller.response.ContractPictureResponse">
+        SELECT
+            ccc.contract_name AS contractName,
+            ccc.contract AS contractUrl
+        FROM
+            carsok_car_contract ccc
+        WHERE
+            ccc.car_id = #{productId}
+        AND enable = 1
+    </select>
+
+    <!--新增车辆图片-->
+    <insert id="addNewPicture" parameterType="com.uton.carsokApi.controller.request.NewPictureRequest">
+        INSERT INTO carsok_new_picture
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="picUrl != null" >
+                pic_url,
+            </if>
+            <if test="picName != null" >
+                pic_name,
+            </if>
+            <if test="productId != null" >
+                product_id,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="picUrl != null" >
+                #{picUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="picName != null" >
+                #{picName,jdbcType=VARCHAR},
+            </if>
+            <if test="productId != null" >
+                #{productId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="delNewPic">
+        UPDATE carsok_new_picture
+        SET enable = 2
+        WHERE id = #{id}
+    </update>
+</mapper>

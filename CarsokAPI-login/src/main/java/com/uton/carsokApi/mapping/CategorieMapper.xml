@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.CategorieMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.Categorie" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parentid" property="parentid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+    <result column="initial" property="initial" jdbcType="VARCHAR" />
+    <result column="depth" property="depth" jdbcType="INTEGER" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="VARCHAR" />
+    <result column="yeartype" property="yeartype" jdbcType="VARCHAR" />
+    <result column="salestate" property="salestate" jdbcType="VARCHAR" />
+    <result column="productionstate" property="productionstate" jdbcType="VARCHAR" />
+    <result column="sizetype" property="sizetype" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+	<!-- 查询所有品牌的首字母 -->
+	<select id="searchAllInitial" resultType="java.lang.String">
+		select initial from carsok_categorie where depth = 1 group by initial
+	</select>
+	
+	<select id="searchCarBrand" resultMap="BaseResultMap">
+		select * from carsok_categorie where depth = 1
+	</select>
+	
+	<select id="searchCarmodel" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from carsok_categorie where parentid = #{parentid,jdbcType=INTEGER} ORDER BY yeartype DESC
+	</select>
+	
+	<select id="searchYeartype" resultType="java.lang.String" parameterType="java.lang.Integer">
+		select yeartype from carsok_categorie where parentid = #{parentid,jdbcType=INTEGER} group by yeartype ORDER BY yeartype DESC
+	</select>
+	  <select id="selectByCarBrand" resultType="java.lang.String">
+  	select logo from carsok_categorie where  name=#{param1} limit 1
+  	</select>
+</mapper>

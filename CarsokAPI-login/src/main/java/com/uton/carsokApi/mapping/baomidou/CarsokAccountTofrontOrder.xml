@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokAccountTofrontOrderMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokAccountTofrontOrder">
+		<id column="id" property="id" />
+		<result column="tofront_plan_id" property="tofrontPlanId" />
+		<result column="order_no" property="orderNo" />
+		<result column="order_type" property="orderType" />
+		<result column="order_price" property="orderPrice" />
+		<result column="is_success" property="isSuccess" />
+		<result column="enable" property="enable" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="pay_time" property="payTime" />
+		<result column="tofront_account_id" property="tofrontAccountId" />
+		<result column="account_id" property="accountId" />
+		<result column="child_id" property="childId" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, tofront_plan_id AS tofrontPlanId, order_no AS orderNo, order_type AS orderType, order_price AS orderPrice, is_success AS isSuccess, enable, create_time AS createTime, update_time AS updateTime
+    </sql>
+
+</mapper>

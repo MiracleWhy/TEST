@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.FollowMapper">
+
+    <select id="getFollowOneCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_customer_flowmsg WHERE account_id=#{accountId}
+        <if test="childId !=null">
+            AND child_id=#{childId}
+        </if>
+        <if test="startDate!=null and endDate!=null">
+            AND DATE_FORMAT(create_time,'%Y-%m-%d') BETWEEN  DATE_FORMAT(#{startDate},'%Y-%m-%d') AND  DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        </if>
+    </select>
+
+    <select id="getFollowTotalCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_customer_flowmsg WHERE account_id=#{accountId}
+        <choose>
+            <when test="childs !=null and childs.size>0">
+                AND (child_id IN
+                <foreach collection="childs" item="child" open="(" separator="," close=")">
+                    #{child.id}
+                </foreach>
+                OR child_id=0)
+            </when>
+            <otherwise>
+                AND child_id=0
+            </otherwise>
+        </choose>
+        <if test="startDate!=null and endDate!=null">
+            AND DATE_FORMAT(create_time,'%Y-%m-%d') BETWEEN  DATE_FORMAT(#{startDate},'%Y-%m-%d') AND  DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        </if>
+    </select>
+</mapper>

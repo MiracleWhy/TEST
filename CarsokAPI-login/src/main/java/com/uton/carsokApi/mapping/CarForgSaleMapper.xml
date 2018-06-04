@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.CarForgSaleMapper" >
+    <select id="childId" resultType="java.lang.String">
+        select child_account_mobile from carsok_child_account where account_phone=(select account FROM carsok_acount  where id=#{id});
+    </select>
+
+    <select id="selectChildId" resultType="com.uton.carsokApi.model.ChildAccount">
+        select  id,
+        child_account_mobile childAccountMobile,
+        child_account_name childAccountName,
+        account_phone accountPhone,
+        alias,
+        create_time createTime,
+        update_time updateTime,
+        child_head_pic childHeadPic FROM carsok_child_account WHERE account_phone=#{phone}
+    </select>
+    <select id="selectOneChild" resultType="java.lang.Integer">
+        select id FROM carsok_child_account where child_account_mobile=#{phone}
+    </select>
+    <select id="countSaledCar" resultType="java.lang.Integer">
+        SELECT count(*) FROM carsok_customer_tenure_car WHERE account_id=#{accountId}
+        <if test="childId !=null">
+            AND child_id=#{childId}
+        </if>
+        <if test="startDate !=null and endDate !=null">
+         AND DATE_FORMAT(sale_time,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate},'%Y-%m-%d') AND DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        </if>
+        AND is_new_record=0
+    </select>
+    <select id="countSaledCarBefore" resultType="java.lang.Integer">
+        SELECT count(*) FROM carsok_customer_tenure_car WHERE account_id=#{accountId}
+        <if test="childId !=null">
+            AND child_id=#{childId}
+        </if>
+        <if test="type==1">
+            <![CDATA[ AND DATE_FORMAT(sale_time,'%Y-%m-%d') <= DATE_ADD(DATE_FORMAT(#{endDate},'%Y-%m-%d'),INTERVAL -1 DAY) ]]>
+        </if>
+        <if test="type==2">
+            <![CDATA[ AND DATE_FORMAT(sale_time,'%Y-%m-%d') <= DATE_ADD(DATE_FORMAT(#{endDate},'%Y-%m-%d'),INTERVAL -7 DAY) ]]>
+        </if>
+        <if test="type==3">
+            <![CDATA[ AND DATE_FORMAT(sale_time,'%Y-%m') <= DATE_ADD(DATE_FORMAT(#{endDate},'%Y-%m'),INTERVAL -1 MONTH) ]]>
+        </if>
+        <if test="type==4">
+            <![CDATA[ AND DATE_FORMAT(sale_time,'%Y') <= DATE_ADD(DATE_FORMAT(#{endDate},'%Y'),INTERVAL -1 YEAR) ]]>
+        </if>
+        AND is_new_record=0
+    </select>
+</mapper>

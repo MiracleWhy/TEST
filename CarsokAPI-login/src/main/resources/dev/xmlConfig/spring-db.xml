@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns="http://www.springframework.org/schema/beans"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:property-placeholder location="classpath:/properties/*.properties" />
+
+	<context:annotation-config />
+
+	<!-- 配置数据源 -->
+	<bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="100" />
+		<property name="maxWait" value="60000" /><!-- 等待时长 -->
+		<property name="filters" value="stat" />  <!-- 数据库监控 -->
+		<property name="validationQuery" value="SELECT user()" />
+		<property name="testWhileIdle" value="true" />
+		<property name="minEvictableIdleTimeMillis" value="1800000" />
+		<property name="numTestsPerEvictionRun" value="3" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="true" />
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!--basePackage指定要扫描的包，在此包之下的映射器都会被搜索到。可指定多个包，包与包之间用逗号或分号分隔 -->
+		<property name="basePackage" value="com.uton.carsokApi.dao" />
+	</bean>
+
+	<bean id="paginationInterceptor" class="com.uton.carsokApi.pagination.PaginationInterceptor">
+		<property name="dialect">
+			<bean class="com.uton.carsokApi.pagination.dialect.MySQLDialect" />
+		</property>
+		<property name="paginationSqlRegEx" value=".*ByPage.*" />
+	</bean>
+
+	<!-- 由于分页插件与mybatis plus分页插件bean存在冲突，因而不需要使用mybatis plus内置插件-->
+	<!-- Spring整合Mybatis，更多查看文档：http://mp.baomidou.com -->
+	<bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="plugins">
+			<array>
+				<ref bean="paginationInterceptor"></ref>
+				<bean id="paginationInterceptorbomidou" class="com.baomidou.mybatisplus.plugins.PaginationInterceptor">
+					<property name="dialectType" value="mysql" />
+					<property name="localPage" value="true" />
+				</bean>
+			</array>
+		</property>
+		<!-- 自动扫描Mapping.xml文件 -->
+		<property name="mapperLocations">
+		<array>
+			<value>classpath:/com/uton/carsokApi/mapping/*.xml</value>
+			<value>classpath:com/uton/carsokApi/mapping/baomidou/*.xml</value>
+		</array>
+		</property>
+		<property name="configLocation" value="classpath:/xmlConfig/mybatis-config.xml"/>
+		<property name="typeAliasesPackage" value="com.uton.carsokApi.model"/>
+		<!-- 全局配置注入 -->
+		<property name="globalConfig" ref="globalConfig" />
+	</bean>
+	<!-- MyBatis 动态扫描  -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.uton.carsokApi.dao"/>
+	</bean>
+	<bean id="globalConfig" class="com.baomidou.mybatisplus.entity.GlobalConfiguration">
+		<!--
+            AUTO->`0`("数据库ID自增")
+             INPUT->`1`(用户输入ID")
+            ID_WORKER->`2`("全局唯一ID")
+            UUID->`3`("全局唯一ID")
+        -->
+		<property name="idType" value="0" />
+		<!--
+			MYSQL->`mysql`
+			ORACLE->`oracle`
+			DB2->`db2`
+			H2->`h2`
+			HSQL->`hsql`
+			SQLITE->`sqlite`
+			POSTGRE->`postgresql`
+			SQLSERVER2005->`sqlserver2005`
+			SQLSERVER->`sqlserver`
+		-->
+		<!-- Oracle需要添加该项 -->
+		 <property name="dbType" value="mysql" />
+		<!-- 全局表为下划线命名设置 true -->
+		<!-- <property name="dbColumnUnderline" value="true" /> -->
+		<!--<property name="metaObjectHandler">-->
+			<!--<bean class="com.baomidou.springmvc.common.MyMetaObjectHandler" />-->
+		<!--</property>-->
+	</bean>
+	<!-- 注解方式配置事物 -->
+	<tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager" />
+	<!-- MyBatis 动态扫描  -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.baomidou.springmvc.mapper"/>
+	</bean>
+
+	<!-- 配置事务管理 -->
+	<bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<bean class="com.baomidou.mybatisplus.plugins.OptimisticLockerInterceptor"/>
+	<!-- 事务管理 属性 -->
+	<!--<tx:advice id="transactionAdvice" transaction-manager="transactionManager">-->
+		<!--<tx:attributes>-->
+			<!--<tx:method name="add*" propagation="REQUIRED" rollback-for="Exception"/>-->
+			<!--<tx:method name="append*" propagation="REQUIRED" rollback-for="Exception"/>-->
+			<!--<tx:method name="save*" propagation="REQUIRED" rollback-for="Exception"/>-->
+			<!--<tx:method name="update*" propagation="REQUIRED" rollback-for="Exception"/>-->
+			<!--<tx:method name="modify*" propagation="REQUIRED" rollback-for="Exception"/>-->
+			<!--<tx:method name="edit*" propagation="REQUIRED" rollback-for="Exception"/>-->
+			<!--<tx:method name="insert*" propagation="REQUIRED" rollback-for="Exception"/>-->
+			<!--<tx:method name="delete*" propagation="REQUIRED" rollback-for="Exception"/>-->
+			<!--<tx:method name="remove*" propagation="REQUIRED" rollback-for="Exception"/>-->
+			<!--<tx:method name="repair" propagation="REQUIRED" rollback-for="Exception"/>-->
+
+			<!--<tx:method name="get*" propagation="REQUIRED" read-only="true"/>-->
+			<!--<tx:method name="find*" propagation="REQUIRED" read-only="true"/>-->
+			<!--<tx:method name="load*" propagation="REQUIRED" read-only="true"/>-->
+			<!--<tx:method name="search*" propagation="REQUIRED" read-only="true"/>-->
+			<!--<tx:method name="datagrid*" propagation="REQUIRED" read-only="true"/>-->
+
+			<!--<tx:method name="*" propagation="REQUIRED"/>-->
+		<!--</tx:attributes>-->
+	<!--</tx:advice>-->
+
+	<!-- 配置切面 -->
+	<aop:config>
+		<aop:pointcut id="transactionPointcut" expression="execution(* com.uton.carsokApi.service..*.*(..))"/>
+		<!--<aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice"/>-->
+	</aop:config>
+
+
+</beans>

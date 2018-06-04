@@ -1,0 +1,715 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokProductMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokProduct">
+        <id column="id" property="id"/>
+        <result column="product_no" property="productNo"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_descr" property="productDescr"/>
+        <result column="search_key_words" property="searchKeyWords"/>
+        <result column="product_short_name" property="productShortName"/>
+        <result column="price" property="price"/>
+        <result column="miniprice" property="miniprice"/>
+        <result column="category" property="category"/>
+        <result column="openid" property="openid"/>
+        <result column="account_id" property="accountId"/>
+        <result column="primary_pic_id" property="primaryPicId"/>
+        <result column="on_shelf_status" property="onShelfStatus"/>
+        <result column="sale_status" property="saleStatus"/>
+        <result column="is_del" property="isDel"/>
+        <result column="on_shelf_time" property="onShelfTime"/>
+        <result column="off_shelf_time" property="offShelfTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="saled_people" property="saledPeople"/>
+        <result column="saled_price" property="saledPrice"/>
+        <result column="saled_type" property="saledType"/>
+        <result column="vin" property="vin"/>
+        <result column="maintain_info" property="maintainInfo"/>
+        <result column="business_if" property="businessIf"/>
+        <result column="reserve_if" property="reserveIf"/>
+        <result column="closeingPrice" property="closeingPrice"/>
+        <result column="consignment" property="consignment"/>
+        <result column="configuration" property="configuration"/>
+        <result column="seat_number" property="seatNumber"/>
+        <result column="exhaust" property="exhaust"/>
+        <result column="production_date" property="productionDate"/>
+        <result column="instore_date" property="instoreDate"/>
+        <result column="buy_type" property="buyType"/>
+        <result column="ariable_box" property="ariableBox"/>
+        <result column="condition" property="condition"/>
+        <result column="displacement" property="displacement"/>
+        <result column="car_id" property="carId"/>
+    </resultMap>
+
+    <resultMap id="inventoryList" type="com.uton.carsokApi.controller.response.InventoryResponse">
+        <id column="id" property="id"/>
+        <result column="car_brand" property="carBrand"/>
+        <result column="car_series" property="carSeries"/>
+        <result column="vin" property="vin"/>
+        <result column="displacement" property="displacement"/>
+        <result column="seat_number" property="seatNumber"/>
+        <result column="ariable_box" property="ariableBox"/>
+        <result column="exhaust" property="exhaust"/>
+        <result column="product_descr" property="productDescr"/>
+        <result column="production_date" property="productionDate"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_no" property="productNo"/>
+        <result column="pic_path" property="picPath"/>
+        <result column="configuration" property="configuration"/>
+        <result column="instore_date" property="instoreDate"/>
+        <result column="price" property="price"/>
+        <result column="car_id" property="carId"/>
+    </resultMap>
+    <resultMap id="carDetailsMap" type="com.uton.carsokApi.controller.response.CarDetailsResponse">
+        <id column="id" property="id"/>
+        <result column="car_brand" property="carBrand"/>
+        <result column="product_no" property="productNo"/>
+        <result column="car_series" property="carSeries"/>
+        <result column="vin" property="vin"/>
+        <result column="configuration" property="configuration"/>
+        <result column="displacement" property="displacement"/>
+        <result column="seat_number" property="seatNumber"/>
+        <result column="ariable_box" property="ariableBox"/>
+        <result column="exhaust" property="exhaust"/>
+        <result column="production_date" property="productionDate"/>
+        <result column="instore_date" property="instoreDate"/>
+        <result column="buy_type" property="buyType"/>
+        <result column="condition" property="condition"/>
+        <result column="miniprice" property="miniprice"/>
+        <result column="price" property="price"/>
+        <result column="sale_status" property="saleStatus"/>
+        <result column="product_descr" property="productDescr"/>
+        <collection property="picList" ofType="com.uton.carsokApi.controller.response.CarStockPic">
+            <id column="picId" property="id"/>
+            <result column="pic_path" property="picPath"/>
+            <result column="type" property="type"/>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, product_no AS productNo, product_name AS productName, product_descr AS productDescr, search_key_words AS searchKeyWords, product_short_name AS productShortName, price, miniprice, category, openid, account_id AS accountId, primary_pic_id AS primaryPicId, on_shelf_status AS onShelfStatus, sale_status AS saleStatus, is_del AS isDel, on_shelf_time AS onShelfTime, off_shelf_time AS offShelfTime, create_time AS createTime, update_time AS updateTime, saled_people AS saledPeople, saled_price AS saledPrice, saled_type AS saledType, vin, maintain_info AS maintainInfo, business_if AS businessIf, reserve_if AS reserveIf, closeingPrice, consignment, configuration, seat_number AS seatNumber, exhaust, production_date AS productionDate, instore_date AS instoreDate, buy_type AS buyType, ariable_box AS ariableBox, condition, displacement, car_id AS carId
+    </sql>
+    <!--库存管理列表查询-->
+    <select id="getInventoryList" resultMap="inventoryList">
+        SELECT
+        ccs.car_brand,
+        ccs.car_series,
+        cp.id,
+        cp.vin,
+        cp.product_no,
+        cp.displacement,
+        cp.seat_number,
+        cp.ariable_box,
+        cp.exhaust,
+        cp.product_descr,
+        DATE_FORMAT(cp.production_date, '%Y-%m-%d') AS production_date,
+        cp.product_name,
+        FORMAT(cp.price/10000,2) AS price,
+        cp.configuration,
+        DATE_FORMAT(cp.instore_date, '%Y-%m-%d') AS instore_date,
+        cp.car_id
+        FROM
+        carsok_product cp
+        LEFT JOIN carsok_car_stock ccs ON cp.car_id = ccs.id AND ccs.account_id = cp.account_id
+        WHERE cp.car_id is not null
+        AND cp.is_del = 0
+        AND cp.account_id = #{param.accountId}
+        AND cp.sale_status = #{param.saleStatus}
+        <if test="param.searchBy != '' and param.searchBy != null">
+            AND (ccs.car_brand LIKE CONCAT('%', #{param.searchBy}, '%') OR ccs.car_series LIKE CONCAT('%',
+            #{param.searchBy}, '%') OR cp.configuration LIKE CONCAT('%', #{param.searchBy}, '%'))
+        </if>
+        <if test="param.carBrand != '' and param.carBrand !=null and param.carBrand != '全部'">
+            AND ccs.car_brand LIKE CONCAT('%', #{param.carBrand}, '%')
+        </if>
+        <if test="param.carSeries != '' and param.carSeries !=null and param.carSeries != '全部'">
+            AND ccs.car_series LIKE CONCAT('%', #{param.carSeries}, '%')
+        </if>
+        <if test="param.productionStartDate != '' and param.productionEndDate != '' and param.productionStartDate != null and param.productionEndDate != null">
+            AND cp.production_date &gt;= #{param.productionStartDate} AND cp.production_date &lt;=
+            #{param.productionEndDate}
+        </if>
+        <if test="param.instoreStartDate != '' and param.instoreEndDate != '' and param.instoreStartDate != null and param.instoreEndDate != null">
+            AND cp.instore_date &gt;= #{param.instoreStartDate} AND cp.instore_date &lt;= #{param.instoreEndDate}
+        </if>
+        <if test="param.condition != '' and param.condition != null and param.condition != '全部'">
+            AND cp.condition LIKE CONCAT('%', #{param.condition}, '%')
+        </if>
+        <if test="param.proCustomer == 'yes' and param.saleStatus ==1">
+            AND cp.saled_people IS NULL
+        </if>
+        <if test="param.price == 1">
+            ORDER BY cp.price DESC
+        </if>
+        <if test="param.price == 2">
+            ORDER BY cp.price ASC
+        </if>
+        <if test="param.instoreDate == 2">
+            ORDER BY cp.id DESC
+        </if>
+        <if test="param.instoreDate == 1">
+            ORDER BY cp.id ASC
+        </if>
+        <if test="param.price == 0 and param.instoreDate == 0">
+            ORDER BY cp.create_time DESC
+        </if>
+    </select>
+
+    <select id="getPicList" resultType="com.uton.carsokApi.controller.response.CarStockPic">
+		SELECT id,pic_path AS picPath,type
+		FROM carsok_car_stock_picture
+		WHERE car_id = #{carId}
+	</select>
+    <!--查询在售数量-->
+    <select id="getOnSaleCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM
+        carsok_product cp
+        LEFT JOIN carsok_car_stock ccs ON cp.car_id = ccs.id AND ccs.account_id = cp.account_id
+        WHERE cp.car_id is not null
+        AND cp.is_del = 0
+        AND cp.account_id = #{param.accountId}
+        AND cp.sale_status = 0
+        <if test="param.searchBy != '' and param.searchBy != null">
+            AND (ccs.car_brand LIKE CONCAT('%', #{param.searchBy}, '%') OR ccs.car_series LIKE CONCAT('%',
+            #{param.searchBy}, '%') OR cp.configuration LIKE CONCAT('%', #{param.searchBy}, '%'))
+        </if>
+        <if test="param.carBrand != '' and param.carBrand !=null and param.carBrand != '全部'">
+            AND ccs.car_brand LIKE CONCAT('%', #{param.carBrand}, '%')
+        </if>
+        <if test="param.carSeries != '' and param.carSeries !=null and param.carSeries != '全部'">
+            AND ccs.car_series LIKE CONCAT('%', #{param.carSeries}, '%')
+        </if>
+        <if test="param.productionStartDate != '' and param.productionEndDate != '' and param.productionStartDate != null and param.productionEndDate != null">
+            AND cp.production_date &gt;= #{param.productionStartDate} AND cp.production_date &lt;=
+            #{param.productionEndDate}
+        </if>
+        <if test="param.instoreStartDate != '' and param.instoreEndDate != '' and param.instoreStartDate != null and param.instoreEndDate != null">
+            AND cp.instore_date &gt;= #{param.instoreStartDate} AND cp.instore_date &lt;= #{param.instoreEndDate}
+        </if>
+        <if test="param.condition != '' and param.condition != null and param.condition != '全部'">
+            AND cp.condition LIKE CONCAT('%', #{param.condition}, '%')
+        </if>
+    </select>
+    <select id="getSaledCount" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_product cp
+        LEFT JOIN carsok_car_stock ccs ON cp.car_id = ccs.id AND ccs.account_id = cp.account_id
+        WHERE cp.car_id is not null
+        AND cp.is_del = 0
+        AND cp.account_id = #{param.accountId}
+        AND cp.sale_status = 1
+        <if test="param.searchBy != '' and param.searchBy != null">
+            AND (ccs.car_brand LIKE CONCAT('%', #{param.searchBy}, '%') OR ccs.car_series LIKE CONCAT('%',
+            #{param.searchBy}, '%') OR cp.configuration LIKE CONCAT('%', #{param.searchBy}, '%'))
+        </if>
+        <if test="param.carBrand != '' and param.carBrand !=null and param.carBrand != '全部'">
+            AND ccs.car_brand LIKE CONCAT('%', #{param.carBrand}, '%')
+        </if>
+        <if test="param.carSeries != '' and param.carSeries !=null and param.carSeries != '全部'">
+            AND ccs.car_series LIKE CONCAT('%', #{param.carSeries}, '%')
+        </if>
+        <if test="param.productionStartDate != '' and param.productionEndDate != '' and param.productionStartDate != null and param.productionEndDate != null">
+            AND cp.production_date &gt;= #{param.productionStartDate} AND cp.production_date &lt;=
+            #{param.productionEndDate}
+        </if>
+        <if test="param.instoreStartDate != '' and param.instoreEndDate != '' and param.instoreStartDate != null and param.instoreEndDate != null">
+            AND cp.instore_date &gt;= #{param.instoreStartDate} AND cp.instore_date &lt;= #{param.instoreEndDate}
+        </if>
+        <if test="param.condition != '' and param.condition != null and param.condition != '全部'">
+            AND cp.condition LIKE CONCAT('%', #{param.condition}, '%')
+        </if>
+        <if test="param.proCustomer == 'yes'">
+            AND cp.saled_people IS NULL
+        </if>
+    </select>
+
+    <select id="getCarDetails" resultMap="carDetailsMap">
+		SELECT
+			cp.id,
+			ccs.car_brand,
+			ccs.car_series,
+			cp.vin,
+			cp.configuration,
+			cp.displacement,
+			cp.seat_number,
+			cp.ariable_box,
+			cp.exhaust,
+			cp.product_no,
+			DATE_FORMAT(cp.production_date, '%Y-%m-%d') AS production_date,
+			DATE_FORMAT(cp.instore_date, '%Y-%m-%d') AS instore_date,
+			cp.buy_type,
+			cp.condition,
+			FORMAT(cp.miniprice/10000,2) AS miniprice,
+			FORMAT(cp.price/10000,2) AS price,
+			cp.sale_status,
+			cp.product_descr,
+			ccsp.id AS picId,
+			ccsp.pic_path,
+			ccsp.type
+		FROM
+			carsok_product cp
+		LEFT JOIN carsok_car_stock ccs ON cp.car_id = ccs.id  AND ccs.account_id = cp.account_id
+		LEFT JOIN carsok_car_stock_picture ccsp ON cp.car_id = ccsp.car_id
+		WHERE cp.car_id is not null
+		AND cp.is_del = 0
+		AND cp.id = #{id}
+		ORDER BY ccsp.id DESC
+	</select>
+
+    <resultMap id="myResultMap1" type="com.uton.carsokApi.controller.response.IntentionCarsListResponse">
+
+        <result column="brand" property="brand"/>
+        <result column="series" property="series"/>
+        <result column="production_date" property="productionDate"/>
+        <result column="vin" property="vinSub"/>
+        <result column="pic_path" property="picPath"/>
+        <result column="model" property="model"/>
+        <result column="on_shelf_time" property="onShelfTime"/>
+        <result column="price" property="price"/>
+        <result column="miniprice" property="miniprice"/>
+        <result column="car_id" property="carId"/>
+        <result column="account_id" property="accountId"/>
+        <result column="browse_num_times" property="browseNumTimes"/>
+        <result column="tel_num_times" property="telNumTimes"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="is_merchant_audit" property="isMerchantAudit"/>
+        <result column="product_no" property="productNo"/>
+        <result column="product_no" property="productNo"/>
+    </resultMap>
+
+    <select id="getintentionCarsList" resultMap="myResultMap1">
+SELECT
+		    cp.id,
+			ccs.c_brand brand,
+			ccs.c_model series,
+			ccs.c_type model,
+			cp.vin,
+			DATE_FORMAT(ccs.first_up_time, '%Y-%m-%d') AS production_date,/*首次上牌时间*/
+			FORMAT(cp.price/10000,2) AS price,
+			cp.on_shelf_time,
+		   FORMAT(cp.miniprice/10000,2) AS miniprice
+
+		FROM
+		(
+
+
+SELECT
+			cp.id,
+			cp.car_id,
+			cp.vin,
+			DATE_FORMAT(cp.production_date, '%Y-%m-%d') AS production_date,
+			FORMAT(cp.price/10000,2) AS price,
+
+			DATE_FORMAT(cp.on_shelf_time, '%Y-%m-%d') AS on_shelf_time,
+		  FORMAT(cp.miniprice/10000,2) AS miniprice
+		FROM
+			carsok_product cp
+	     where cp.is_del = 0
+	     AND  cp.car_id is NULL
+	    AND cp.account_id = #{param.accountId}
+		AND cp.sale_status = #{param.saleStatus}
+		and cp.on_shelf_status=#{param.onShelfStatus}
+
+
+	) cp
+
+		LEFT JOIN carsok_pruduct_oldcar  ccs ON  ccs.pruduct_id = cp.id
+     order by on_shelf_time desc
+
+
+	</select>
+
+
+    <select id="getintentionCarsList_271" resultMap="myResultMap1">
+        SELECT
+        cp.id,
+        cp.account_id,
+        cp.product_no,
+        ccs.c_brand brand,
+        ccs.c_model series,
+        ccs.c_type model,
+        ccs.browse_num_times,
+        ccs.tel_num_times,
+        cp.merchant_name,
+        cp.is_merchant_audit,
+        cp.vin,
+        DATE_FORMAT(ccs.first_up_time, '%Y-%m-%d') AS production_date,
+        /*首次上牌时间*/
+        FORMAT(cp.price / 10000, 2) AS price,
+        cp.on_shelf_time,
+        FORMAT(cp.miniprice / 10000, 2) AS miniprice
+      FROM
+        (SELECT
+          cp.id,
+          cp.account_id,
+          cp.product_no,
+          cp.car_id,
+          cp.vin,
+          DATE_FORMAT(cp.production_date, '%Y-%m-%d') AS production_date,
+          FORMAT(cp.price / 10000, 2) AS price,
+          DATE_FORMAT(cp.on_shelf_time, '%Y-%m-%d') AS on_shelf_time,
+          FORMAT(cp.miniprice / 10000, 2) AS miniprice,
+          ca.is_merchant_audit,
+          ca.merchant_name
+        FROM
+          carsok_product cp
+          LEFT JOIN
+          carsok_acount ca
+          ON ca.id = cp.account_id
+        WHERE cp.is_del = 0
+          AND cp.car_id IS NULL
+          AND cp.account_id = #{accountId}
+          AND cp.sale_status = 0
+          AND cp.on_shelf_status = 1
+        ) cp
+        LEFT JOIN
+        carsok_pruduct_oldcar ccs
+        ON ccs.pruduct_id = cp.id
+        WHERE 1 = 1
+        <if test="param.productionStartDate != null and param.productionStartDate != '' ">
+            AND ccs.first_up_time &gt;=#{param.productionStartDate}
+        </if>
+        <if test="param.productionEndDate != null and param.productionEndDate != '' ">
+            AND ccs.first_up_time &lt;=#{param.productionEndDate}
+        </if>
+        <if test="param.searchKey != '' and param.searchKey != null ">
+            AND ccs.c_brand LIKE CONCAT('%', #{param.searchKey}, '%')
+            OR ccs.c_model LIKE CONCAT('%', #{param.searchKey}, '%')
+        </if>
+        ORDER BY
+        <if test="param.sorts == '' or param.sorts == null  or param.sorts ==0">
+            on_shelf_time DESC
+        </if>
+        <if test="param.sorts ==1 ">
+            cp.price ASC
+        </if>
+        <if test="param.sorts ==2 ">
+            cp.price DESC
+        </if>
+        <if test="param.sorts ==3 ">
+            ccs.first_up_time DESC
+        </if>
+        <if test="param.sorts ==4 ">
+            ccs.miles ASC
+        </if>
+    </select>
+
+
+    <select id="getintentionCarsListForAlly" resultMap="myResultMap1">
+        SELECT
+        cp.id,
+        cp.account_id,
+        cp.product_no,
+        ccs.c_brand brand,
+        ccs.c_model series,
+        ccs.c_type model,
+        ccs.browse_num_times,
+        ccs.tel_num_times,
+        cp.merchant_name,
+        cp.is_merchant_audit,
+        cp.vin,
+        DATE_FORMAT(ccs.first_up_time, '%Y-%m-%d') AS production_date,
+        /*首次上牌时间*/
+        FORMAT(cp.price / 10000, 2) AS price,
+        cp.on_shelf_time,
+        FORMAT(cp.miniprice / 10000, 2) AS miniprice
+      FROM
+        (SELECT
+          cp.id,
+          cp.account_id,
+          cp.product_no,
+          cp.car_id,
+          cp.vin,
+          DATE_FORMAT(cp.production_date, '%Y-%m-%d') AS production_date,
+          FORMAT(cp.price / 10000, 2) AS price,
+          DATE_FORMAT(cp.on_shelf_time, '%Y-%m-%d') AS on_shelf_time,
+          FORMAT(cp.miniprice / 10000, 2) AS miniprice,
+          ca.is_merchant_audit,
+          ca.merchant_name
+        FROM
+          carsok_product cp
+        LEFT JOIN
+        carsok_acount ca
+        ON ca.id = cp.account_id
+        WHERE cp.is_del = 0
+          AND cp.car_id IS NULL
+        <if test="accountIds != null and accountIds.size>0 ">
+            AND cp.account_id in
+            <foreach collection="accountIds" item="accountId" separator="," open="("
+                     close=")">
+                 #{accountId}
+            </foreach>
+        </if>
+          AND cp.sale_status = 0
+          AND cp.on_shelf_status = 1
+        ) cp
+        LEFT JOIN
+        carsok_pruduct_oldcar ccs
+        ON ccs.pruduct_id = cp.id
+        WHERE 1 = 1
+        <if test="param.productionStartDate != null and param.productionStartDate != '' ">
+            AND ccs.first_up_time &lt;=#{param.productionStartDate}
+        </if>
+        <if test="param.productionEndDate != null and param.productionEndDate != '' ">
+            AND ccs.first_up_time &gt;=#{param.productionEndDate}
+        </if>
+        <if test="param.searchKey != '' and param.searchKey != null ">
+            AND ccs.c_brand LIKE CONCAT('%', #{param.searchKey}, '%')
+            OR ccs.c_model LIKE CONCAT('%', #{param.searchKey}, '%')
+        </if>
+        ORDER BY
+        <if test="param.sorts == '' or param.sorts == null  or param.sorts ==0">
+            on_shelf_time DESC
+        </if>
+        <if test="param.sorts ==1 ">
+            cp.price ASC
+        </if>
+        <if test="param.sorts ==2 ">
+            cp.price DESC
+        </if>
+        <if test="param.sorts ==3 ">
+            ccs.first_up_time DESC
+        </if>
+        <if test="param.sorts ==4 ">
+            ccs.miles ASC
+        </if>
+    </select>
+
+
+
+
+
+
+
+    <select id="getCarsouceList" resultType="com.uton.carsokApi.controller.response.CarSourceResponse">
+        SELECT
+        cp.id AS productId,
+        cp.product_no AS productNo,
+        cp.price/10000 AS price,
+        cpo.c_brand AS brand,
+        cpo.c_model AS model,
+        cpo.c_type AS type,
+        DATE_FORMAT(cp.on_shelf_time,'%Y-%m') AS onShelfTime,
+        DATE_FORMAT(cpo.first_up_time,'%Y-%m-%d') AS productionDate,
+        cpo.miles AS miles,
+        ca.merchant_name AS merchantName,
+        ca.is_merchant_audit AS isMrchantAudit,
+        (SELECT COUNT(*) FROM carsok_bargain cb WHERE cb.product_id = cp.id ) AS bargain,
+        (SELECT id FROM carsok_car_collect ccc WHERE ccc.collect_product_id = cp.id AND ccc.account_id =#{param.accountId}
+        <if test="param.childId!= null">
+            and child_id = #{param.childId}
+        </if>
+        <if test="param.childId == null or param.childId ==''">
+            and child_id is null
+        </if> ) AS collectId,
+        (SELECT pic_path FROM carsok_picture WHERE product_id = cp.id AND type = 1 GROUP BY product_id) AS primarypic
+        FROM
+        carsok_product cp LEFT JOIN carsok_pruduct_oldcar cpo ON cp.id = cpo.pruduct_id
+        LEFT JOIN carsok_acount ca ON cp.account_id = ca.id
+        WHERE cp.is_del = 0
+        AND cp.car_id IS NULL
+        AND cp.sale_status = 0
+        <if test="param.search != '' and param.search != null ">
+            AND cpo.c_brand LIKE CONCAT('%', #{param.search}, '%')
+            OR cpo.c_model LIKE CONCAT('%', #{param.search}, '%')
+        </if>
+        <if test="param.brand != null">
+            AND cpo.c_brand in
+            <foreach collection="param.brand" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="param.province != '' and param.province != null and param.province != '全国' ">
+            AND cpo.province LIKE CONCAT('%', #{param.province}, '%')
+        </if>
+        <if test="param.city != '' and param.city != null and param.city != '全国' ">
+            AND cpo.city LIKE CONCAT('%', #{param.city}, '%')
+        </if>
+        <if test="param.productionStartDate != '' and param.productionStartDate != null ">
+            AND cpo.first_up_time &gt;=#{param.productionStartDate}
+        </if>
+        <if test="param.productionEndDate != '' and param.productionEndDate != null ">
+            AND cpo.first_up_time &lt;=#{param.productionEndDate}
+        </if>
+        ORDER BY
+        <if test="param.rank == '' or param.rank == null  or param.rank ==0">
+            cp.on_shelf_time DESC
+        </if>
+        <if test="param.rank ==1 ">
+            cp.price ASC
+        </if>
+        <if test="param.rank ==2 ">
+            cp.price DESC
+        </if>
+        <if test="param.rank ==3 ">
+            cpo.first_up_time DESC
+        </if>
+        <if test="param.rank ==4 ">
+            cpo.miles ASC
+        </if>
+        limit #{pn}, #{ps};
+    </select>
+
+
+
+    <select id="getTopCarSourceLsit" resultMap="topCarSourceListMap">
+SELECT
+	cp.id,
+	ccs.c_brand brand,
+	ccs.c_model model,
+	ccs.c_type ,
+	cp.vin,
+	DATE_FORMAT(
+		ccs.first_up_time,
+		'%Y-%m-%d'
+	) AS firstUpTime,
+	/*首次上牌时间*/
+	cp.price AS price,
+	cp.miniprice AS miniprice,
+	cp.on_shelf_time AS onShelfTime,
+      /*上架日期*/
+	DATEDIFF(
+		DATE_FORMAT(NOW(), '%Y-%m-%d'),
+		DATE_FORMAT(
+			cp.on_shelf_time,
+			'%Y-%m-%d'
+		)
+	) saleDays,
+	cpt.pic_path picPath,
+	FORMAT(ccs.miles / 10000, 2) AS miles,
+	ccs.browse_num_times AS  browseNumTimes,
+	ccs.tel_num_times AS  telNumTimes
+FROM
+	(
+		SELECT
+			cp.id,
+			cp.car_id,
+			cp.vin,
+			FORMAT(cp.price / 10000, 2) AS price,
+			cp.on_shelf_time AS on_shelf_time,
+			FORMAT(cp.miniprice / 10000, 2) AS miniprice
+		FROM
+			carsok_product cp
+		WHERE
+			cp.is_del = 0
+		AND cp.car_id IS NULL
+		AND cp.account_id = #{accountId}
+		AND cp.sale_status = 0
+		AND cp.on_shelf_status = 1
+        AND cp.id NOT IN (SELECT tofront_product_id FROM carsok_car_tofront where `enable` = 0)
+        ) cp
+LEFT JOIN carsok_pruduct_oldcar ccs ON ccs.pruduct_id = cp.id
+LEFT JOIN carsok_picture cpt ON cpt.product_id = cp.id
+AND cpt.type = 1
+where
+  1=1
+        <if test="productionStartDate != '' and productionStartDate != null ">
+            AND ccs.first_up_time &gt;=#{productionStartDate}
+        </if>
+
+        <if test="productionEndDate != '' and productionEndDate != null ">
+            AND ccs.first_up_time &lt;=#{productionEndDate}
+        </if>
+ORDER BY
+        <if test="rank == '' or rank == null  or rank ==0">
+            cp.on_shelf_time DESC
+        </if>
+        <if test="rank ==1 ">
+            cp.price ASC
+        </if>
+        <if test="rank ==2 ">
+            cp.price DESC
+        </if>
+        <if test="rank ==3 ">
+            ccs.first_up_time DESC
+        </if>
+        <if test="rank ==4 ">
+            ccs.miles ASC
+        </if>
+
+
+    </select>
+    <select id="getGrandTotalNew" resultType="java.lang.Integer">
+
+        SELECT COUNT(*) FROM v_product_count;
+
+    </select>
+    <select id="getAllyCarList" resultType="com.uton.carsokApi.controller.response.AllyCarListResponse">
+        SELECT
+		    cp.id,
+			ccs.c_brand brand,
+			ccs.c_model series,
+			ccs.c_type model,
+            ccs.miles,
+			DATE_FORMAT(ccs.first_up_time, '%Y-%m-%d') AS productionDate,/*首次上牌时间*/
+			cp.price AS price,
+			cp.on_shelf_time,
+           ca.merchant_name merchantName,
+           ca.is_merchant_audit isMerchantAudit
+		FROM
+		(
+SELECT
+			cp.id,
+			cp.car_id,
+			cp.vin,
+			DATE_FORMAT(cp.production_date, '%Y-%m-%d') AS production_date,
+			FORMAT(cp.price/10000,2) AS price,
+
+			DATE_FORMAT(cp.on_shelf_time, '%Y-%m-%d') AS on_shelf_time,
+		  FORMAT(cp.miniprice/10000,2) AS miniprice,
+          cp.account_id
+		FROM
+			carsok_product cp
+	     where cp.is_del = 0
+	     AND  cp.car_id is NULL
+	    AND cp.account_id IN
+        <foreach collection="accountIds" index="index" item="item"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+		AND cp.sale_status = #{param.saleStatus}
+		and cp.on_shelf_status=#{param.onShelfStatus}
+
+
+	) cp
+
+		LEFT JOIN carsok_pruduct_oldcar  ccs ON  ccs.pruduct_id = cp.id
+        LEFT JOIN carsok_acount ca on cp.account_id=ca.id
+        where 1=1
+        <if test="param.searchBy!=null and param.searchBy!=''">
+            and ccs.c_brand =#{param.searchBy}
+            or ccs.c_model=#{param.searchBy}
+            or  ccs.c_type=#{param.searchBy}
+        </if>
+     order by on_shelf_time desc
+
+    </select>
+
+    <resultMap id="topCarSourceListMap" type="com.uton.carsokApi.controller.response.TopCarSourceListResponse">
+        <id column="id" property="id"></id>
+        <result column="brand" property="brand"/>
+        <result column="c_type" property="type"/>
+        <result column="model" property="model"/>
+        <result column="onShelfTime" property="onShelfTime"/>
+        <result column="picPath" property="picPath"/>
+        <result column="firstUpTime" property="firstUpTime"/>
+        <result column="vin" property="vin"/>
+        <result column="miles" property="miles"/>
+        <result column="price" property="price"/>
+        <result column="miniprice" property="minPrice"/>
+        <result column="browseNumTimes" property="browseNumTimes"/>
+        <result column="telNumTimes" property="telNumTimes"/>
+        <result column="saleDays" property="saleDays"/>
+
+
+    </resultMap>
+</mapper>

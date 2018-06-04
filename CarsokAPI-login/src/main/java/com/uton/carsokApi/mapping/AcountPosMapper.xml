@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.AcountPosMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.AcountPos" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="account_id" property="accountId" jdbcType="INTEGER" />
+    <result column="account_code" property="accountCode" jdbcType="INTEGER" />
+    <result column="pos_login_account" property="posLoginAccount" jdbcType="VARCHAR" />
+    <result column="pos_login_passwd" property="posLoginPasswd" jdbcType="VARCHAR" />
+    <result column="pos_sn" property="posSn" jdbcType="VARCHAR" />
+    <result column="apply_status" property="applyStatus" jdbcType="SMALLINT" />
+    <result column="open_status" property="openStatus" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, account_id, account_code, pos_login_account, pos_login_passwd, pos_sn, apply_status, 
+    open_status, create_time, update_time
+  </sql>
+  
+  <select id="selectByModel" resultMap="BaseResultMap" parameterType="com.uton.carsokApi.model.AcountPos" >
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_account_pos
+    <where>
+   	 	<if test="id != null ">
+		and
+			id = #{id}
+		</if>
+    	<if test="accountId != null ">
+		and
+			account_id = #{accountId}
+		</if>
+	</where>
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from carsok_account_pos
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.uton.carsokApi.model.AcountPos" >
+    insert into carsok_account_pos (id, account_id, account_code, 
+      pos_login_account, pos_login_passwd, pos_sn, 
+      apply_status, open_status, create_time, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{accountCode,jdbcType=INTEGER}, 
+      #{posLoginAccount,jdbcType=VARCHAR}, #{posLoginPasswd,jdbcType=VARCHAR}, #{posSn,jdbcType=VARCHAR}, 
+      #{applyStatus,jdbcType=SMALLINT}, #{openStatus,jdbcType=SMALLINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.AcountPos" >
+    insert into carsok_account_pos
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="accountId != null" >
+        account_id,
+      </if>
+      <if test="accountCode != null" >
+        account_code,
+      </if>
+      <if test="posLoginAccount != null" >
+        pos_login_account,
+      </if>
+      <if test="posLoginPasswd != null" >
+        pos_login_passwd,
+      </if>
+      <if test="posSn != null" >
+        pos_sn,
+      </if>
+      <if test="applyStatus != null" >
+        apply_status,
+      </if>
+      <if test="openStatus != null" >
+        open_status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="accountId != null" >
+        #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="accountCode != null" >
+        #{accountCode,jdbcType=INTEGER},
+      </if>
+      <if test="posLoginAccount != null" >
+        #{posLoginAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="posLoginPasswd != null" >
+        #{posLoginPasswd,jdbcType=VARCHAR},
+      </if>
+      <if test="posSn != null" >
+        #{posSn,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        #{applyStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="openStatus != null" >
+        #{openStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.AcountPos" >
+    update carsok_account_pos
+    <set >
+      <if test="accountId != null" >
+        account_id = #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="accountCode != null" >
+        account_code = #{accountCode,jdbcType=INTEGER},
+      </if>
+      <if test="posLoginAccount != null" >
+        pos_login_account = #{posLoginAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="posLoginPasswd != null" >
+        pos_login_passwd = #{posLoginPasswd,jdbcType=VARCHAR},
+      </if>
+      <if test="posSn != null" >
+        pos_sn = #{posSn,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        apply_status = #{applyStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="openStatus != null" >
+        open_status = #{openStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.uton.carsokApi.model.AcountPos" >
+    update carsok_account_pos
+    set account_id = #{accountId,jdbcType=INTEGER},
+      account_code = #{accountCode,jdbcType=INTEGER},
+      pos_login_account = #{posLoginAccount,jdbcType=VARCHAR},
+      pos_login_passwd = #{posLoginPasswd,jdbcType=VARCHAR},
+      pos_sn = #{posSn,jdbcType=VARCHAR},
+      apply_status = #{applyStatus,jdbcType=SMALLINT},
+      open_status = #{openStatus,jdbcType=SMALLINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

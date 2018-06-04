@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokCustomerFlowmsgMapper">
+
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokCustomerFlowmsg">
+		<id column="id" property="id" />
+		<result column="customer_id" property="customerId" />
+		<result column="customer_flow_message" property="customerFlowMessage" />
+		<result column="create_time" property="createTime" />
+		<result column="status" property="status" />
+		<result column="push_time" property="pushTime" />
+		<result column="cust_come" property="custCome" />
+		<result column="account_id" property="accountId" />
+		<result column="child_id" property="childId" />
+		<result column="cus_service_follow" property="cusServiceFollow" />
+	</resultMap>
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, customer_id AS customerId, customer_flow_message AS customerFlowMessage, create_time AS createTime, status, push_time AS pushTime, cust_come AS custCome, account_id AS accountId, child_id AS childId, cus_service_follow AS cusServiceFollow
+    </sql>
+</mapper>

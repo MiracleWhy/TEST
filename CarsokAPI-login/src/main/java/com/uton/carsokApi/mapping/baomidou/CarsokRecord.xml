@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokRecordMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokRecord">
+		<id column="id" property="id" />
+		<result column="out_id" property="outId" />
+		<result column="from" property="from" />
+		<result column="to" property="to" />
+		<result column="message" property="message" />
+		<result column="model" property="model" />
+		<result column="type" property="type" />
+		<result column="account_id" property="accountId" />
+		<result column="child_id" property="childId" />
+		<result column="create_time" property="createTime" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, out_id AS outId, from, to, message, model, type, account_id AS accountId, child_id AS childId, create_time AS createTime
+    </sql>
+
+</mapper>

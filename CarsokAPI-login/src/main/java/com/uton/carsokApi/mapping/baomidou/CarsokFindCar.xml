@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokFindCarMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokFindCar">
+		<id column="id" property="id" />
+		<result column="intentional_no" property="intentionalNo" />
+		<result column="account_id" property="accountId" />
+		<result column="child_id" property="childId" />
+		<result column="brand" property="brand" />
+		<result column="brand_id" property="brandId" />
+		<result column="model" property="model" />
+		<result column="configuration" property="configuration" />
+		<result column="car_colour" property="carColour" />
+		<result column="linkman" property="linkman" />
+		<result column="linkphone" property="linkphone" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="first_up_time" property="firstUpTime" />
+		<result column="remark" property="remark" />
+		<result column="enable" property="enable" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="indoor_type" property="indoorType" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, intentional_no AS intentionalNo, account_id AS accountId, child_id AS childId, brand, brand_id AS brandId, model, configuration, car_colour AS carColour, linkman, linkphone, province, city, first_up_time AS firstUpTime, remark, enable, create_time AS createTime, update_time AS updateTime,indoor_type AS indoorType
+    </sql>
+
+	<select id="getFindCarList"  resultMap="FindCarListMap" >
+
+		SELECT
+		cfc.id,
+		cfc.brand,
+		cfc.model,
+		cfc.configuration,
+		cfc.indoor_type,
+		DATE_FORMAT(
+		cfc.create_time,
+		'%Y-%m-%d'
+		) AS create_time,
+		cfc.car_colour,
+		cfc.city,
+		cfc.province,
+		(SELECT COUNT(DISTINCT(cq.account_id))FROM carsok_quote cq WHERE cq.intentional_product_id = cfc.id ) AS quoteNum,
+		tcb.logo AS  primarypic
+		FROM
+		(
+		SELECT
+		*
+		FROM
+		carsok_find_car cfc
+		WHERE
+		cfc.`enable` = 0
+		<if test="province !=null and province !='' and province !='全国' ">
+			AND province= #{province}
+		</if>
+		<if test="city !=null and city !='' and city !='全国' ">
+			AND city= #{city}
+		</if>
+		<if test="search !=null and search !=''">
+			<bind name="pattern" value="'%' + search + '%'" />
+			AND ( brand LIKE #{pattern} OR model LIKE #{pattern} OR configuration LIKE #{pattern} )
+		</if>
+		) cfc
+		LEFT JOIN t_car_brand tcb ON cfc.brand_id = tcb.brand_id
+		ORDER BY cfc.create_time DESC
+	</select>
+
+	<resultMap id="FindCarListMap" type="com.uton.carsokApi.controller.response.CarFindUp">
+		<id column="id" property="id" />
+		<result column="brand" property="brand" />
+		<result column="model" property="model" />
+		<result column="configuration" property="configuration" />
+		<result column="car_colour" property="carColour" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="create_time" property="createTime" />
+		<result column="quoteNum" property="quoteNum" />
+		<result column="primarypic" property="primarypic" />
+		<result column="indoor_type" property="indoorType" />
+	</resultMap>
+
+
+
+	<select id="selectMsg" resultMap="selectMsgMap" >
+		SELECT
+			cfc.id,
+			cfc.model,
+			cfc.brand,
+			cfc.configuration,
+			cfc.linkman,
+			cfc.province,
+			cfc.city,
+			cfc.car_colour,
+			cfc.indoor_type,
+			cfc.linkphone,
+			DATE_FORMAT(
+				cfc.create_time,
+				"%Y-%m-%d %H:%i"
+			) AS createTime,
+			cfc.first_up_time,
+			cfc.remark,
+			cq.`name`,
+			DATE_FORMAT(
+				cq.create_time,
+				"%Y-%m-%d %H:%i"
+			) AS create_time
+		FROM
+			carsok_find_car cfc
+		LEFT JOIN carsok_quote cq ON cfc.id = cq.intentional_product_id
+		WHERE
+			cfc.id = #{id}
+	</select>
+	<resultMap id="selectMsgMap" type="com.uton.carsokApi.controller.response.FindCarMsgResponse">
+		<id column="id" property="id" />
+		<result column="brand" property="brand" />
+		<result column="model" property="model" />
+		<result column="configuration" property="configuration" />
+		<result column="car_colour" property="carColour" />
+		<result column="linkman" property="linkman" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="first_up_time" property="firstUpTime" />
+		<result column="remark" property="remark" />
+		<result column="createTime" property="createTime" />
+		<result column="linkphone" property="linkPhone" />
+		<result column="indoor_type" property="indoorType" />
+		<collection property="quoteList" ofType="com.uton.carsokApi.controller.response.CarsokQuoteResponse">
+			<result column="name" property="name"/>
+			<result column="create_time" property="createTime"/>
+		</collection>
+	</resultMap>
+</mapper>

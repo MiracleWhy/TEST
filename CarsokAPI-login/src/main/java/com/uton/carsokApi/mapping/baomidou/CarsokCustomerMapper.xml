@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokCustomerMapper">
+
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokCustomer">
+		<id column="id" property="id" />
+		<result column="mobile" property="mobile" />
+		<result column="name" property="name" />
+		<result column="sex" property="sex" />
+		<result column="birthday" property="birthday" />
+		<result column="source" property="source" />
+		<result column="age" property="age" />
+		<result column="address" property="address" />
+		<result column="job" property="job" />
+		<result column="personality" property="personality" />
+		<result column="link" property="link" />
+		<result column="before_car" property="beforeCar" />
+		<result column="remark" property="remark" />
+		<result column="in_time" property="inTime" />
+		<result column="out_time" property="outTime" />
+		<result column="in_number" property="inNumber" />
+		<result column="level" property="level" />
+		<result column="fail_reason" property="failReason" />
+		<result column="budget" property="budget" />
+		<result column="is_driving_test" property="isDrivingTest" />
+		<result column="area" property="area" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="visit_status" property="visitStatus" />
+		<result column="flowCount" property="flowCount" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="district" property="district" />
+		<collection ofType="com.uton.carsokApi.model.CarsokCustomerIntentionCar" property="carLists">
+			<result column="brand" jdbcType="VARCHAR" property="brand"/>
+			<result column="series" jdbcType="VARCHAR" property="series"/>
+			<result column="model" jdbcType="VARCHAR" property="model"/>
+		</collection>
+	</resultMap>
+
+	<resultMap id="BaseResultMap2" type="com.uton.carsokApi.controller.response.CarsokCustomerResponse">
+		<id column="id" property="id" />
+		<result column="mobile" property="mobile" />
+		<result column="name" property="name" />
+		<result column="sex" property="sex" />
+		<result column="birthday" property="birthday" />
+		<result column="source" property="source" />
+		<result column="age" property="age" />
+		<result column="address" property="address" />
+		<result column="job" property="job" />
+		<result column="personality" property="personality" />
+		<result column="link" property="link" />
+		<result column="before_car" property="beforeCar" />
+		<result column="remark" property="remark" />
+		<result column="in_time" property="inTime" />
+		<result column="out_time" property="outTime" />
+		<result column="in_number" property="inNumber" />
+		<result column="level" property="level" />
+		<result column="fail_reason" property="failReason" />
+		<result column="budget" property="budget" />
+		<result column="is_driving_test" property="isDrivingTest" />
+		<result column="area" property="area" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="visit_status" property="visitStatus" />
+		<result column="flowCount" property="flowCount" />
+		<result column="child_account_name" property="childAccountName" />
+		<result column="child_id" property="childId" />
+		<collection ofType="com.uton.carsokApi.model.CarsokCustomerIntentionCar" property="carLists">
+			<result column="brand" jdbcType="VARCHAR" property="brand"/>
+			<result column="series" jdbcType="VARCHAR" property="series"/>
+			<result column="model" jdbcType="VARCHAR" property="model"/>
+		</collection>
+	</resultMap>
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, mobile, name, sex, birthday, source, age, address, job, personality, link, before_car AS beforeCar, remark, in_time AS inTime, out_time AS outTime, in_number AS inNumber, level, fail_reason AS failReason, budget, is_driving_test AS isDrivingTest, area, create_time AS createTime, update_time AS updateTime
+    </sql>
+
+	<select id="selectLatentListByTab" resultMap="BaseResultMap2">
+		SELECT cc.id,
+		cc.mobile,
+		cc.NAME,
+		cc.in_time,
+		cc.LEVEL,
+		cc. flowCount , ccic.brand,ccic.series,ccic.model FROM
+		(SELECT
+		 cc.id,
+		 cc.mobile,
+		 cc.NAME,
+		 cc.in_time,
+		 cc.LEVEL,
+		 COUNT(ccf.id) flowCount
+		 FROM carsok_customer cc
+		 LEFT JOIN carsok_customer_flowmsg ccf ON ccf.customer_id = cc.id
+		 WHERE 1=1
+		 and cc.account_id = #{accountId}
+		 <if test="childId != 0">
+			 AND cc.child_id = #{childId}
+		 </if>
+		 <if test="type == 1">
+			 AND cc.visit_status != 1 AND cc.level NOT in('F0 战败待确认','F 战败')
+		 </if>
+		 <if test="type == 2">
+			 AND cc.visit_status = 30 AND cc.level NOT in('F0 战败待确认','F 战败')
+		 </if>
+		 <if test="type == 3">
+		 	 AND cc.visit_status = 1 AND cc.level NOT in('F0 战败待确认','F 战败')
+		 </if>
+		 <if test="type == 4">
+		   	 AND cc.level in('F0 战败待确认','F 战败')
+		 </if>
+		 GROUP BY cc.id
+		 ) cc
+		 LEFT JOIN carsok_customer_intention_car ccic ON ccic.customer_id=cc.id
+	</select>
+
+	<select id="selectTaskById" resultMap="BaseResultMap2">
+		SELECT
+		a.id,
+		a.mobile,
+		a.name,
+		a.in_time,
+		a.level,
+		a.child_id,
+		ccc.child_account_name,
+		COUNT( ccf.id ) flowCount,
+		ccic.brand,
+		ccic.series,
+		ccic.model
+		FROM
+		carsok_customer a
+		LEFT JOIN (SELECT * FROM carsok_customer_tenure_car GROUP BY customer_id) b ON b.customer_id = a.id
+		LEFT JOIN carsok_customer_flowmsg ccf ON ccf.customer_id = a.id
+		LEFT JOIN carsok_child_account ccc ON ccc.id = a.child_id
+		LEFT JOIN (SELECT * FROM carsok_customer_intention_car GROUP BY customer_id) ccic ON ccic.customer_id = a.id
+		WHERE ( b.is_new_record = 0 OR b.is_new_record IS NULL )
+		<if test="id == null or id == 0">
+			AND 1=0
+		</if>
+		<if test="id != null and id != 0">
+			AND a.id = #{id}
+		</if>
+		GROUP BY a.id
+		ORDER BY a.id DESC
+	</select>
+
+
+	<select id="selectLatentListByScreen" resultMap="BaseResultMap2">
+		SELECT
+		a.id,
+		a.mobile,
+		a.name,
+		a.in_time,
+		a.level,
+		a.child_id,
+		ccc.child_account_name,
+		COUNT( ccf.id ) flowCount,
+		ccic.brand,
+		ccic.series,
+		ccic.model
+		FROM
+		carsok_customer a
+		LEFT JOIN (SELECT * FROM carsok_customer_tenure_car GROUP BY customer_id) b ON b.customer_id = a.id
+		LEFT JOIN carsok_customer_flowmsg ccf ON ccf.customer_id = a.id
+		LEFT JOIN carsok_child_account ccc ON ccc.id = a.child_id
+		LEFT JOIN (SELECT * FROM carsok_customer_intention_car GROUP BY customer_id) ccic ON ccic.customer_id = a.id
+		WHERE ( b.is_new_record = 0 OR b.is_new_record IS NULL )
+		AND a.account_id = #{accountId}
+		<if test="times == 1">
+			AND DATE_FORMAT(a.create_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+		</if>
+		<if test="times == 2">
+			AND a.create_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+		</if>
+		<if test="times == 3">
+			AND DATE_FORMAT(a.create_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+		</if>
+		<if test="sources!=null and sources.size()!=0">
+			AND a.source IN
+			<foreach collection="sources" item="source" separator="," open="("
+					 close=")">
+				#{source}
+			</foreach>
+		</if>
+		<if test="levels!=null and levels.size()!=0">
+			AND a.level IN
+			<foreach collection="levels" item="level" separator="," open="("
+					 close=")">
+				#{level}
+			</foreach>
+		</if>
+		<if test="budgets!=null and budgets.size()!=0">
+			AND a.budget IN
+			<foreach collection="budgets" item="budget" separator="," open="("
+					 close=")">
+				#{budget}
+			</foreach>
+		</if>
+		<if test="power == 'qkjlkf' and childIds!=null and childIds.size()!=0 ">
+			AND a.child_id IN
+			<foreach collection="childIds" item="childId" separator="," open="("
+					 close=")">
+				#{childId}
+			</foreach>
+		</if>
+		<if test=" power == 'qkyxgw' ">
+			AND a.child_id = #{childId}
+		</if>
+		GROUP BY a.id
+		ORDER BY a.id DESC
+	</select>
+
+	<select id="selectLatentListBySearchKey" resultMap="BaseResultMap2">
+		SELECT
+		a.id,
+		a.mobile,
+		a.name,
+		a.in_time,
+		a.level,
+		a.child_id,
+		ccc.child_account_name,
+		COUNT( ccf.id ) flowCount,
+		ccic.brand,
+		ccic.series,
+		ccic.model
+		FROM
+		carsok_customer a
+		LEFT JOIN (SELECT * FROM carsok_customer_tenure_car GROUP BY customer_id) b ON b.customer_id = a.id
+		LEFT JOIN carsok_customer_flowmsg ccf ON ccf.customer_id = a.id
+		LEFT JOIN carsok_child_account ccc ON ccc.id = a.child_id
+		LEFT JOIN (SELECT * FROM carsok_customer_intention_car GROUP BY customer_id) ccic ON ccic.customer_id = a.id
+		WHERE ( b.is_new_record = 0 OR b.is_new_record IS NULL )
+		AND a.account_id = #{accountId}
+		<if test="childId != 0">
+			AND a.child_id = #{childId}
+		</if>
+		<if test=" select != null and select != '' ">
+			AND (
+			a.mobile LIKE CONCAT('%',#{select},'%')
+			OR a.name LIKE CONCAT('%',#{select},'%')
+			OR ccic.model LIKE CONCAT('%',#{select},'%')
+			OR a.level LIKE CONCAT('%',#{select},'%')
+			OR ccc.child_account_name LIKE CONCAT('%',#{select},'%')
+			)
+		</if>
+		GROUP BY a.id
+		ORDER BY a.id DESC
+	</select>
+
+	<select id="selectPowerByChildMobile" resultType="java.lang.String">
+		select power_name from carsok_account_power where child_id = #{childId}
+	</select>
+
+	<select id="selectTabCount" resultType="java.lang.Integer">
+		select count(*) from (
+		SELECT cc.id,
+		cc.mobile,
+		cc.NAME,
+		cc.in_time,
+		cc.LEVEL,
+		cc. flowCount , ccic.brand,ccic.series,ccic.model FROM
+		(SELECT
+		cc.id,
+		cc.mobile,
+		cc.NAME,
+		cc.in_time,
+		cc.LEVEL,
+		COUNT(ccf.id) flowCount
+		FROM carsok_customer cc
+		LEFT JOIN carsok_customer_flowmsg ccf ON ccf.customer_id = cc.id
+		WHERE 1=1
+		and cc.account_id = #{accountId}
+		<if test="childId != 0">
+			AND cc.child_id = #{childId}
+		</if>
+		<if test="type == 1">
+			AND cc.visit_status != 1 AND cc.level NOT in('F0 战败待确认','F 战败')
+		</if>
+		<if test="type == 2">
+			AND cc.visit_status = 30 AND cc.level NOT in('F0 战败待确认','F 战败')
+		</if>
+		<if test="type == 3">
+			AND cc.visit_status = 1 AND cc.level NOT in('F0 战败待确认','F 战败')
+		</if>
+		<if test="type == 4">
+			AND cc.level IN ('F0 战败待确认','F 战败')
+		</if>
+		GROUP BY cc.id
+		) cc
+		LEFT JOIN carsok_customer_intention_car ccic ON ccic.customer_id=cc.id GROUP BY cc.id )
+		ss
+	</select>
+
+
+
+	<update id="updateVisitStatus">
+		UPDATE carsok_customer
+		SET visit_status = ${visitStatus}
+		WHERE DATE_FORMAT(NOW(),'%Y-%m-%d') = DATE_ADD(DATE_FORMAT(create_time,'%Y-%m-%d'), INTERVAL ${dayStatus} DAY)
+	</update>
+
+	<update id="updateOverdue">
+		UPDATE carsok_customer
+		SET visit_status = 30
+		WHERE visit_status = 0
+	</update>
+
+	<update id="updateCustLevelById">
+		UPDATE carsok_customer SET level = #{level} WHERE id=${id}
+	</update>
+</mapper>

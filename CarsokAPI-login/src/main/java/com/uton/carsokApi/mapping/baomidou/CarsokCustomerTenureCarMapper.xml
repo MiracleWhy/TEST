@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokCustomerTenureCarMapper">
+
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokCustomerTenureCar">
+		<id column="id" property="id" />
+		<result column="tenure_carname" property="tenureCarname" />
+		<result column="tenure_vin" property="tenureVin" />
+		<result column="tenure_carnum" property="tenureCarnum" />
+		<result column="tenure_cartype" property="tenureCartype" />
+		<result column="tenure_compulsory" property="tenureCompulsory" />
+		<result column="tenure_business" property="tenureBusiness" />
+		<result column="tenure_maintain" property="tenureMaintain" />
+		<result column="tenure_Warranty" property="tenureWarranty" />
+		<result column="tenure_carprice" property="tenureCarprice" />
+		<result column="product_id" property="productId" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="enable" property="enable" />
+		<result column="sale_people" property="salePeople" />
+		<result column="car_miles" property="carMiles" />
+		<result column="sale_time" property="saleTime" />
+		<result column="account_id" property="accountId" />
+		<result column="child_id" property="childId" />
+		<result column="brand" property="brand" />
+		<result column="three_status" property="threeStatus" />
+		<result column="seven_status" property="sevenStatus" />
+		<result column="customer_id" property="customerId" />
+		<result column="purchase_status" property="purchaseStatus" />
+		<result column="is_driving_test" property="isDrivingTest" />
+		<result column="is_bussiness" property="isBussiness" />
+		<result column="is_new_record" property="isNewRecord" />
+		<result column="remark" property="remark" />
+	</resultMap>
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, tenure_carname AS tenureCarname, tenure_vin AS tenureVin, tenure_carnum AS tenureCarnum, tenure_cartype AS tenureCartype, tenure_compulsory AS tenureCompulsory, tenure_business AS tenureBusiness, tenure_maintain AS tenureMaintain, tenure_Warranty AS tenureWarranty, tenure_carprice AS tenureCarprice, product_id AS productId, create_time AS createTime, update_time AS updateTime, enable, sale_people AS salePeople, car_miles AS carMiles, sale_time AS saleTime, account_id AS accountId, child_id AS childId, brand, three_status AS threeStatus, seven_status AS sevenStatus, customer_id AS customerId, purchase_status AS purchaseStatus, is_driving_test AS isDrivingTest, is_bussiness AS isBussiness, is_new_record AS isNewRecord, remark
+    </sql>
+</mapper>

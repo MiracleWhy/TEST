@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokQuoteMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokQuote">
+		<id column="id" property="id" />
+		<result column="intentional_product_id" property="intentionalProductId" />
+		<result column="name" property="name" />
+		<result column="mobile" property="mobile" />
+		<result column="intentional_price" property="intentionalPrice" />
+		<result column="create_time" property="createTime" />
+		<result column="remark" property="remark" />
+		<result column="account_id" property="accountId" />
+		<result column="child_id" property="childId" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, intentional_product_id AS intentionalProductId, name, mobile, intentional_price AS intentionalPrice, create_time AS createTime, remark, account_id AS accountId, child_id AS childId
+    </sql>
+
+	<!--通过id获取详细报价信息-->
+	<select id="getQuoteMessageById" resultType="com.uton.carsokApi.controller.response.CarsokQuoteDetailsResponse">
+		SELECT
+		cq.id,
+		cq.name,
+		cq.mobile,
+		cq.intentional_price AS intentionalPrice,
+		cq.remark,
+		cfc.brand,
+		cfc.model,
+		cfc.configuration,
+		cfc.indoor_type AS indoorType,
+		DATE_FORMAT(cfc.create_time, '%Y-%m-%d') AS createTime,
+		cfc.car_colour AS carColour,
+		cfc.province,
+		cfc.city,
+		(SELECT COUNT(DISTINCT(cqa.account_id)) FROM carsok_quote cqa  WHERE cqa.intentional_product_id = cfc.id) AS quoteCount,
+		(SELECT logo FROM t_car_brand WHERE brand_id = cfc.brand_id) AS brandLogo
+		FROM
+		carsok_quote cq
+		LEFT JOIN carsok_find_car cfc ON cq.intentional_product_id = cfc.id
+		WHERE cq.id = #{id}
+	</select>
+
+
+	<select id="getQuoteMessageList" resultType="com.uton.carsokApi.controller.response.CarsokQuoteListResponse">
+		SELECT
+		cq.create_time AS createTime,
+		cq.name,
+		ccp.quote_id AS quoteId
+		FROM
+		carsok_content_push ccp
+		LEFT JOIN carsok_quote cq
+		ON ccp.quote_id = cq.id
+		WHERE content_type = 'quoteMessage'
+		AND ccp.push_to = #{accountId}
+		AND cq.create_time &gt; #{createTime}
+		ORDER BY ccp.create_time DESC
+	</select>
+</mapper>

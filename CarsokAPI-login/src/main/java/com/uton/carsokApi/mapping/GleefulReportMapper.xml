@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.GleefulReportMapper">
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.GleefulReport">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="pic_list" jdbcType="VARCHAR" property="picList" />
+    <result column="enable" jdbcType="INTEGER" property="enable" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap id="GleefulReportResultMap" type="com.uton.carsokApi.controller.response.GleefulReportResponse" extends="BaseResultMap">
+    <result column="share_count" jdbcType="INTEGER" property="shareCount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, account_id, title, date, type, content, pic_list, enable, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from carsok_gleeful_report
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from carsok_gleeful_report
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.uton.carsokApi.model.GleefulReport" useGeneratedKeys="true" keyProperty="id">
+    insert into carsok_gleeful_report (id, account_id, title,
+      date, type, content, 
+      pic_list, enable, create_time, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
+      #{date,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{picList,jdbcType=VARCHAR}, 1,now(),
+      now())
+  </insert>
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.GleefulReport">
+    insert into carsok_gleeful_report
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="date != null">
+        date,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="picList != null">
+        pic_list,
+      </if>
+      <if test="enable != null">
+        enable,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="accountId != null">
+        #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="date != null">
+        #{date,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="picList != null">
+        #{picList,jdbcType=VARCHAR},
+      </if>
+      <if test="enable != null">
+        #{enable,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.GleefulReport">
+    update carsok_gleeful_report
+    <set>
+      <if test="accountId != null">
+        account_id = #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="date != null">
+        date = #{date,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="picList != null">
+        pic_list = #{picList,jdbcType=VARCHAR},
+      </if>
+      <if test="enable != null">
+        enable = #{enable,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.uton.carsokApi.model.GleefulReport">
+    update carsok_gleeful_report
+    set account_id = #{accountId,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      date = #{date,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      pic_list = #{picList,jdbcType=VARCHAR},
+      enable = #{enable,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getGleefulReportList" resultMap="GleefulReportResultMap">
+    SELECT
+	a.*,count(b.id) as share_count
+    FROM
+        carsok_gleeful_report a
+    <choose>
+      <when test="sharer!=null and sharer !=''">
+        LEFT JOIN (select * from carsok_share_record where sharer=#{sharer}) b ON a.id = b.share_id
+      </when>
+      <otherwise>
+        LEFT JOIN carsok_share_record b ON a.id = b.share_id
+      </otherwise>
+    </choose>
+    AND a.type = b.share_type
+    WHERE
+        a.account_id = #{accountId}
+    AND DATE_FORMAT(a.create_time, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate}, '%Y-%m-%d')
+    AND DATE_FORMAT(#{endDate}, '%Y-%m-%d')
+    GROUP BY a.id
+    order by a.create_time DESC
+  </select>
+
+  <select id="getGleefulSharedRecordCount" resultType="java.lang.Integer">
+    SELECT count(*)
+    FROM carsok_content_push a, carsok_gleeful_report b
+    LEFT JOIN carsok_share_record c
+    ON c.share_id = b.id
+    WHERE a.content_type = 'taskXB'
+    AND a.push_to = #{sharer}
+    AND b.id = a.xibao_id
+    AND c.id IS NULL
+    AND a.enable = 1
+  </select>
+
+  <select id="selectFirstReportByAccountId" resultMap="BaseResultMap">
+    SELECT *
+    FROM carsok_gleeful_report cgr
+    WHERE cgr.account_id = #{accountId}
+    ORDER BY create_time DESC
+    LIMIT #{start},#{end}
+  </select>
+</mapper>

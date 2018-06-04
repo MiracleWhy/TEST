@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.ProductMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.Product" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="product_no" property="productNo" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_descr" property="productDescr" jdbcType="VARCHAR" />
+    <result column="search_key_words" property="searchKeyWords" jdbcType="VARCHAR" />
+    <result column="product_short_name" property="productShortName" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="miniprice" property="miniprice" jdbcType="DECIMAL" />
+    <result column="saled_price" property="saledPrice" jdbcType="DECIMAL" />
+    <result column="category" property="category" jdbcType="INTEGER" />
+    <result column="account_id" property="accountId" jdbcType="INTEGER" />
+    <result column="primary_pic_id" property="primaryPicId" jdbcType="INTEGER" />
+    <result column="on_shelf_status" property="onShelfStatus" jdbcType="SMALLINT" />
+    <result column="sale_status" property="saleStatus" jdbcType="SMALLINT" />
+    <result column="is_del" property="isDel" jdbcType="SMALLINT" />
+    <result column="on_shelf_time" property="onShelfTime" jdbcType="TIMESTAMP" />
+    <result column="off_shelf_time" property="offShelfTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="maintain_info" property="maintainInfo" jdbcType="VARCHAR" />
+    <result column="vin" property="vin" jdbcType="VARCHAR" />
+    <result column="business_if" property="businessIf" jdbcType="INTEGER" />
+    <result column="reserve_if" property="reserveIf" jdbcType="INTEGER" />
+      <result column="closeingPrice" property="closeingPrice" jdbcType="DECIMAL" />
+      <result column="consignment" property="consignment" jdbcType="INTEGER"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, product_no, product_name, product_descr, search_key_words, product_short_name, 
+    price,miniprice, category, account_id, primary_pic_id, on_shelf_status, sale_status, is_del, 
+    on_shelf_time, off_shelf_time, create_time, update_time,maintain_info,vin,business_if,reserve_if,closeingPrice,consignment
+  </sql>
+  <select id="selectByModel" resultMap="BaseResultMap" parameterType="com.uton.carsokApi.model.Product" >
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_product
+    <where>
+		<if test="id != null ">
+		and
+			id = #{id}
+		</if>
+		<if test="accountId != null ">
+		and
+			account_id = #{accountId}
+		</if>
+		<if test="onShelfStatus != null ">
+		and
+			on_shelf_status = #{onShelfStatus}
+		</if>
+		<if test="saleStatus != null ">
+		and
+			sale_status = #{saleStatus}
+		</if>
+		<if test="isDel != null ">
+		and
+			is_del = #{isDel}
+		</if>
+	</where>
+  </select>
+  
+  <select id="selectByPage" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from carsok_product
+    <where>
+		<if test="acountId != null ">
+		and
+			account_id = #{acountId}
+		</if>
+		<if test="onShelfStatus != null and onShelfStatus ==4">
+		and
+			on_shelf_status !=1
+		</if>
+		<if test="onShelfStatus != null and onShelfStatus !=4">
+		and
+			on_shelf_status = #{onShelfStatus}
+		</if>
+		<if test="saleStatus != null ">
+		and
+			sale_status = #{saleStatus}
+		</if>
+		<if test="isDel != null ">
+		and
+			is_del = #{isDel}
+		</if>
+	    <if test="maxPrice != null">
+		and
+		    price &lt;= #{maxPrice}*10000
+	    </if>
+	    <if test="minPrice != null">
+		and
+		    price >= #{minPrice}*10000
+	    </if>
+        <if test="proCustomer == 'yes' and saleStatus ==1">
+            AND saled_people is  NULL
+        </if>
+	</where>
+	  ORDER BY
+	  <if test="sort == 0 or sort == null">
+          update_time DESC
+	  </if>
+	  <if test="sort == 1">
+		  price DESC
+	  </if>
+	  <if test="sort == 2">
+		  price ASC
+	  </if>
+      <if test="sort==3">
+          on_shelf_time ASC
+      </if>
+      <if test="sort==4">
+          on_shelf_time DESC
+      </if>
+	limit #{curPage}, #{pageSize};
+  </select>
+
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="java.util.Map">
+  		 select 
+    <include refid="Base_Column_List" />
+    from carsok_product
+      <where>
+          <if test="acountId != null ">
+              and
+              account_id = #{acountId}
+          </if>
+          <if test="onShelfStatus != null and onShelfStatus ==4">
+              and
+              on_shelf_status !=1
+          </if>
+          <if test="onShelfStatus != null and onShelfStatus !=4">
+              and
+              on_shelf_status = #{onShelfStatus}
+          </if>
+          <if test="saleStatus != null ">
+              and
+              sale_status = #{saleStatus}
+          </if>
+          <if test="isDel != null ">
+              and
+              is_del = #{isDel}
+          </if>
+          <if test="productName != null ">
+              and
+              product_name like CONCAT('%', #{productName}, '%')
+          </if>
+	      <if test="maxPrice != null">
+		      and
+		      price &lt;= #{maxPrice}*10000
+	      </if>
+	      <if test="minPrice != null">
+		      and
+		      price >= #{minPrice}*10000
+	      </if>
+          /*潜客购车标识符*/
+          <if test="proCustomer == 'yes' and saleStatus ==1">
+              AND saled_people is  NULL
+          </if>
+      </where>
+	  ORDER BY
+	  <if test="sort == 0 or sort == null">
+		  create_time DESC
+	  </if>
+	  <if test="sort == 1">
+		  price DESC
+	  </if>
+	  <if test="sort == 2">
+		  price ASC
+	  </if>
+      <if test="sort==3">
+          on_shelf_time ASC
+      </if>
+      <if test="sort==4">
+          on_shelf_time DESC
+      </if>
+  </select>
+
+  <select id="selectOnsaleCount" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_product
+    <where>
+		<if test="acountId != null ">
+		and
+			account_id = #{acountId}
+		</if>
+		<if test="onShelfStatus != null and onShelfStatus ==4">
+		and
+			on_shelf_status !=1
+		</if>
+		<if test="onShelfStatus != null and onShelfStatus !=4">
+		and
+			on_shelf_status = #{onShelfStatus}
+		</if>
+		<if test="saleStatus != null ">
+		and
+			sale_status = #{saleStatus}
+		</if>
+		<if test="isDel != null ">
+		and
+			is_del = #{isDel}
+		</if>
+	</where>
+  </select>
+   
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from carsok_product
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.Product" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into carsok_product
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="productNo != null" >
+        product_no,
+      </if>
+      <if test="productName != null" >
+        product_name,
+      </if>
+      <if test="productDescr != null" >
+        product_descr,
+      </if>
+      <if test="searchKeyWords != null" >
+        search_key_words,
+      </if>
+      <if test="productShortName != null" >
+        product_short_name,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="miniprice != null" >
+        miniprice,
+      </if>
+      <if test="category != null" >
+        category,
+      </if>
+      <if test="accountId != null" >
+        account_id,
+      </if>
+      <if test="primaryPicId != null" >
+        primary_pic_id,
+      </if>
+      <if test="onShelfStatus != null" >
+        on_shelf_status,
+      </if>
+      <if test="saleStatus != null" >
+        sale_status,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+      <if test="onShelfTime != null" >
+        on_shelf_time,
+      </if>
+      <if test="offShelfTime != null" >
+        off_shelf_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+	  <if test="maintainInfo != null" >
+		  maintain_info,
+	  </if>
+	  <if test="vin != null" >
+	    vin,
+	  </if>
+        <if test="closeingPrice != null" >
+            closeingPrice,
+        </if>
+        <if test="consignment != null" >
+            consignment,
+        </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="productNo != null" >
+        #{productNo,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productDescr != null" >
+        #{productDescr,jdbcType=VARCHAR},
+      </if>
+      <if test="searchKeyWords != null" >
+        #{searchKeyWords,jdbcType=VARCHAR},
+      </if>
+      <if test="productShortName != null" >
+        #{productShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="miniprice != null" >
+        #{miniprice,jdbcType=DECIMAL},
+      </if>
+      <if test="category != null" >
+        #{category,jdbcType=INTEGER},
+      </if>
+      <if test="accountId != null" >
+        #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="primaryPicId != null" >
+        #{primaryPicId,jdbcType=INTEGER},
+      </if>
+      <if test="onShelfStatus != null" >
+        #{onShelfStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="saleStatus != null" >
+        #{saleStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=SMALLINT},
+      </if>
+      <if test="onShelfTime != null" >
+        #{onShelfTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="offShelfTime != null" >
+        #{offShelfTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+	  <if test="maintainInfo != null" >
+	    #{maintainInfo,jdbcType=VARCHAR},
+	  </if>
+	  <if test="vin != null" >
+	    #{vin,jdbcType=VARCHAR},
+	  </if>
+        <if test="closeingPrice != null" >
+            #{closeingPrice,jdbcType=DECIMAL},
+        </if>
+        <if test="consignment != null" >
+            #{consignment,jdbcType=INTEGER},
+        </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByModel" parameterType="com.uton.carsokApi.model.Product" >
+    update carsok_product
+    <set >
+      <if test="productNo != null" >
+        product_no = #{productNo,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productDescr != null" >
+        product_descr = #{productDescr,jdbcType=VARCHAR},
+      </if>
+      <if test="searchKeyWords != null" >
+        search_key_words = #{searchKeyWords,jdbcType=VARCHAR},
+      </if>
+      <if test="productShortName != null" >
+        product_short_name = #{productShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="miniprice != null" >
+        miniprice = #{miniprice,jdbcType=DECIMAL},
+      </if>
+      <if test="category != null" >
+        category = #{category,jdbcType=INTEGER},
+      </if>
+      <if test="accountId != null" >
+        account_id = #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="primaryPicId != null" >
+        primary_pic_id = #{primaryPicId,jdbcType=INTEGER},
+      </if>
+      <if test="onShelfStatus != null" >
+        on_shelf_status = #{onShelfStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="saleStatus != null" >
+        sale_status = #{saleStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=SMALLINT},
+      </if>
+      <if test="onShelfTime != null" >
+        on_shelf_time = #{onShelfTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="offShelfTime != null" >
+        off_shelf_time = #{offShelfTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saledPeople != null" >
+        saled_people = #{saledPeople,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saledPrice != null" >
+        saled_price = #{saledPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="saledType != null" >
+        saled_type = #{saledType,jdbcType=INTEGER},
+      </if>
+	  <if test="maintainInfo != null" >
+		  maintain_info = #{maintainInfo,jdbcType=VARCHAR},
+	  </if>
+	  <if test="vin != null" >
+	    vin = #{vin,jdbcType=VARCHAR},
+	  </if>
+      <if test="businessIf != null" >
+          business_if = #{businessIf,jdbcType=INTEGER},
+      </if>
+      <if test="closeingPrice != null" >
+            closeingPrice=#{closeingPrice,jdbcType=DECIMAL},
+      </if>
+        <if test="consignment != null" >
+            consignment=#{consignment,jdbcType=INTEGER},
+        </if>
+    </set>
+    <where>
+		<if test="id != null ">
+		and
+			id = #{id}
+		</if>
+		<if test="accountId != null ">
+		and
+			account_id = #{accountId}
+		</if>
+	</where>
+  </update>
+
+<select id="selectNewCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+	SELECT COUNT(*) FROM carsok_product WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+	AND account_id = #{accountId,jdbcType=INTEGER}
+</select>  
+
+<select id="selectSaleCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+	SELECT COUNT(*) FROM carsok_product WHERE sale_status=1 AND DATE_FORMAT(update_time, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+	AND account_id = #{accountId,jdbcType=INTEGER}
+</select> 
+<select id="selectCountByStatus" parameterType="java.util.Map" resultType="java.util.HashMap">
+	select count(if(sale_status=1,true,null)) saleCount,count(if(sale_status=0 and on_shelf_status=1,true,null)) unSaleCount ,count(if(on_shelf_status!=1,true,null)) unOnSelfCount from carsok_product 
+		where is_del = #{isDel} and account_id= #{acountId}
+			<if test="productName != null">
+		 		and product_name like CONCAT('%', #{productName}, '%')
+			</if>
+</select>
+    <select id="selectCountByStatusForQianke" parameterType="java.util.Map" resultType="java.util.HashMap">
+        select count(if(sale_status=1  and saled_people is null,true,null)) saleCount,count(if(sale_status=0 and on_shelf_status=1,true,null)) unSaleCount ,count(if(on_shelf_status!=1,true,null)) unOnSelfCount from carsok_product
+        where is_del = #{isDel} and account_id= #{acountId}
+        <if test="productName != null">
+            and product_name like CONCAT('%', #{productName}, '%')
+        </if>
+    </select>
+
+	<select id="queryPutAwayCountByDay" resultType="java.util.HashMap">
+		SELECT DATE_FORMAT(cp.on_shelf_time, '%Y-%m-%d') days,
+			   count(IF(cp.on_shelf_status = '1' AND cp.sale_status = '0' AND cp.is_del = '0',TRUE,NULL)) count
+		FROM carsok_product cp
+		WHERE DATE_FORMAT(cp.on_shelf_time,'%Y-%m-%d') >= DATE_SUB(DATE_FORMAT(NOW(),'%Y%m%d'),INTERVAL 6 DAY)
+		AND cp.account_id IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		GROUP BY days
+		ORDER BY 1 DESC
+	</select>
+
+	<select id="querySoldCountByDay" resultType="java.util.HashMap">
+		SELECT DATE_FORMAT(cp.update_time, '%Y-%m-%d') days,
+			   count(IF(cp.sale_status = '1' AND cp.is_del = '0',TRUE,NULL)) count
+		FROM carsok_product cp
+		WHERE DATE_FORMAT(cp.update_time,'%Y-%m-%d') >= DATE_SUB(DATE_FORMAT(NOW(),'%Y%m%d'),INTERVAL 6 DAY)
+		AND cp.account_id IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		GROUP BY days
+		ORDER BY 1 DESC
+	</select>
+
+	<select id="queryRepertoryCount" resultType="java.lang.Integer">
+		SELECT 	count(IF(cp.on_shelf_status = '1' AND cp.sale_status = '0' AND cp.is_del = '0',TRUE,NULL)) count
+		FROM carsok_product cp
+		WHERE cp.account_id IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		ORDER BY 1 DESC
+	</select>
+
+	<select id="queryPutAwayCountByWeek" resultType="java.util.HashMap">
+		SELECT DATE_FORMAT(cp.on_shelf_time, '%Y-%u') weeks,
+			   count(IF(cp.on_shelf_status = '1' AND cp.sale_status = '0' AND cp.is_del = '0',TRUE,NULL)) count
+		FROM carsok_product cp
+		WHERE DATE_FORMAT(cp.on_shelf_time,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m')
+		AND cp.account_id IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		GROUP BY weeks
+		ORDER BY 1 DESC
+	</select>
+
+	<select id="querySoldCountByWeek" resultType="java.util.HashMap">
+		SELECT DATE_FORMAT(cp.update_time, '%Y-%u') weeks,
+			   count(IF(cp.sale_status = '1' AND cp.is_del = '0',TRUE,NULL)) count
+		FROM carsok_product cp
+		WHERE DATE_FORMAT(cp.update_time,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m')
+		AND cp.account_id IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		GROUP BY weeks
+		ORDER BY 1 DESC
+	</select>
+
+	<select id="queryPutAwayCountByMonth" resultType="java.util.HashMap">
+		SELECT DATE_FORMAT(cp.on_shelf_time, '%Y-%m') mon,
+			   count(IF(cp.on_shelf_status = '1' AND cp.sale_status = '0' AND cp.is_del = '0',TRUE,NULL)) count
+		FROM carsok_product cp
+		WHERE DATE_FORMAT(cp.on_shelf_time,'%Y') = DATE_FORMAT(NOW(),'%Y')
+		AND cp.account_id IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		GROUP BY mon
+		ORDER BY 1 DESC
+	</select>
+
+	<select id="querySoldCountByMonth" resultType="java.util.HashMap">
+		SELECT DATE_FORMAT(cp.update_time, '%Y-%m') mon,
+		count(IF(cp.sale_status = '1' AND cp.is_del = '0',TRUE,NULL)) count
+		FROM carsok_product cp
+		WHERE DATE_FORMAT(cp.update_time,'%Y') = DATE_FORMAT(NOW(),'%Y')
+		AND cp.account_id IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		GROUP BY mon
+		ORDER BY 1 DESC
+	</select>
+<select id="selectByIdForUpdate" resultMap="BaseResultMap">
+	select 
+    <include refid="Base_Column_List" />
+    from carsok_product
+    where id=#{param1} and account_id=#{param2} for update
+</select>
+    <select id="selectByProductId" resultMap="BaseResultMap">
+        select * from carsok_product where id=#{0}
+    </select>
+    <update id="updateReserve">
+        update carsok_product
+         SET reserve_if = #{reserveIf}
+         where id = #{id}
+    </update>
+    <select id="getAcqPriceByVin" resultType="java.math.BigDecimal">
+        SELECT closeingPrice  from carsok_acquisition_car WHERE  vin=#{vin} order by record_time desc limit 0,1
+    </select>
+
+    <select id="selectPidByVin" resultMap="BaseResultMap">
+        SELECT * FROM carsok_product
+        WHERE vin = #{vin}
+        AND account_id = #{accountId}
+        <if test="isSale">
+        AND sale_status = 0
+        </if>
+        AND is_del = 0
+        ORDER BY id DESC
+        LIMIT 0,1
+    </select>
+
+    <select id="SelectIndexById" resultType="com.utonw.searchcenter.api.entity.StoreCar">
+        SELECT
+        a.id,
+        a.product_no AS productCode,
+        a.consignment AS consignment,
+        a.product_name AS productName,
+        CONCAT_WS(
+        " | ",
+        DATE_FORMAT(b.first_up_time, '%Y-%m'),
+        CONVERT (
+        b.miles / 10000,
+        DECIMAL (19, 2)
+        )
+        ) AS descr,
+        CONVERT (
+        a.price / 10000,
+        DECIMAL (19, 2)
+        ) AS price,
+        c.pic_path AS picPath,
+        a.sale_status AS saleStatus,
+        a.on_shelf_status AS on_shelf_status,
+        a.is_del AS is_del,
+        a.account_id AS account_id,
+        a.on_shelf_time AS on_shelf_time
+        FROM carsok_product a
+        INNER JOIN carsok_pruduct_oldcar b ON b.pruduct_id = a.id
+        INNER JOIN (select * from carsok_picture where type = 1) c ON c.product_id = a.id
+        WHERE a.id=#{productId} limit 1
+    </select>
+
+    <select id="SelectIndexByIds" resultType="com.utonw.searchcenter.api.entity.StoreCar">
+        SELECT
+        a.id,
+        a.product_no AS productCode,
+        a.consignment AS consignment,
+        a.product_name AS productName,
+        CONCAT_WS(
+        " | ",
+        DATE_FORMAT(b.first_up_time, '%Y-%m'),
+        CONVERT (
+        b.miles / 10000,
+        DECIMAL (19, 2)
+        )
+        ) AS descr,
+        CONVERT (
+        a.price / 10000,
+        DECIMAL (19, 2)
+        ) AS price,
+        c.pic_path AS picPath,
+        a.sale_status AS saleStatus,
+        a.on_shelf_status AS on_shelf_status,
+        a.is_del AS is_del,
+        a.account_id AS account_id,
+        a.on_shelf_time AS on_shelf_time
+        FROM carsok_product a
+        INNER JOIN carsok_pruduct_oldcar b ON b.pruduct_id = a.id
+        INNER JOIN (select * from carsok_picture where type = 1) c ON c.product_id = a.id
+        WHERE 1 = 1
+        <if test="ids != null and ids != ''">
+            AND a.id in
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="selectApplyCSD" resultType="int">
+		select count(*) from carsok_product cp inner join merchant_indent mi on cp.id=mi.productId where cp.id=#{param1}
+	</select>
+
+    <select id="queryCarDetailByStatusAndDate" resultType="com.uton.carsokApi.model.Product">
+        SELECT id,
+        product_name as productName,
+        miniprice ,
+        saled_price as saledPrice,
+        closeingPrice as closeingPrice,
+        saled_people as saledPeople
+        FROM carsok_product WHERE account_id=#{accountId}
+        <if test="status!=null">
+            AND sale_status=#{status}
+        </if>
+        <if test="type=='day'">
+            AND DATE_FORMAT(update_time,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        <if test="type=='month'">
+            AND DATE_FORMAT(update_time,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+        </if>
+        AND is_del=0
+    </select>
+    <select id="querySaleCountByDay" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_customer_tenure_car WHERE account_id=#{accountId}
+        AND child_id IN
+        <foreach collection="childAccounts" open="(" separator="," close=")" item="child">
+            #{child.id}
+        </foreach>
+        <if test="type=='day'">
+            AND DATE_FORMAT(sale_time,'%Y-%m-%d')=DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        <if test="type=='month'">
+            AND DATE_FORMAT(sale_time,'%Y-%m')=DATE_FORMAT(#{date},'%Y-%m')
+        </if>
+        AND is_new_record=0
+    </select>
+
+    <select id="selectSaledCount" resultType="java.lang.Integer">
+        select COUNT(id) from carsok_product
+        WHERE account_id = #{accountId}
+        AND sale_status = 1 and is_del = 0
+    </select>
+
+    <select id="selectOnSaleCounts" resultType="java.lang.Integer">
+        select COUNT(id) from carsok_product
+        WHERE account_id = #{accountId}
+        AND sale_status = 0 and is_del = 0 AND on_shelf_status = 1
+    </select>
+
+    <select id="selectSaledPriceCount" resultType="java.math.BigDecimal">
+        SELECT SUM(saled_price) FROM carsok_product
+        WHERE account_id = #{accountId}
+        AND sale_status = 1 AND is_del = 0
+    </select>
+</mapper>

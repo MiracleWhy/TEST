@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokTofrontPlanMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokTofrontPlan">
+		<id column="id" property="id" />
+		<result column="plan_name" property="planName" />
+		<result column="plan_price" property="planPrice" />
+		<result column="plan_time" property="planTime" />
+		<result column="plan_type" property="planType" />
+		<result column="remark" property="remark" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, plan_name AS planName, plan_price AS planPrice, plan_time AS planTime, plan_type AS planType, remark
+    </sql>
+
+	<!--车行置顶套餐查询-->
+	<select id="getAccountTofrontPlan" resultType="com.uton.carsokApi.controller.response.TofrontPlanResponse">
+		SELECT
+			id,
+			plan_name AS planName,
+			plan_price AS planPrice,
+			plan_time AS planTime
+		FROM carsok_tofront_plan WHERE plan_type = 1
+	</select>
+
+	<!--车源置顶套餐查询-->
+	<select id="getCarTofrontPlan" resultType="com.uton.carsokApi.controller.response.TofrontPlanResponse">
+		SELECT
+		id,
+		plan_name AS planName,
+		plan_price AS planPrice,
+		plan_time AS planTime
+		FROM carsok_tofront_plan WHERE plan_type = 2
+	</select>
+
+	<!--查询子账号权限-->
+	<select id="getIsShow" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+		carsok_account_power
+		WHERE
+		child_id = #{childId}
+		AND power_name = #{powerName}
+	</select>
+</mapper>

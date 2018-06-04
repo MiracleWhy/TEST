@@ -1,0 +1,1133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.TenureCustomerMapper" >
+    <resultMap id="BaseResult" type="com.uton.carsokApi.model.CustomerTenure">
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="cust_name" property="custName" jdbcType="VARCHAR" />
+        <result column="cust_phone" property="custPhone" jdbcType="VARCHAR" />
+        <result column="cust_sex" property="custSex" jdbcType="VARCHAR" />
+        <result column="cust_age" property="custAge" jdbcType="VARCHAR" />
+        <result column="cust_birthday" property="custBirthday" jdbcType="TIMESTAMP" />
+        <result column="cust_threevisit" property="custThreevisit" jdbcType="VARCHAR" />
+        <result column="cust_sevenvisit" property="custSevenvisit" jdbcType="VARCHAR" />
+        <result column="cust_vocation" property="custVocation" jdbcType="VARCHAR" />
+        <result column="cust_beforecar" property="custBeforecar" jdbcType="VARCHAR" />
+        <result column="cust_remark" property="custRemark" jdbcType="VARCHAR" />
+        <result column="cust_saledpeople" property="custsaledpeople" jdbcType="VARCHAR" />
+        <result column="cust_visittime" property="custVisittime" jdbcType="TIMESTAMP" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="enable" property="enable" jdbcType="INTEGER" />
+        <result column="tenurecar_id" property="tenurecarId" jdbcType="INTEGER" />
+        <result column="tenureVin" property="tenureVin" jdbcType="VARCHAR" />
+        <result column="saleTime" property="saleTime" jdbcType="TIMESTAMP" />
+        <result column="tid" property="tid" jdbcType="INTEGER" />
+        <result column="tcid" property="tcid" jdbcType="INTEGER" />
+        <result column="tenureCarname" property="tenureCarname" jdbcType="VARCHAR"/>
+        <result column="purchase_status" property="purchaseStatus" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="BaseResult2" type="com.uton.carsokApi.model.CustomerCar">
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="tenure_id" property="tenureId" jdbcType="INTEGER" />
+        <result column="tenure_carname" property="tenureCarname" jdbcType="VARCHAR" />
+        <result column="tenure_vin" property="tenureVin" jdbcType="VARCHAR" />
+        <result column="tenure_carnum" property="tenureCarnum" jdbcType="VARCHAR" />
+        <result column="tenure_cartype" property="tenureCartype" jdbcType="INTEGER" />
+        <result column="tenure_compulsory" property="tenureCompulsory" jdbcType="TIMESTAMP" />
+        <result column="tenure_business" property="tenureBusiness" jdbcType="TIMESTAMP" />
+        <result column="tenure_maintain" property="tenureMaintain" jdbcType="TIMESTAMP" />
+        <result column="tenure_Warranty" property="tenureWarranty" jdbcType="TIMESTAMP" />
+        <result column="tenure_carprice" property="tenureCarprice" jdbcType="DECIMAL" />
+        <result column="product_id" property="productId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="enable" property="enable" jdbcType="INTEGER" />
+        <result column="sale_people" property="salePeople" jdbcType="VARCHAR" />
+        <result column="car_males" property="carMales" jdbcType="VARCHAR" />
+        <result column="sale_time" property="saleTime" jdbcType="TIMESTAMP" />
+        <result column="account_id" property="accountId" jdbcType="INTEGER" />
+        <result column="child_id" property="childId" jdbcType="INTEGER" />
+        <result column="brand" property="brand" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <resultMap id="BaseResult3" type="com.uton.carsokApi.model.Welfare">
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="accountMobile" property="accountMobile" jdbcType="VARCHAR" />
+        <result column="referral" property="referral" jdbcType="VARCHAR" />
+        <result column="replacementVehicle" property="replacementVehicle" jdbcType="VARCHAR" />
+        <result column="buybackVehicle" property="buybackVehicle" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="BaseResult4" type="com.uton.carsokApi.model.TenureTask">
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="alias" property="alias" jdbcType="VARCHAR" />
+        <result column="childPhone" property="childPhone" jdbcType="VARCHAR" />
+        <result column="account" property="account" jdbcType="VARCHAR" />
+        <result column="custPhone" property="custPhone" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="selectDayCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t on t.tenurecar_id = tc.id
+        WHERE DATE_FORMAT(tc.create_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="perfect == 2">
+            and t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        </if>
+        <if test="perfect == 1">
+            and t.cust_name IS NULL AND t.cust_phone IS NULL
+        </if>
+        and tc.enable = 1
+    </select>
+    <select id="selectWeekCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t on t.tenurecar_id = tc.id
+        where tc.create_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="perfect == 2">
+            and t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        </if>
+        <if test="perfect == 1">
+            and t.cust_name IS NULL AND t.cust_phone IS NULL
+        </if>
+        and tc.enable = 1
+    </select>
+    <select id="selectMonthCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t on t.tenurecar_id = tc.id
+        WHERE DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="perfect == 2">
+            and t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        </if>
+        <if test="perfect == 1">
+            and t.cust_name IS NULL AND t.cust_phone IS NULL
+        </if>
+        and tc.enable = 1
+    </select>
+    <select id="selectYearCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t on t.tenurecar_id = tc.id
+        WHERE DATE_FORMAT(tc.create_time, '%Y') = (DATE_FORMAT(NOW(), '%Y'))
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="perfect == 2">
+            and t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        </if>
+        <if test="perfect == 1">
+            and t.cust_name IS NULL AND t.cust_phone IS NULL
+        </if>
+        and tc.enable = 1
+    </select>
+
+    <select id="selectByMonthCount" resultType="java.lang.Integer" >
+        SELECT count(*) from carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t on t.tenurecar_id = tc.id
+        WHERE DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="perfect == 2">
+            and t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        </if>
+        <if test="perfect == 1">
+            and t.cust_name IS NULL AND t.cust_phone IS NULL
+        </if>
+        and tc.enable = 1
+    </select>
+
+    <select id="selectYesCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t on t.tenurecar_id = tc.id
+        <if test="times == 1">
+            WHERE DATE_FORMAT(tc.create_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="times == 2">
+            where tc.create_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="times == 3">
+            WHERE DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="times == 4">
+            WHERE DATE_FORMAT(tc.create_time, '%Y') = (DATE_FORMAT(NOW(), '%Y'))
+        </if>
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        and t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        and tc.enable = 1
+    </select>
+
+    <select id="selectYesCountByMonth" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t on t.tenurecar_id = tc.id
+        <if test="month != null">
+            WHERE DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        </if>
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        and t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        and tc.enable = 1
+    </select>
+
+    <select id="selectNoCountByMonth" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t on t.tenurecar_id = tc.id
+        <if test=" month != null ">
+            WHERE DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        </if>
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        and t.cust_name IS NULL AND t.cust_phone IS NULL
+        and tc.enable = 1
+    </select>
+
+    <select id="selectNoCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) from carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t on t.tenurecar_id = tc.id
+        <if test="times == 1">
+            WHERE DATE_FORMAT(tc.create_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="times == 2">
+            where tc.create_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="times == 3">
+            WHERE DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="times == 4">
+            WHERE DATE_FORMAT(tc.create_time, '%Y') = (DATE_FORMAT(NOW(), '%Y'))
+        </if>
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        and t.cust_name IS NULL AND t.cust_phone IS NULL
+        and tc.enable = 1
+    </select>
+    <select id="selectTenureMsg" resultMap="BaseResult">
+        SELECT t.id as tid,t.cust_name,t.cust_phone,tc.id as tcid,tc.tenure_carname AS tenureCarname,tenure_vin as tenureVin,tc.sale_time as saleTime FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON tc.id = t.tenurecar_id
+        <if test="times == 0">
+            where 1=0
+        </if>
+        <if test="times == 1">
+            WHERE DATE_FORMAT(tc.create_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="times == 2">
+            where tc.create_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="times == 3">
+            WHERE DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="times == 4">
+            WHERE DATE_FORMAT(tc.create_time, '%Y') = (DATE_FORMAT(NOW(), '%Y'))
+        </if>
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="perfect == 2">
+            and t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        </if>
+        <if test="perfect == 1">
+            and t.cust_name IS NULL AND t.cust_phone IS NULL
+        </if>
+        and tc.enable = 1
+        ORDER BY tc.id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+
+    <select id="selectTenureMsgByMonth" resultMap="BaseResult">
+        SELECT t.id as tid,t.cust_name,t.cust_phone,tc.id as tcid,tc.tenure_carname AS tenureCarname,tenure_vin as tenureVin,tc.sale_time as saleTime FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON tc.id = t.tenurecar_id
+
+        <if test=" month != null ">
+            WHERE DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        </if>
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="perfect == 2">
+            and t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        </if>
+        <if test="perfect == 1">
+            and t.cust_name IS NULL AND t.cust_phone IS NULL
+        </if>
+        and tc.enable = 1
+        ORDER BY tc.id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+
+
+    <select id="selectTenureAll" resultMap="BaseResult">
+        SELECT * from carsok_customer_tenure WHERE id = #{tid}
+    </select>
+    <select id="selectCarAll" resultMap="BaseResult2">
+        SELECT * from carsok_customer_trnure_car WHERE id = #{tcid}
+    </select>
+    <select id="selectBySearch" resultType="java.lang.Integer">
+        SELECT count(*) FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON t.tenurecar_id = tc.id
+        WHERE tc.enable = 1
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="month != null">
+            AND DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        </if>
+        AND t.cust_name LIKE CONCAT('%',#{selects},'%')
+        OR t.cust_phone LIKE CONCAT('%',#{selects},'%')
+        OR tc.tenure_carname LIKE CONCAT('%',#{selects},'%')
+
+    </select>
+
+    <select id="selectByNull" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON t.tenurecar_id = tc.id
+        WHERE t.cust_name IS NULL AND t.cust_phone IS NULL
+        <if test=" month != null ">
+            AND DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        </if>
+        <if test="times == 1">
+            and DATE_FORMAT(tc.create_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="times == 2">
+            and tc.create_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="times == 3">
+            and DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="times == 4">
+            and DATE_FORMAT(tc.create_time, '%Y') = (DATE_FORMAT(NOW(), '%Y'))
+        </if>
+        and tc.enable = 1
+    </select>
+    <select id="selectByNotNull" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON t.tenurecar_id = tc.id
+        WHERE t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        <if test=" month != null ">
+            and DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        </if>
+        <if test="times == 1">
+            and DATE_FORMAT(tc.create_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="times == 2">
+            and tc.create_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="times == 3">
+            and DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="times == 4">
+            and DATE_FORMAT(tc.create_time, '%Y') = (DATE_FORMAT(NOW(), '%Y'))
+        </if>
+        and tc.enable = 1
+    </select>
+
+    <select id="selectSearchList" resultMap="BaseResult">
+        SELECT t.id as tid,t.cust_name,t.cust_phone,tc.id as tcid,tc.tenure_carname AS tenureCarname,tc.tenure_vin as tenureVin,tc.sale_time as saleTime FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON t.tenurecar_id = tc.id
+        where tc.enable = 1
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="month != null">
+            AND DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        </if>
+        <if test="selects != null and selects != '' ">
+            AND ( t.cust_name LIKE CONCAT('%',#{selects},'%')
+            OR t.cust_phone LIKE CONCAT('%',#{selects},'%')
+            OR tc.tenure_carname LIKE CONCAT('%',#{selects},'%') )
+        </if>
+        ORDER BY tc.id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+
+    <select id="selectNullList" resultMap="BaseResult">
+        SELECT t.id as tid,t.cust_name,t.cust_phone,tc.id as tcid,tc.tenure_carname AS tenureCarname,tc.tenure_vin as tenureVin,tc.sale_time as saleTime FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON t.tenurecar_id = tc.id
+        <if test="childId == 0">
+            where tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            where tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="times == 1">
+            and DATE_FORMAT(tc.create_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="times == 2">
+            and tc.create_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="times == 3">
+            and DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="times == 4">
+            and DATE_FORMAT(tc.create_time, '%Y') = (DATE_FORMAT(NOW(), '%Y'))
+        </if>
+        <if test="month != null ">
+            and DATE_FORMAT(tc.create_time, '%Y-%m') = DATE_FORMAT(#{month}, '%Y-%m')
+        </if>
+        and t.cust_name IS NULL AND t.cust_phone IS NULL
+        and tc.enable = 1
+        ORDER BY tc.id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+    <select id="selectNotNullList" resultMap="BaseResult">
+        SELECT t.id as tid,t.cust_name,t.cust_phone,tc.id as tcid,tc.tenure_carname AS tenureCarname,tc.tenure_vin as tenureVin,tc.sale_time as saleTime FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON t.tenurecar_id = tc.id
+        <if test="childId == 0">
+            where tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            where tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test=" month != null ">
+            AND DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(#{month}, '%Y-%m'))
+        </if>
+        <if test="times == 1">
+            and DATE_FORMAT(tc.create_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="times == 2">
+            and tc.create_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="times == 3">
+            and DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="times == 4">
+            and DATE_FORMAT(tc.create_time, '%Y') = (DATE_FORMAT(NOW(), '%Y'))
+        </if>
+        and t.cust_name IS NOT NULL AND t.cust_phone IS not NULL
+        and tc.enable = 1
+        ORDER BY tc.id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+
+
+    <delete id="deleteByTid" parameterType="java.lang.Integer">
+        DELETE from carsok_customer_tenure
+        where id = #{tid}
+    </delete>
+    <delete id="deleteByTcid" parameterType="java.lang.Integer">
+        DELETE from carsok_customer_trnure_car
+        where id = #{tcid}
+    </delete>
+    <select id="selectTenureById" resultMap="BaseResult">
+        SELECT * from carsok_customer_tenure
+        where id = #{tid}
+    </select>
+    <select id="selectTenureCarById" resultMap="BaseResult2">
+        SELECT * from carsok_customer_trnure_car
+        where id = #{tcid}
+    </select>
+    <insert id="insertTenure" parameterType="com.uton.carsokApi.model.CustomerTenure">
+        insert into carsok_customer_tenure
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="custName != null" >
+                cust_name,
+            </if>
+            <if test="custPhone != null" >
+                cust_phone,
+            </if>
+            <if test="custSex != null" >
+                cust_sex,
+            </if>
+            <if test="custAge != null" >
+                cust_age,
+            </if>
+            <if test="custBirthday != null" >
+                cust_birthday,
+            </if>
+            <if test="custThreevisit != null" >
+                cust_threevisit,
+            </if>
+            <if test="custSevenvisit != null" >
+                cust_sevenvisit,
+            </if>
+            <if test="custVocation != null" >
+                cust_vocation,
+            </if>
+            <if test="custBeforecar != null" >
+                cust_beforecar,
+            </if>
+            <if test="custRemark != null" >
+                cust_remark,
+            </if>
+            <if test="custsaledpeople != null" >
+                cust_saledpeople,
+            </if>
+            <if test="custVisittime != null" >
+                cust_visittime,
+            </if>
+            <if test="enable != null" >
+                enable,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="tenurecarId != null" >
+                tenurecar_id,
+            </if>
+            <if test="purchaseStatus != null" >
+                purchase_status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="custName != null" >
+                #{custName,jdbcType=VARCHAR},
+            </if>
+            <if test="custPhone != null" >
+                #{custPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="custSex != null" >
+                #{custSex,jdbcType=VARCHAR},
+            </if>
+            <if test="custAge != null" >
+                #{custAge,jdbcType=VARCHAR},
+            </if>
+            <if test="custBirthday != null" >
+                #{custBirthday,jdbcType=TIMESTAMP},
+            </if>
+            <if test="custThreevisit != null" >
+                #{custThreevisit,jdbcType=VARCHAR},
+            </if>
+            <if test="custSevenvisit != null" >
+                #{custSevenvisit,jdbcType=VARCHAR},
+            </if>
+            <if test="custVocation != null" >
+                #{custVocation,jdbcType=VARCHAR},
+            </if>
+            <if test="custBeforecar != null" >
+                #{custBeforecar,jdbcType=VARCHAR},
+            </if>
+            <if test="custRemark != null" >
+                #{custRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="custsaledpeople != null" >
+                #{custsaledpeople,jdbcType=VARCHAR},
+            </if>
+            <if test="custVisittime != null" >
+                #{custVisittime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enable != null" >
+                #{enable,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tenurecarId != null" >
+                #{tenurecarId,jdbcType=INTEGER},
+            </if>
+            <if test="purchaseStatus != null" >
+                #{purchaseStatus,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateTenureMsg">
+        UPDATE carsok_customer_tenure
+        <set >
+            <if test="custName != null" >
+                cust_name = #{custName},
+            </if>
+            <if test="custPhone != null" >
+                cust_phone = #{custPhone},
+            </if>
+            <if test="custSex != null" >
+                cust_sex = #{custSex},
+            </if>
+            <if test="custAge != null" >
+                cust_age = #{custAge},
+            </if>
+            <if test="custBirthday != null" >
+                cust_birthday = #{custBirthday},
+            </if>
+            <if test="custThreevisit != null" >
+                cust_threevisit = #{custThreevisit},
+            </if>
+            <if test="custSevenvisit != null" >
+                cust_sevenvisit = #{custSevenvisit},
+            </if>
+            <if test="custVocation != null" >
+                cust_vocation = #{custVocation},
+            </if>
+            <if test="custBeforecar != null" >
+                cust_beforecar = #{custBeforecar},
+            </if>
+            <if test="custRemark != null" >
+                cust_remark = #{custRemark},
+            </if>
+            <if test="custsaledpeople != null" >
+                cust_saledpeople = #{custsaledpeople},
+            </if>
+            <if test="custVisittime != null" >
+                cust_visittime = #{custVisittime},
+            </if>
+            <if test="enable != null" >
+                enable = #{enable},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime},
+            </if>
+            <if test="purchaseStatus != null" >
+                purchase_status = #{purchaseStatus},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <insert id="insertTenureCar" parameterType="com.uton.carsokApi.model.CustomerCar" useGeneratedKeys="true" keyProperty="id">
+        insert into carsok_customer_trnure_car
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="tenureCarname != null" >
+                tenure_carname,
+            </if>
+            <if test="tenureVin != null" >
+                tenure_vin,
+            </if>
+            <if test="tenureCarnum != null" >
+                tenure_carnum,
+            </if>
+            <if test="tenureCartype != null" >
+                tenure_cartype,
+            </if>
+            <if test="tenureCompulsory != null" >
+                tenure_compulsory,
+            </if>
+            <if test="tenureBusiness != null" >
+                tenure_business,
+            </if>
+            <if test="tenureMaintain != null" >
+                tenure_maintain,
+            </if>
+            <if test="tenureWarranty != null" >
+                tenure_Warranty,
+            </if>
+            <if test="tenureCarprice != null" >
+                tenure_carprice,
+            </if>
+            <if test="productId != null" >
+                product_id,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="enable != null" >
+                enable,
+            </if>
+            <if test="salePeople != null" >
+                sale_people,
+            </if>
+            <if test="carMales != null" >
+                car_males,
+            </if>
+            <if test="saleTime != null" >
+                sale_time,
+            </if>
+            <if test="accountId != null" >
+                account_id,
+            </if>
+            <if test="childId != null" >
+                child_id,
+            </if>
+            <if test="brand != null" >
+                brand,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="tenureCarname != null" >
+                #{tenureCarname,jdbcType=VARCHAR},
+            </if>
+            <if test="tenureVin != null" >
+                #{tenureVin,jdbcType=VARCHAR},
+            </if>
+            <if test="tenureCarnum != null" >
+                #{tenureCarnum,jdbcType=VARCHAR},
+            </if>
+            <if test="tenureCartype != null" >
+                #{tenureCartype,jdbcType=INTEGER},
+            </if>
+            <if test="tenureCompulsory != null" >
+                #{tenureCompulsory,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tenureBusiness != null" >
+                #{tenureBusiness,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tenureMaintain != null" >
+                #{tenureMaintain,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tenureWarranty != null" >
+                #{tenureWarranty,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tenureCarprice != null" >
+                #{tenureCarprice,jdbcType=DECIMAL},
+            </if>
+            <if test="productId != null" >
+                #{productId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enable != null" >
+                #{enable,jdbcType=INTEGER},
+            </if>
+            <if test="salePeople != null" >
+                #{salePeople,jdbcType=VARCHAR},
+            </if>
+            <if test="carMales != null" >
+                #{carMales,jdbcType=VARCHAR},
+            </if>
+            <if test="saleTime != null" >
+                #{saleTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="accountId != null" >
+                #{accountId,jdbcType=INTEGER},
+            </if>
+            <if test="childId != null" >
+                #{childId,jdbcType=INTEGER},
+            </if>
+            <if test="brand != null" >
+                #{brand,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectBySaledCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON t.tenurecar_id = tc.id
+        <if test="childId == 0">
+            where tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            where tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="otherId != null and otherId != ''">
+            and tc.id = #{otherId}
+        </if>
+        and tc.enable = 1
+    </select>
+
+
+    <select id="selectBySaledMsg" resultMap="BaseResult">
+        SELECT t.id as tid,t.cust_name,t.cust_phone,tc.id as tcid,tc.tenure_carname AS tenureCarname,tc.tenure_vin as tenureVin,tc.sale_time as saleTime FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON t.tenurecar_id = tc.id
+        <if test="childId == 0">
+            where tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            where tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="otherId != null and otherId != ''">
+            and tc.id = #{otherId}
+        </if>
+        and tc.enable = 1
+        ORDER BY tc.id DESC
+        LIMIT #{p1},#{p2}
+    </select>
+    <insert id="insertWelfare" parameterType="com.uton.carsokApi.model.Welfare">
+        insert into carsok_tenure_welfare
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null and id != ''" >
+                id,
+            </if>
+            <if test="accountMobile != null and accountMobile != ''" >
+                accountMobile,
+            </if>
+            <if test="referral != null and referral != ''" >
+                referral,
+            </if>
+            <if test="replacementVehicle != null and replacementVehicle != ''" >
+                replacementVehicle,
+            </if>
+            <if test="buybackVehicle != null and buybackVehicle != ''" >
+                buybackVehicle,
+            </if>
+            <if test="remark != null and remark != ''" >
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null and id != ''" >
+                #{id},
+            </if>
+            <if test="accountMobile != null and accountMobile != ''" >
+                #{accountMobile},
+            </if>
+            <if test="referral != null and referral != ''" >
+                #{referral},
+            </if>
+            <if test="replacementVehicle != null and replacementVehicle != ''" >
+                #{replacementVehicle},
+            </if>
+            <if test="buybackVehicle != null and buybackVehicle != ''" >
+                #{buybackVehicle},
+            </if>
+            <if test="remark != null and remark != ''" >
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateWelfare" parameterType="com.uton.carsokApi.model.Welfare">
+        UPDATE carsok_tenure_welfare
+        SET referral = #{referral,jdbcType=VARCHAR},
+        replacementVehicle = #{replacementVehicle,jdbcType=VARCHAR},
+        buybackVehicle = #{buybackVehicle,jdbcType=VARCHAR},
+        remark = #{remark,jdbcType=VARCHAR}
+        WHERE id = #{id,jdbcType=INTEGER}
+    </update>
+    <sql id="Base_Column_List" >
+        id, accountMobile, referral, replacementVehicle, buybackVehicle, remark
+    </sql>
+    <select id="selectCarWelfareByMobile" resultMap="BaseResult3">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM carsok_tenure_welfare WHERE accountMobile = #{mobile}
+    </select>
+
+    <select id="selectTenureThree" resultMap="BaseResult4">
+        SELECT cctc.id,
+        cct.create_time AS createTime,
+        cct.cust_phone as custPhone,
+        cca.alias,
+        cca.child_account_mobile AS childPhone,
+        ca.account AS account
+        FROM carsok_customer_tenure cct
+        LEFT JOIN carsok_customer_trnure_car cctc ON cctc.id = cct.tenurecar_id
+        LEFT JOIN carsok_child_account cca ON cca.id = cctc.child_id
+        LEFT JOIN carsok_acount ca ON ca.id = cctc.account_id
+        LEFT JOIN carsok_child_account cca2 ON cca2.account_phone = ca.account
+        WHERE DATE_FORMAT(cct.create_time,'%Y-%m-%d') = DATE_SUB(DATE_FORMAT(NOW(),'%Y%m%d'),INTERVAL 3 DAY)
+        and cctc.enable = 1
+        GROUP BY cctc.id
+    </select>
+    <select id="selectNewMsgBycustPhone" resultMap="BaseResult">
+        SELECT * FROM carsok_customer_tenure cct
+	    LEFT JOIN carsok_customer_trnure_car cctc ON cctc.id = cct.tenurecar_id
+	    WHERE cct.cust_phone = #{custPhone}
+        <if test="childId == 0">
+            AND cctc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND cctc.account_id = #{accountId} and cctc.child_id = #{childId}
+        </if>
+        and cctc.enable = 1
+	    ORDER BY cct.id  DESC LIMIT 0,1
+    </select>
+
+    <select id="selectCarListByCustPhone" resultMap="BaseResult">
+        SELECT t.id AS tid,t.cust_name,t.cust_phone,tc.id AS tcid,tc.tenure_carname AS tenureCarname,tenure_vin AS tenureVin,tc.sale_time AS saleTime FROM carsok_customer_trnure_car tc
+        LEFT JOIN carsok_customer_tenure t ON tc.id = t.tenurecar_id
+        <if test="childId == 0">
+            WHERE tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            WHERE tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        AND t.cust_phone = #{custPhone}
+        and tc.enable = 1
+        ORDER BY tc.id DESC
+    </select>
+
+    <update id="updateOldByNew">
+        UPDATE carsok_customer_trnure_car
+        <set >
+            <if test="tenureCarname != null" >
+                tenure_carname = #{tenureCarname},
+            </if>
+            <if test="tenureVin != null" >
+                tenure_vin = #{tenureVin},
+            </if>
+            <if test="tenureCarnum != null" >
+                tenure_carnum = #{tenureCarnum},
+            </if>
+            <if test="tenureCartype != null" >
+                tenure_cartype = #{tenureCartype},
+            </if>
+            <if test="tenureCompulsory != null" >
+                tenure_compulsory = #{tenureCompulsory},
+            </if>
+            <if test="tenureBusiness != null" >
+                tenure_business = #{tenureBusiness},
+            </if>
+            <if test="tenureMaintain != null" >
+                tenure_maintain = #{tenureMaintain},
+            </if>
+            <if test="tenureWarranty != null" >
+                tenure_Warranty = #{tenureWarranty},
+            </if>
+            <if test="tenureCarprice != null" >
+                tenure_carprice = #{tenureCarprice},
+            </if>
+            <if test="productId != null" >
+                product_id = #{productId},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime},
+            </if>
+            <if test="carMales != null" >
+                car_males = #{carMales},
+            </if>
+            <if test="saleTime != null" >
+                sale_time = #{saleTime},
+            </if>
+            <if test="brand != null" >
+                brand = #{brand},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <update id="updateNewCarIsDelete">
+        UPDATE carsok_customer_trnure_car
+        set enable = 0
+        WHERE id = #{id}
+    </update>
+    <select id="selectCustMsgByCarId" resultMap="BaseResult">
+        SELECT * from carsok_customer_tenure
+        WHERE tenurecar_id = #{tenurecarId}
+    </select>
+    <select id="selectByProductId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM carsok_customer_trnure_car
+        WHERE product_id = #{id}
+    </select>
+
+    <select id="selectNum" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM (SELECT * FROM carsok_customer_trnure_car GROUP BY product_id) AS tc
+        LEFT JOIN (SELECT * FROM carsok_customer_tenure GROUP BY tenurecar_id) AS t on t.tenurecar_id = tc.id
+        WHERE tc.enable = 1
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="type == 2">
+            AND tc.three_status = 0
+            AND tc.seven_status = 0
+            AND DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 3 DAY) ,'%Y-%m-%d') >= (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="type == 3">
+            AND ((tc.three_status = 0
+            AND tc.seven_status = 0
+            AND (DATE_FORMAT(NOW(), '%Y-%m-%d')) > DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 3 DAY) ,'%Y-%m-%d')
+            AND DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 7 DAY) ,'%Y-%m-%d') >= (DATE_FORMAT(NOW(), '%Y-%m-%d')))
+            OR (tc.three_status = 1
+            AND tc.seven_status = 0
+            AND DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 7 DAY) ,'%Y-%m-%d') >= (DATE_FORMAT(NOW(), '%Y-%m-%d'))))
+        </if>
+        <if test="type == 4">
+            AND ((tc.three_status = 0
+            AND tc.seven_status = 0
+            AND (DATE_FORMAT(NOW(), '%Y-%m-%d')) > DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 3 DAY) ,'%Y-%m-%d'))
+            OR (tc.three_status = 1
+            AND tc.seven_status = 0
+            AND (DATE_FORMAT(NOW(), '%Y-%m-%d')) > DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 7 DAY) ,'%Y-%m-%d')))
+        </if>
+    </select>
+
+    <select id="selectListNew" resultMap="BaseResult">
+        SELECT t.id as tid,t.cust_name,t.cust_phone,tc.id as tcid,tc.tenure_carname AS tenureCarname,tc.tenure_vin as tenureVin,tc.sale_time as saleTime
+        FROM (SELECT * FROM carsok_customer_trnure_car GROUP BY product_id) AS tc
+        LEFT JOIN (SELECT * FROM carsok_customer_tenure GROUP BY tenurecar_id) AS t on t.tenurecar_id = tc.id
+        WHERE tc.enable = 1
+        <if test="childId == 0">
+            AND tc.account_id = #{accountId}
+        </if>
+        <if test="childId != 0">
+            AND tc.account_id = #{accountId} and tc.child_id = #{childId}
+        </if>
+        <if test="compeleteStatus == '1'.toString()">
+            AND t.cust_name IS NULL AND t.cust_phone IS NULL
+        </if>
+        <if test="compeleteStatus == '2'.toString()">
+            AND t.cust_name IS NOT NULL AND t.cust_phone IS NOT NULL
+        </if>
+        <if test="dateStatus == '1'.toString()">
+            AND DATE_FORMAT(tc.create_time, '%Y-%m-%d') = (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="dateStatus == '2'.toString()">
+            AND tc.create_time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL WEEKDAY(NOW()) DAY),'%Y-%m-%d') AND DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL -1 DAY) ,'%Y-%m-%d')
+        </if>
+        <if test="dateStatus == '3'.toString()">
+            AND DATE_FORMAT(tc.create_time, '%Y-%m') = (DATE_FORMAT(NOW(), '%Y-%m'))
+        </if>
+        <if test="buyStatus != null and buyStatus != ''">
+            AND t.purchase_status = #{buyStatus}
+        </if>
+        <if test="type == 2">
+            AND tc.three_status = 0
+            AND tc.seven_status = 0
+            AND DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 3 DAY) ,'%Y-%m-%d') >= (DATE_FORMAT(NOW(), '%Y-%m-%d'))
+        </if>
+        <if test="type == 3">
+            AND ((tc.three_status = 0
+            AND tc.seven_status = 0
+            AND (DATE_FORMAT(NOW(), '%Y-%m-%d')) > DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 3 DAY) ,'%Y-%m-%d')
+            AND DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 7 DAY) ,'%Y-%m-%d') >= (DATE_FORMAT(NOW(), '%Y-%m-%d')))
+            OR (tc.three_status = 1
+            AND tc.seven_status = 0
+            AND DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 7 DAY) ,'%Y-%m-%d') >= (DATE_FORMAT(NOW(), '%Y-%m-%d'))))
+        </if>
+        <if test="type == 4">
+            AND ((tc.three_status = 0
+            AND tc.seven_status = 0
+            AND (DATE_FORMAT(NOW(), '%Y-%m-%d')) > DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 3 DAY) ,'%Y-%m-%d'))
+            OR (tc.three_status = 1
+            AND tc.seven_status = 0
+            AND (DATE_FORMAT(NOW(), '%Y-%m-%d')) > DATE_FORMAT(DATE_ADD(tc.sale_time,INTERVAL 7 DAY) ,'%Y-%m-%d')))
+        </if>
+        <if test="selects != null and selects != '' ">
+            AND ( t.cust_name LIKE CONCAT('%',#{selects},'%')
+            OR t.cust_phone LIKE CONCAT('%',#{selects},'%')
+            OR tc.tenure_carname LIKE CONCAT('%',#{selects},'%') )
+        </if>
+        ORDER BY tc.id DESC
+    </select>
+    <select id="selectFollowMessage" resultType="com.uton.carsokApi.model.TenureCarFollow">
+        SELECT tf.id, tf.tenurecar_id AS tenurecarId, tf.follow_message AS followMessage, tf.follow_type AS followType, tf.account_id AS accountId, tf.child_id AS childId, tf.create_time AS createTime
+        FROM carsok_customer_tenure_follow tf
+        LEFT JOIN carsok_customer_trnure_car tc
+        ON tc.id = tf.tenurecar_id
+        WHERE tf.tenurecar_id = #{tcid}
+        ORDER BY tf.create_time DESC
+    </select>
+    <insert id="saveFollowMessage" parameterType="com.uton.carsokApi.model.TenureCarFollow" useGeneratedKeys="true" keyProperty="id">
+        insert into carsok_customer_tenure_follow
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="tenurecarId != null" >
+                tenurecar_id,
+            </if>
+            <if test="followMessage != null" >
+                follow_message,
+            </if>
+            <if test="followType != null" >
+                follow_type,
+            </if>
+            <if test="accountId != null" >
+                account_id,
+            </if>
+            <if test="childId != null" >
+                child_id,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="tenurecarId != null" >
+                #{tenurecarId,jdbcType=INTEGER},
+            </if>
+            <if test="followMessage != null" >
+                #{followMessage,jdbcType=INTEGER},
+            </if>
+            <if test="followType != null" >
+                #{followType,jdbcType=INTEGER},
+            </if>
+            <if test="accountId != null" >
+                #{accountId,jdbcType=INTEGER},
+            </if>
+            <if test="childId != null" >
+                #{childId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateStatusByType" parameterType="java.lang.Integer">
+        UPDATE carsok_customer_trnure_car tc
+        SET
+        <if test="followType == 2">
+            tc.three_status = 1
+        </if>
+        <if test="followType == 3">
+            tc.seven_status = 1
+        </if>
+        WHERE tc.id = #{tenurecarId}
+    </update>
+    <select id="selectByTenurecarId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM carsok_customer_tenure
+        WHERE tenurecar_id = #{tcid}
+    </select>
+</mapper>

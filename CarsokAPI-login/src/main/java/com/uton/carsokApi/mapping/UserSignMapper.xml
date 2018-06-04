@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.UserSignMapper">
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.UserSign">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+    <result column="last_sign_date" jdbcType="TIMESTAMP" property="lastSignDate" />
+    <result column="continuity_times" jdbcType="INTEGER" property="continuityTimes" />
+    <result column="present_times" jdbcType="INTEGER" property="presentTimes" />
+    <result column="enable" jdbcType="INTEGER" property="enable" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, account_id, last_sign_date, continuity_times, present_times, enable, create_time, 
+    update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from carsok_user_sign
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from carsok_user_sign
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.uton.carsokApi.model.UserSign">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into carsok_user_sign (account_id, last_sign_date, continuity_times, 
+      present_times, enable, create_time, 
+      update_time)
+    values (#{accountId,jdbcType=VARCHAR}, #{lastSignDate,jdbcType=TIMESTAMP}, #{continuityTimes,jdbcType=INTEGER}, 
+      #{presentTimes,jdbcType=INTEGER}, #{enable,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.uton.carsokApi.model.UserSign">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into carsok_user_sign
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="lastSignDate != null">
+        last_sign_date,
+      </if>
+      <if test="continuityTimes != null">
+        continuity_times,
+      </if>
+      <if test="presentTimes != null">
+        present_times,
+      </if>
+      <if test="enable != null">
+        enable,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="accountId != null">
+        #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastSignDate != null">
+        #{lastSignDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="continuityTimes != null">
+        #{continuityTimes,jdbcType=INTEGER},
+      </if>
+      <if test="presentTimes != null">
+        #{presentTimes,jdbcType=INTEGER},
+      </if>
+      <if test="enable != null">
+        #{enable,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.UserSign">
+    update carsok_user_sign
+    <set>
+      <if test="accountId != null">
+        account_id = #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastSignDate != null">
+        last_sign_date = #{lastSignDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="continuityTimes != null">
+        continuity_times = #{continuityTimes,jdbcType=INTEGER},
+      </if>
+      <if test="presentTimes != null">
+        present_times = #{presentTimes,jdbcType=INTEGER},
+      </if>
+      <if test="enable != null">
+        enable = #{enable,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.uton.carsokApi.model.UserSign">
+    update carsok_user_sign
+    set account_id = #{accountId,jdbcType=VARCHAR},
+      last_sign_date = #{lastSignDate,jdbcType=TIMESTAMP},
+      continuity_times = #{continuityTimes,jdbcType=INTEGER},
+      present_times = #{presentTimes,jdbcType=INTEGER},
+      enable = #{enable,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateUserSign">
+    UPDATE carsok_user_sign
+        SET continuity_times = CASE DATE_FORMAT(last_sign_date, "%Y-%m-%d")
+            WHEN DATE_FORMAT(now(), "%Y-%m-%d") THEN
+                continuity_times
+            WHEN DATE_FORMAT(DATE_SUB(now(), INTERVAL 1 DAY),"%Y-%m-%d") THEN
+                (continuity_times MOD 7) + 1
+            ELSE
+                1
+            END,
+         last_sign_date = now(),
+         update_time=now()
+    WHERE
+        account_id = #{accountId}
+  </update>
+  <select id="selectUserContinuitySign" resultType="java.lang.Integer">
+    SELECT
+      CASE
+        WHEN DATE_FORMAT(last_sign_date, "%Y-%m-%d") >= DATE_FORMAT(DATE_SUB(now(), INTERVAL 1 DAY),"%Y-%m-%d") THEN continuity_times
+        ELSE 0
+      END AS times
+    FROM
+      carsok_user_sign
+    WHERE
+      account_id = #{accountId}
+  </select>
+  <select id="selectUserSignByAccountId" resultType="com.uton.carsokApi.model.UserSign" resultMap="BaseResultMap">
+    SELECT * FROM carsok_user_sign WHERE account_id = #{accountId}
+  </select>
+  <update id="updatePresentTimes">
+    UPDATE
+      carsok_user_sign
+    SET
+      present_times = present_times + #{times,jdbcType=INTEGER}
+    WHERE
+      account_id = #{accountId}
+  </update>
+</mapper>

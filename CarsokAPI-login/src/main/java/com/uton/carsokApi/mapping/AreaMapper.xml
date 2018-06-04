@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.AreaMapper" >
+  <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.Area" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="sort_num" property="sortnum" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+	
+	<select id="searchAreaBypid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from carsok_area where pid = #{pid,jdbcType=INTEGER}
+	</select>
+	
+		<!-- 查询 -->
+	<select id="findCity" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT 
+			*
+		FROM 
+			carsok_area  
+		WHERE
+		 	 level = 2
+			 and pid = #{id} 
+		order by sort_num
+	</select>
+</mapper>

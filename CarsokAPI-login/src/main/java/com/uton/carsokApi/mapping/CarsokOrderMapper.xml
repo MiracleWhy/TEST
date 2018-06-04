@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.CarsokOrderMapper">
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokOrder">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+		<result column="biz_id" property="bizId" jdbcType="VARCHAR" />
+		<result column="total_money" property="totalMoney" jdbcType="DECIMAL" />
+		<result column="pay_money" property="payMoney" jdbcType="DECIMAL" />
+		<result column="rest_money" property="restMoney" jdbcType="DECIMAL" />
+		<result column="pay_status" property="payStatus" jdbcType="VARCHAR" />
+		<result column="order_status" property="orderStatus" jdbcType="VARCHAR" />
+		<result column="enable" property="enable" jdbcType="SMALLINT" />
+		<result column="gmt_expire" property="gmtExpire" jdbcType="TIMESTAMP" />
+		<result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+		<result column="gmt_pay" property="gmtPay" jdbcType="TIMESTAMP" />
+		<result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="memo" property="memo" jdbcType="VARCHAR" />
+		<result column="account_id" property="accountId" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="account_real_name" property="accountRealName"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, order_no, biz_id, total_money, pay_money, rest_money, pay_status,
+		order_status,
+		enable, gmt_expire, gmt_create, gmt_pay, gmt_modify, type, memo, account_id,
+		description,
+		account_real_name
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from carsok_order
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from carsok_order
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.uton.carsokApi.model.CarsokOrder">
+		<selectKey resultType="java.lang.Integer" keyProperty="id"
+			order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into carsok_order (order_no, biz_id, total_money,
+		pay_money, rest_money, pay_status,
+		order_status, enable, gmt_expire,
+		gmt_create, gmt_pay, gmt_modify,
+		type, memo, account_id,
+		description, account_real_name)
+		values (#{orderNo,jdbcType=VARCHAR}, #{bizId,jdbcType=VARCHAR},
+		#{totalMoney,jdbcType=DECIMAL},
+		#{payMoney,jdbcType=DECIMAL}, #{restMoney,jdbcType=DECIMAL}, #{payStatus,jdbcType=VARCHAR},
+		#{orderStatus,jdbcType=VARCHAR}, #{enable,jdbcType=SMALLINT},
+		#{gmtExpire,jdbcType=TIMESTAMP},
+		#{gmtCreate,jdbcType=TIMESTAMP}, #{gmtPay,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+		#{type,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR},
+		#{accountId,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR}, #{accountRealName,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.uton.carsokApi.model.CarsokOrder">
+		<selectKey resultType="java.lang.Integer" keyProperty="id"
+			order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into carsok_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orderNo != null">
+				order_no,
+			</if>
+			<if test="bizId != null">
+				biz_id,
+			</if>
+			<if test="totalMoney != null">
+				total_money,
+			</if>
+			<if test="payMoney != null">
+				pay_money,
+			</if>
+			<if test="restMoney != null">
+				rest_money,
+			</if>
+			<if test="payStatus != null">
+				pay_status,
+			</if>
+			<if test="orderStatus != null">
+				order_status,
+			</if>
+			<if test="enable != null">
+				enable,
+			</if>
+			<if test="gmtExpire != null">
+				gmt_expire,
+			</if>
+			<if test="gmtCreate != null">
+				gmt_create,
+			</if>
+			<if test="gmtPay != null">
+				gmt_pay,
+			</if>
+			<if test="gmtModify != null">
+				gmt_modify,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="memo != null">
+				memo,
+			</if>
+			<if test="accountId != null">
+				account_id,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="accountRealName != null">
+				account_real_name,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="orderNo != null">
+				#{orderNo,jdbcType=VARCHAR},
+			</if>
+			<if test="bizId != null">
+				#{bizId,jdbcType=VARCHAR},
+			</if>
+			<if test="totalMoney != null">
+				#{totalMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="payMoney != null">
+				#{payMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="restMoney != null">
+				#{restMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="payStatus != null">
+				#{payStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="orderStatus != null">
+				#{orderStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="enable != null">
+				#{enable,jdbcType=SMALLINT},
+			</if>
+			<if test="gmtExpire != null">
+				#{gmtExpire,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtCreate != null">
+				#{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtPay != null">
+				#{gmtPay,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModify != null">
+				#{gmtModify,jdbcType=TIMESTAMP},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=VARCHAR},
+			</if>
+			<if test="memo != null">
+				#{memo,jdbcType=VARCHAR},
+			</if>
+			<if test="accountId != null">
+				#{accountId,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="accountRealName != null">
+				#{accountRealName,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.uton.carsokApi.model.CarsokOrder">
+		update carsok_order
+		<set>
+			<if test="orderNo != null">
+				order_no = #{orderNo,jdbcType=VARCHAR},
+			</if>
+			<if test="bizId != null">
+				biz_id = #{bizId,jdbcType=VARCHAR},
+			</if>
+			<if test="totalMoney != null">
+				total_money = #{totalMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="payMoney != null">
+				pay_money = #{payMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="restMoney != null">
+				rest_money = #{restMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="payStatus != null">
+				pay_status = #{payStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="orderStatus != null">
+				order_status = #{orderStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="enable != null">
+				enable = #{enable,jdbcType=SMALLINT},
+			</if>
+			<if test="gmtExpire != null">
+				gmt_expire = #{gmtExpire,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtCreate != null">
+				gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtPay != null">
+				gmt_pay = #{gmtPay,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModify != null">
+				gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=VARCHAR},
+			</if>
+			<if test="memo != null">
+				memo = #{memo,jdbcType=VARCHAR},
+			</if>
+			<if test="accountId != null">
+				account_id = #{accountId,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="accountRealName != null">
+				account_real_name = #{accountRealName,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.uton.carsokApi.model.CarsokOrder">
+		update carsok_order
+		set order_no = #{orderNo,jdbcType=VARCHAR},
+		biz_id = #{bizId,jdbcType=VARCHAR},
+		total_money = #{totalMoney,jdbcType=DECIMAL},
+		pay_money = #{payMoney,jdbcType=DECIMAL},
+		rest_money = #{restMoney,jdbcType=DECIMAL},
+		pay_status = #{payStatus,jdbcType=VARCHAR},
+		order_status = #{orderStatus,jdbcType=VARCHAR},
+		enable = #{enable,jdbcType=SMALLINT},
+		gmt_expire = #{gmtExpire,jdbcType=TIMESTAMP},
+		gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+		gmt_pay = #{gmtPay,jdbcType=TIMESTAMP},
+		gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+		type = #{type,jdbcType=VARCHAR},
+		memo = #{memo,jdbcType=VARCHAR},
+		account_id = #{accountId,jdbcType=VARCHAR},
+		description = #{description,jdbcType=VARCHAR},
+		account_real_name = #{accountRealName,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<select id="selectOrderStatus" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from carsok_order co
+		where order_no=#{param1}
+	</select>
+	<select id="selectByOrderNoForUpdate" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from carsok_order co
+		where order_no=#{param1} for update
+	</select>
+	<select id="selectByOrderNo" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from carsok_order co
+		where order_no=#{param1}
+	</select>
+	<select id="selectOrdersByStatus" resultMap="BaseResultMap" parameterType="com.uton.carsokApi.controller.request.OrderBaseRequest">
+		select
+		<include refid="Base_Column_List" />
+		from carsok_order co
+		where account_id=#{accountId}
+		<if test="orderStatus!=null">
+			and order_status=#{orderStatus}
+		</if>
+		<if test="searchKey!=null and searchKey!=''">
+			and (order_no like 	CONCAT('%',#{searchKey},'%' ) or description like  	CONCAT('%',#{searchKey},'%' ))
+		</if>
+		<if test="orderTypes !=null">
+			and type in
+		<foreach collection="orderTypes" open="(" close=")" item="item" separator=",">
+			 #{item}
+		</foreach>
+		</if>
+		order by gmt_create desc
+	</select>
+	<select id="selectProductIdsByCondition" resultType="java.lang.String"
+		parameterType="com.uton.carsokApi.model.CarsokOrder">
+		select cod.product_id
+		from carsok_order co left join carsok_order_detail cod on
+		co.order_no=cod.order_no
+		<where>
+			<if test="type!=null">
+				co.type=#{type}
+			</if>
+			<if test="orderStatus!=null">
+				and co.order_status=#{orderStatus}
+			</if>
+			<if test="payStatus!=null">
+				and co.pay_status=#{payStatus}
+			</if>
+			<if test="enable!=null">
+				and co.enable=#{enable}
+			</if>
+			<if test="accountId!=null">
+				and co.account_id=#{accountId}
+			</if>
+		</where>
+	</select>
+	<select id="selectOrderCount" resultType="java.util.HashMap">
+		select count(*) counts,order_status  orderStatus from carsok_order co where
+		account_id=#{accountId} 
+		<if test="orderTypes!=null">
+		AND type in
+		<foreach collection="orderTypes" open="(" close=")" item="item" separator="," >
+		#{item}
+		</foreach>
+		</if>
+		<if test="searchKey!=null and searchKey!=''">
+			and (order_no like 	CONCAT('%',#{searchKey},'%' ) or description like  	CONCAT('%',#{searchKey},'%' ))
+		</if>
+		group by order_status
+	</select>
+	<select id="selectTestOrderForUpdate" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from carsok_order co where type='TEST' and total_money &gt;0.01 order by total_money desc limit 1 for update
+	</select>
+	<select id="selectByProductIdsAndType" resultType="java.util.HashMap">
+		select co.order_no orderNo,cod.product_id productId, co.pay_status payStatus
+		from carsok_order co inner join carsok_order_detail cod on co.order_no=cod.order_no 
+		where 
+		co.type=#{param2}
+		<if test="param1 !=null">
+		and cod.product_id in 
+		<foreach collection="param1" close=")" open="(" separator="," item="item">
+		#{item}
+		</foreach>		
+		and co.order_status != 'ALREADY_CANCLE'
+		</if>
+	</select>
+</mapper>

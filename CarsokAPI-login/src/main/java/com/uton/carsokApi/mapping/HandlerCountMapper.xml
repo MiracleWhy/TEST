@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.HandlerCountMapper" >
+    <select id="selectMenDianCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_content_push
+        WHERE push_to = #{mobile}
+        AND content_type = 'taskRemind'
+        and enable=1
+    </select>
+    <select id="selectBaoYouCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_content_push
+        WHERE push_to = #{mobile}
+        AND content_type = 'taskTenure'
+        and enable=1
+    </select>
+    <select id="selectRiJianCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_content_push
+        WHERE push_to = #{mobile}
+        AND content_type = 'taskDC'
+        and enable=1 and DATE_FORMAT(create_time,'%Y-%m-%d')=DATE_FORMAT(now(),'%Y-%m-%d')
+    </select>
+    <select id="selectShouCheCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_content_push
+        WHERE push_to = #{mobile}
+        AND content_type = 'taskAcquisition'
+        and enable=1
+    </select>
+
+    <select id="selectXiBaoCount" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM carsok_content_push a
+        INNER JOIN carsok_gleeful_report b
+        ON b.id = a.xibao_id
+        LEFT JOIN carsok_share_record c
+        ON c.share_id = b.id
+        WHERE a.content_type = 'taskXB'
+        AND a.push_to = #{mobile}
+        AND c.id IS NULL
+        AND a.enable = 1
+    </select>
+
+    <delete id="deleteMendianMsg">
+        DELETE FROM carsok_content_push
+        <where>
+            <if test="mendianId != null ">
+                and
+                mendian_id = #{mendianId}
+            </if>
+        </where>
+    </delete>
+    <delete id="deleteBaoyouMsg">
+        DELETE FROM carsok_content_push
+        <where>
+            <if test="baoyouId != null ">
+                and
+                baoyou_id = #{baoyouId}
+            </if>
+        </where>
+    </delete>
+    <delete id="deleteShoucheMsg">
+        DELETE FROM carsok_content_push
+        <where>
+            <if test="shoucheId != null ">
+                and
+                shouche_id = #{shoucheId}
+            </if>
+        </where>
+    </delete>
+
+</mapper>

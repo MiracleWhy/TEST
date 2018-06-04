@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.PurposeForgMapper" >
+    <select id="selectCustomerCountN" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="N 24小时内回访"
+        <if test="childId != '' and childId != null">
+            and child_id = #{childId}
+        </if>
+    </select>
+    <select id="selectCustomerCountH" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="H 3天内购买"
+        <if test="childId != '' and childId != null">
+            and child_id = #{childId}
+        </if>
+    </select>
+    <select id="selectCustomerCountA" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="A 7天内购买"
+        <if test="childId != '' and childId != null">
+            and child_id = #{childId}
+        </if>
+    </select>
+    <select id="selectCustomerCountB" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="B 15天内购买"
+
+        <if test="childId != '' and childId != null">
+            and child_id = #{childId}
+        </if>
+    </select>
+    <select id="selectCustomerCountC" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="C 30天内购买"
+
+        <if test="childId != '' and childId != null">
+            and child_id = #{childId}
+        </if>
+    </select>
+    <select id="selectCustomerCountFO" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="F0 战败待确认"
+
+        <if test="childId != '' and childId != null">
+            and child_id = #{childId}
+        </if>
+    </select>
+    <select id="selectCustomerCountF" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="F 战败"
+
+        <if test="childId != '' and childId != null">
+            and child_id = #{childId}
+        </if>
+    </select>
+    <select id="childIds" resultType="java.lang.Integer">
+        select id from carsok_child_account where child_account_mobile=#{phone}
+    </select>
+    <select id="selectChildName" resultType="java.lang.String">
+        select child_account_name from carsok_child_account where id=#{ids}
+    </select>
+    <select id="selectAccountCustomerCountN" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="N 24小时内回访"
+        <if test="accountId != '' and accountId != null">
+            and account_id = #{accountId} and child_id=0
+        </if>
+    </select>
+    <select id="selectAccountCustomerCountH" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="H 3天内购买"
+        <if test="accountId != '' and accountId != null">
+            and account_id = #{accountId} and child_id=0
+        </if>
+    </select>
+    <select id="selectAccountCustomerCountA" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="A 7天内购买"
+        <if test="accountId != '' and accountId != null">
+            and account_id = #{accountId} and child_id=0
+        </if>
+    </select>
+    <select id="selectAccountCustomerCountB" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="B 15天内购买"
+
+        <if test="accountId != '' and accountId != null">
+            and account_id = #{accountId} and child_id=0
+        </if>
+    </select>
+    <select id="selectAccountCustomerCountC" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="C 30天内购买"
+
+        <if test="accountId != '' and accountId != null">
+            and account_id = #{accountId} and child_id=0
+        </if>
+    </select>
+    <select id="selectAccountCustomerCountFO" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="F0 战败待确认"
+
+        <if test="accountId != '' and accountId != null">
+            and account_id = #{accountId} and child_id=0
+        </if>
+    </select>
+    <select id="selectAccountCustomerCountF" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        carsok_customer
+        WHERE
+        `level`="F 战败"
+
+        <if test="accountId != '' and accountId != null">
+            and account_id = #{accountId} and child_id=0
+        </if>
+    </select>
+
+</mapper>

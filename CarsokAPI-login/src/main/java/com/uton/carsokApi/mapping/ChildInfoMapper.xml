@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.ChildInfoMapper">
+    <select id="selectChildInfo" resultType="com.uton.carsokApi.controller.response.ChildInfoResponse">
+        SELECT cca.id childId,
+        cca.child_account_name childAccountName,
+        cca.child_account_mobile childAccountMobile,
+        ca.merchant_name merchantName,
+        ca.province province,
+        ca.city city,
+        ca.merchant_address merchantAddress,
+        ca.merchant_descr merchantDescr,
+        GROUP_CONCAT(czr.NAME  SEPARATOR ' ') roleName,
+        cca.child_head_pic childHeadPic
+        FROM carsok_child_account cca
+        LEFT JOIN carsok_acount ca ON ca.account = cca.account_phone
+        LEFT JOIN carsok_zb_childrole czc ON czc.childId = cca.id
+        LEFT JOIN carsok_zb_role czr ON czr.VALUE = czc.roleName
+        WHERE cca.id = #{id} GROUP BY childId
+    </select>
+    <select id="selectInfoByCustPhone" resultType="com.uton.carsokApi.controller.response.InfoResponse">
+        SELECT
+            tc.tenure_carnum AS carNum,
+            IFNULL( cca.child_account_mobile, ca.account ) AS phone,
+            IFNULL( cca.child_account_name, IFNULL( IFNULL(ca.real_name, ca.nick), ca.merchant_name) ) AS name,
+            ca.merchant_name AS companyName,
+            ca.merchant_address AS address,
+            cca.star star,
+            cca.good_evaluate goodEvaluate,
+            IFNULL(cca.describes, ca.merchant_descr) AS describes
+        FROM
+            carsok_customer_tenure_car tc
+            LEFT JOIN carsok_product cp ON cp.id = tc.product_id
+            LEFT JOIN carsok_customer cc ON cc.id = tc.customer_id
+            LEFT JOIN carsok_child_account cca ON cc.child_id = cca.id
+            LEFT JOIN carsok_acount ca ON ca.id = cc.account_id
+        WHERE
+            cc.mobile = #{mobile}
+            AND tc.is_done = 1
+            AND cp.id IS NOT NULL
+        ORDER BY
+            cc.in_time DESC
+    </select>
+    <select id="selectInfoByCarId" resultType="com.uton.carsokApi.controller.response.InfoResponse">
+        SELECT
+        	ccta.tenure_carnum AS carNum,
+        	IFNULL( cca.child_account_mobile, ca.account ) AS phone,
+        	IFNULL( cca.child_account_name, IFNULL( IFNULL(ca.real_name, ca.nick), ca.merchant_name) ) AS name,
+	        ca.merchant_name AS companyName,
+	        ca.merchant_address AS address,
+        	cca.star star,
+        	cca.good_evaluate goodEvaluate,
+        	IFNULL( cca.describes, ca.merchant_descr ) AS describes,
+        	ca.account AS accountPhone
+        FROM
+	        carsok_customer_tenure_car ccta
+	    LEFT JOIN carsok_child_account cca ON ccta.child_id = cca.id
+	    LEFT JOIN carsok_acount ca ON ca.id = ccta.account_id
+       WHERE
+	        ccta.id = #{carId}
+    </select>
+
+
+</mapper>

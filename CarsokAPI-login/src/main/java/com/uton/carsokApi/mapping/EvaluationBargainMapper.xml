@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.EvaluationBargainMapper" >
+    <resultMap id="BaseResultMapE" type="com.uton.carsokApi.model.Evaluations" >
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="account_id" jdbcType="INTEGER" property="accountId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        <result column="vehicle_model" jdbcType="VARCHAR" property="vehicleModel" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+    <resultMap id="BaseResultMapB" type="com.uton.carsokApi.model.Bargain" >
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="product_id" jdbcType="INTEGER" property="productId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        <result column="intentional_price" jdbcType="VARCHAR" property="intentionalPrice" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+    <insert id="evaluationInsert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO carsok_evaluations
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="accountId != null">
+                account_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="vehicleModel != null">
+                vehicle_model,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="accountId != null">
+                #{accountId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="vehicleModel != null">
+                #{vehicleModel,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <insert id="bargainInsert" useGeneratedKeys="true" keyProperty="id" parameterType="com.uton.carsokApi.model.Bargain">
+        INSERT INTO carsok_bargain
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="productId != null">
+                product_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="intentionalPrice != null">
+                intentional_price,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="productId != null">
+                #{productId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="intentionalPrice != null">
+                #{intentionalPrice,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <select id="selectEvaluationMsgById" resultMap="BaseResultMapE">
+        SELECT * from carsok_evaluations WHERE id = #{id}
+    </select>
+
+    <select id="selectProductMsgByProductId" resultType="com.uton.carsokApi.controller.response.BargainInfoResponse">
+        SELECT
+        cb.NAME AS NAME,
+        cb.mobile AS mobile,
+        cb.intentional_price AS intentionalPrice,
+        cp.id AS id,
+        cpic.pic_path AS picture,
+        cp.product_name AS productName,
+        cp.price AS price,
+        cp.miniprice AS miniPrice,
+        cp.on_shelf_time AS onShelfTime,
+        cpo.miles AS miles,
+        cpo.first_up_time AS firstUpTime
+        FROM carsok_bargain cb
+        LEFT JOIN carsok_product cp ON cb.product_id = cp.id
+        LEFT JOIN carsok_pruduct_oldcar cpo ON cpo.pruduct_id = cp.id
+        LEFT JOIN carsok_picture cpic ON cpic.product_id = cp.id  AND cpic.TYPE = 1
+        WHERE cb.id = #{id}
+    </select>
+
+    <select id="selectAccountIdByBargainIdProductId" resultType="com.uton.carsokApi.controller.response.BargainAccountResponse">
+         SELECT account FROM carsok_acount WHERE id IN(SELECT account_id FROM carsok_product WHERE id IN(SELECT product_id FROM carsok_bargain WHERE id = #{id}))
+    </select>
+</mapper>

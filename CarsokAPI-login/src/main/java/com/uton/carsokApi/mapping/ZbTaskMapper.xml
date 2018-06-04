@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.ZbTaskMapper">
+	<insert id="createTask" parameterType="com.uton.carsokApi.model.ZbTask" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO carsok_zb_task(
+			carName
+			,carNum
+			,taskStatus
+			,taskNum
+			,taskAccount
+			,taskTime
+			,vin
+		) VALUES (
+			#{carName},
+			#{carNum},
+			#{taskStatus},
+			#{taskNum},
+			#{taskAccount},
+			#{taskTime},
+			#{vin}
+		) 
+	</insert>
+
+	<update id="updateByModel" parameterType="com.uton.carsokApi.model.ZbTask" >
+		update carsok_zb_task
+		<set >
+			<if test="lastCarNum != null" >
+				lastCarNum = #{lastCarNum,jdbcType=VARCHAR},
+			</if>
+			<if test="taskStatus != null" >
+				taskStatus = #{taskStatus,jdbcType=INTEGER},
+			</if>
+			<if test="taskTime != null" >
+				taskTime = #{taskTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="productId != null" >
+				product_id = #{productId,jdbcType=INTEGER},
+			</if>
+			<if test="carName != null" >
+				carName = #{carName,jdbcType=INTEGER},
+			</if>
+		</set>
+		<where>
+			<if test="id != null ">
+				and id = #{id}
+			</if>
+		</where>
+	</update>
+
+
+	<update id="updateTaskModel" parameterType="com.uton.carsokApi.model.ZbTask">
+		update carsok_zb_task
+		<set >
+			<if test="carName != null" >
+				carName = #{carName,jdbcType=VARCHAR},
+			</if>
+			<if test="carNum != null" >
+				carNum = #{carNum,jdbcType=VARCHAR},
+			</if>
+			<if test="lastCarNum != null" >
+				lastCarNum = #{lastCarNum,jdbcType=VARCHAR},
+			</if>
+			<if test="vin != null">
+				vin = #{vin}
+			</if>
+		</set>
+		<where>
+			<if test="id != null ">
+				and id = #{id}
+			</if>
+		</where>
+	</update>
+	<update id="updateEnableFlag" parameterType="java.lang.Integer" >
+		update carsok_zb_task
+		  SET enable = 0
+		  WHERE
+		  id = #{id}
+	</update>
+
+	<insert id="createSxyTask" parameterType="com.uton.carsokApi.model.ZbTasksxy">
+		INSERT INTO carsok_zb_task_sxy(
+			tid
+			,infoSource
+			,infoName
+			,infoMobile
+			,arcPath
+			,dlPath
+			,policyPath
+			,idcardPath
+			,remark
+			,keysNum
+			,selfName
+			,selfMobile
+			,vin
+		) VALUES (
+			#{tid},
+			#{infoSource},
+			#{infoName},
+			#{infoMobile},
+			#{arcPath},
+			#{dlPath},
+			#{policyPath},
+			#{idcardPath},
+			#{remark},
+			#{keysNum},
+			#{selfName},
+			#{selfMobile},
+			#{vin}
+		) 
+	</insert>
+
+	<insert id="createPgsTask" parameterType="com.uton.carsokApi.model.ZbTaskpgs">
+		INSERT INTO carsok_zb_task_pgs(
+			tid
+			,infos
+			,vin
+			,remark
+			,pic_outlook
+			,pic_inside
+			,pic_paint
+		) VALUES (
+			#{tid},
+			#{infos},
+			#{vin},
+			#{remark},
+			#{picOutlook},
+			#{picInside},
+			#{picPaint}
+		)		
+	</insert>
+
+	<insert id="insertMoneyInfo" parameterType="com.uton.carsokApi.model.ZbMoneyInfo">
+		INSERT INTO carsok_zb_task_zby_moneyinfo(
+			zbyId
+			,detail
+			,classification
+			,amount
+			,againTimes
+			,againTime
+		) VALUES (
+			#{zbyId},
+			#{detail},
+			#{classification},
+			#{amount},
+			#{againTimes},
+			#{againTime}
+		)		
+	</insert>
+
+	<insert id="createZbyTask" parameterType="com.uton.carsokApi.model.ZbTaskzby" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO carsok_zb_task_zby(
+			tid
+			,zbMoney
+			,vin
+			,remark
+		) VALUES (
+			#{tid},
+			#{zbMoney},
+			#{vin},
+			#{remark}
+		)		
+	</insert>
+
+	<insert id="createManagerTask" parameterType="com.uton.carsokApi.model.ZbTaskManager">
+		INSERT INTO carsok_zb_task_manager(
+			tid
+			,buyprice
+			,selfprice
+			,overprice
+			,remark
+		) VALUES (
+			#{tid},
+			#{buyprice},
+			#{selfprice},
+			#{overprice},
+			#{remark}
+		)		
+	</insert>
+
+	<select id="selectByModel" resultType="com.uton.carsokApi.model.ZbTask" parameterType="com.uton.carsokApi.model.ZbTask" >
+		select *
+		from carsok_zb_task
+		WHERE enable = 1
+		<if test="id != null and id != 0">
+			and
+			id = #{id}
+		</if>
+		<if test="carName != null ">
+			and
+			carName = #{carName}
+		</if>
+		<if test="carNum != null ">
+			and
+			carNum = #{carNum}
+		</if>
+		<if test="taskStatus != null and taskStatus != 0">
+			and
+			taskStatus = #{taskStatus}
+		</if>
+		<if test="taskNum != null ">
+			and
+			taskNum = #{taskNum}
+		</if>
+		<if test="taskAccount != null ">
+			and
+			taskAccount = #{taskAccount}
+		</if>
+		ORDER BY taskTime DESC
+	</select>
+
+	<select id="selecthasDoTask" resultType="com.uton.carsokApi.model.ZbTask" parameterType="com.uton.carsokApi.model.ZbTask" >
+		select *
+		from carsok_zb_task
+		WHERE enable = 1
+		<if test="taskStatus != null">
+			and
+			taskStatus > #{taskStatus}
+		</if>
+
+		<if test="taskAccount != null ">
+			and
+			taskAccount = #{taskAccount}
+		</if>
+		ORDER BY taskTime DESC
+	</select>
+
+	<!-- 各角色任务详情 -->
+	<select id="selectsxyTask" resultType="com.uton.carsokApi.model.ZbTasksxy" parameterType="com.uton.carsokApi.model.ZbTasksxy" >
+		select *
+		from carsok_zb_task_sxy
+		<where>
+			<if test="tid != null and tid != 0">
+				and
+				tid = #{tid}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectpgsTask" resultType="com.uton.carsokApi.model.ZbTaskpgs" parameterType="com.uton.carsokApi.model.ZbTaskpgs" >
+		select *
+		from carsok_zb_task_pgs
+		<where>
+			<if test="tid != null and tid != 0">
+				and
+				tid = #{tid}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectzbyTask" resultType="com.uton.carsokApi.model.ZbTaskzby" parameterType="com.uton.carsokApi.model.ZbTaskzby" >
+		select *
+		from carsok_zb_task_zby
+		<where>
+			<if test="tid != null and tid != 0">
+				and
+				tid = #{tid}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectmanagerTask" resultType="com.uton.carsokApi.model.ZbTaskManager" parameterType="com.uton.carsokApi.model.ZbTaskManager" >
+		select *
+		from carsok_zb_task_manager
+		<where>
+			<if test="tid != null and tid != 0">
+				and
+				tid = #{tid}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectzbMoneyInfo" resultType="com.uton.carsokApi.model.ZbMoneyInfo" parameterType="com.uton.carsokApi.model.ZbMoneyInfo" >
+		select *
+		from carsok_zb_task_zby_moneyinfo
+		<where>
+			<if test="zbyId != null and zbyId != 0">
+				and
+				zbyId = #{zbyId}
+			</if>
+		</where>
+	</select>
+	<update id="updateZbyMoneyInfo" parameterType="com.uton.carsokApi.model.ZbMoneyInfo">
+		UPDATE carsok_zb_task_zby_moneyinfo
+		<set >
+			<if test="classification != null and classification != '' ">
+				classification = #{classification},
+			</if>
+			<if test="detail != null and detail != ''" >
+				detail = #{detail},
+			</if>
+			<if test="amount != null and amount != ''" >
+				amount = #{amount},
+			</if>
+		</set>
+		<where>
+			<if test="id != null and id != 0" >
+				and id = #{id}
+			</if>
+			<if test="zbyId != null and zbyId != 0" >
+				and zbyId = #{zbyId}
+			</if>
+		</where>
+	</update>
+	<delete id="deleteMoneyInfo">
+		DELETE FROM carsok_zb_task_zby_moneyinfo WHERE zbyId = #{zbyId}
+	</delete>
+	<update id="updateManagerTask" parameterType="com.uton.carsokApi.model.ZbTaskManager">
+		UPDATE carsok_zb_task_manager SET
+		selfprice = #{selfprice} ,
+
+		overprice = #{overprice}
+		WHERE
+		tid = #{tid}
+	</update>
+	<update id="updateSxyTask" parameterType="com.uton.carsokApi.model.ZbTasksxy">
+		UPDATE carsok_zb_task_sxy
+		SET
+		<if test="infoSource != null and infoSource !=''">
+			infoSource = #{infoSource} ,
+		</if>
+
+		<if test="infoName != null and infoName !=''">
+			infoName = #{infoName} ,
+		</if>
+		<if test="infoMobile != null and infoMobile !=''">
+			infoMobile = #{infoMobile} ,
+		</if>
+
+		<if test="keysNum != null and keysNum !=''">
+			keysNum = #{keysNum} ,
+		</if>
+
+		<if test="remark != null and remark !=''">
+			remark = #{remark} ,
+		</if>
+		<if test="selfMobile != null and selfMobile !=''">
+			selfMobile = #{selfMobile} ,
+		</if>
+
+		<if test="selfName != null and selfName !=''">
+			selfName = #{selfName},
+		</if>
+
+		vin = #{vin}
+
+		WHERE tid = #{tid}
+
+	</update>
+	<update id="updateZbyTask" parameterType="com.uton.carsokApi.model.ZbTaskzby">
+		UPDATE carsok_zb_task_zby
+		SET
+		zbMoney = #{zbMoney}
+		<if test="vin != null and vin !=''">
+			,vin = #{vin}
+		</if>
+		<if test="zbyAgainTimes != null">
+			,zbyAgainTimes = #{zbyAgainTimes}
+		</if>
+		<if test="zbyAgainTime != null">
+			,zbyAgainTime = #{zbyAgainTime}
+		</if>
+		WHERE tid = #{tid}
+	</update>
+	<select id="selectZbCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM carsok_content_push
+		WHERE push_to = #{mobile}
+		AND content_type IN
+		<foreach collection="roleList" item="roleList" separator="," open="("
+				 close=")">
+			#{roleList}
+		</foreach>
+		and enable=1
+	</select>
+	<select id="selectZbCountByZjl" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM carsok_content_push
+		WHERE push_to IN
+		<foreach collection="mobiles" item="mobile" separator="," open="("
+				 close=")">
+			#{mobile}
+		</foreach>
+		AND content_type IN
+		<foreach collection="roleList" item="roleList" separator="," open="("
+				 close=")">
+			#{roleList}
+		</foreach>
+		and enable=1
+	</select>
+
+	<select id="sxydb"  resultType="com.uton.carsokApi.model.CarsokZbTaskSxyWb" parameterType="com.uton.carsokApi.model.Acount_child_Id">
+		SELECT a.*,b.closeingPrice
+		FROM carsok_zb_task_sxy_wb a
+		LEFT JOIN carsok_acquisition_car b
+		ON a.acquisitioncar_id = b.id
+		WHERE a.enable = 0
+		AND a.acount_id= #{acountId}
+		ORDER BY create_time DESC
+	</select>
+
+
+	<update id="updateId">
+		UPDATE carsok_acquisition_car SET tid_id=#{id} where id=#{acquisitioncarId}
+	</update>
+	<update id="updateWBtaskId">
+		UPDATE carsok_zb_task_sxy_wb SET task_id=#{id} where acquisitioncar_id=#{acquisitioncarId}
+	</update>
+
+	<update id="updateEnable" parameterType="java.lang.Integer">
+		UPDATE carsok_zb_task_sxy_wb SET enable=1 where acquisitioncar_id=#{id}
+	</update>
+
+	<select id="sxydbCount"  resultType="java.lang.Integer" parameterType="com.uton.carsokApi.model.Acount_child_Id">
+		select count(*) from carsok_zb_task_sxy_wb
+		where enable=0
+		and acount_id= #{acountId}
+	</select>
+
+	<select id="selectSxyDh"  parameterType="java.lang.Integer" resultType="java.lang.String">
+		select task_num from carsok_zb_task_sxy_wb
+		where acquisitioncar_id=#{id}
+	</select>
+	<select id="selectPictureLook" resultType="java.util.HashMap" parameterType="java.lang.Integer">
+		select arcPath,dlPath,policyPath,idcardPath from carsok_zb_task_sxy where tid=#{taskid}
+	</select>
+
+	<select id="selectPgsByTid" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM carsok_zb_task_pgs WHERE tid = #{tid}
+	</select>
+	<select id="selectZbyByTid" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM carsok_zb_task_zby WHERE tid = #{tid}
+	</select>
+	<select id="selectManagerByTid" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM carsok_zb_task_manager WHERE tid = #{tid}
+	</select>
+
+	<select id="selectAcarIdByTaskId" resultType="java.lang.String">
+		SELECT acar.id
+		FROM carsok_acquisition_car acar
+		LEFT JOIN carsok_zb_task_sxy_wb wb
+		ON wb.acquisitioncar_id = acar.id
+		WHERE wb.task_id = #{taskId}
+	</select>
+
+	<update id="modifyAcquisitionClosingPrice">
+		UPDATE carsok_acquisition_car acar
+		SET acar.closeingPrice = #{closingPrice}
+		WHERE acar.id = #{acarId}
+	</update>
+
+	<select id="selectClosingPriceByTaskId" resultType="java.math.BigDecimal">
+		SELECT IFNULL(acar.closeingPrice,0) AS closeingPrice
+		FROM carsok_acquisition_car acar
+		LEFT JOIN carsok_zb_task_sxy_wb wb
+		ON wb.acquisitioncar_id = acar.id
+		WHERE wb.task_id = #{taskid}
+	</select>
+
+	<select id="selectID" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		SELECT id
+		FROM carsok_zb_task_sxy_wb
+		WHERE acquisitioncar_id = #{acquisitioncarId}
+	</select>
+
+	<insert id="insertBill" parameterType="com.uton.carsokApi.model.TaskZbBill">
+		INSERT INTO carsok_zb_task_zby_bill(
+		tid
+		,bill_name
+		,bill_pic
+		,againTimes
+		,againTime
+		) VALUES (
+		#{tid},
+		#{billName},
+		#{billPic},
+		#{againTimes},
+		#{againTime}
+		)
+	</insert>
+	<delete id="deleteZbyBill">
+		DELETE FROM carsok_zb_task_zby_bill where tid = #{tid}
+	</delete>
+	<select id="selectBillListByTid" resultType="com.uton.carsokApi.model.TaskZbBill">
+		SELECT id,tid,bill_name as billName,bill_pic as billPic FROM carsok_zb_task_zby_bill where tid = #{tid}
+	</select>
+	<select id="selectzbMoneyInfoAgain" resultType="com.uton.carsokApi.model.ZbMoneyInfo">
+		select *
+		from carsok_zb_task_zby_moneyinfo
+		where
+		zbyId = #{zbyId}
+		and againTimes = #{againTimes}
+	</select>
+	<select id="selectBillListByTidAgain" resultType="com.uton.carsokApi.model.TaskZbBill">
+		SELECT id,tid,
+		bill_name as billName,
+		bill_pic as billPic,
+		againTimes as againTimes,
+		againTime as againTime
+		FROM carsok_zb_task_zby_bill where tid = #{tid} AND againTimes = #{againTimes}
+	</select>
+</mapper>

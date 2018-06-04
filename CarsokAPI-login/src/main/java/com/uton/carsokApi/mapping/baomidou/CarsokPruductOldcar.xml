@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uton.carsokApi.dao.CarsokPruductOldcarMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.uton.carsokApi.model.CarsokPruductOldcar">
+		<id column="id" property="id" />
+		<result column="pruduct_id" property="pruductId" />
+		<result column="c_brand" property="cBrand" />
+		<result column="c_type" property="cType" />
+		<result column="c_model" property="cModel" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="miles" property="miles" />
+		<result column="first_up_time" property="firstUpTime" />
+		<result column="linkman" property="linkman" />
+		<result column="linkphone" property="linkphone" />
+		<result column="browse_num_times" property="browseNumTimes" />
+		<result column="tel_num_times" property="telNumTimes" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="browse_num_times_fake" property="browseNumTimesFake" />
+		<result column="ariable_box" property="ariableBox" />
+		<result column="car_colour" property="carColour" />
+		<result column="displacement" property="displacement" />
+		<result column="indoor_type" property="indoorType" />
+		<result column="body_structure" property="bodyStructure" />
+		<result column="engine" property="engine" />
+		<result column="driving_wheel" property="drivingWheel" />
+		<result column="invoice" property="invoice" />
+		<result column="today_browse_num_times" property="todayBrowseNumTimes"/>
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, pruduct_id AS pruductId, c_brand AS cBrand, c_type AS cType, c_model AS cModel, province, city, miles, first_up_time AS firstUpTime, linkman, linkphone, browse_num_times AS browseNumTimes, tel_num_times AS telNumTimes, create_time AS createTime, update_time AS updateTime, browse_num_times_fake AS browseNumTimesFake, ariable_box AS ariableBox, car_colour AS carColour, displacement, indoor_type AS indoorType, body_structure AS bodyStructure, engine, driving_wheel AS drivingWheel, invoice
+    </sql>
+
+	<!--查询今日浏览量-->
+	<select id="getTodayViewCount" resultType="java.lang.Integer">
+		SELECT
+	IFNULL(SUM(cpo.today_browse_num_times), 0) AS todayView
+FROM
+	carsok_product cp
+LEFT JOIN carsok_pruduct_oldcar cpo ON cp.id = cpo.pruduct_id
+WHERE
+	cp.is_del = 0
+AND cp.on_shelf_status = 1
+AND cp.sale_status = 0
+	</select>
+
+	<!--查询总浏览量-->
+	<select id="getTotleViewCount" resultType="java.lang.Integer">
+		SELECT
+	IFNULL(SUM(cpo.browse_num_times), 0) AS todayView
+FROM
+	carsok_product cp
+LEFT JOIN carsok_pruduct_oldcar cpo ON cp.id = cpo.pruduct_id
+WHERE
+	cp.is_del = 0
+AND cp.on_shelf_status = 1
+AND cp.sale_status = 0
+	</select>
+</mapper>

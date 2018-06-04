@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uton.carsokApi.dao.MessageCenterMapper" >
+    <resultMap id="BaseResultMap" type="com.uton.carsokApi.model.MessageCenter" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="push_to" property="pushTo" jdbcType="VARCHAR" />
+        <result column="push_from" property="pushFrom" jdbcType="VARCHAR" />
+        <result column="content_type" property="contentType" jdbcType="VARCHAR" />
+        <result column="enable" property="enable" jdbcType="INTEGER" />
+        <result column="push_status" property="pushStatus" jdbcType="INTEGER" />
+        <result column="task_id" property="taskId" jdbcType="INTEGER" />
+        <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+        <result column="mendian_id" property="mendianId" jdbcType="INTEGER" />
+        <result column="baoyou_id" property="baoyouId" jdbcType="INTEGER" />
+        <result column="shouche_id" property="shoucheId" jdbcType="INTEGER" />
+        <result column="product_id" property="productId" jdbcType="INTEGER" />
+        <result column="pic_path" property="picPath" jdbcType="INTEGER" />
+    </resultMap>
+    <insert id="messageCenterAdd" parameterType="com.uton.carsokApi.model.MessageCenter" useGeneratedKeys="true" keyProperty="id">
+        insert into carsok_content_push
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="title != null" >
+                title,
+            </if>
+            <if test="content != null" >
+                content,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="pushTo != null" >
+                push_to,
+            </if>
+            <if test="pushFrom != null" >
+                push_from,
+            </if>
+            <if test="contentType != null" >
+                content_type,
+            </if>
+            <if test="enable != null" >
+                enable,
+            </if>
+            <if test="pushStatus != null" >
+                push_status,
+            </if>
+            <if test="taskId != null" >
+                task_id,
+            </if>
+            <if test="sxyId != null" >
+                sxy_id,
+            </if>
+            <if test="roleName != null" >
+                role_name,
+            </if>
+            <if test="mendianId != null" >
+                mendian_id,
+            </if>
+            <if test="baoyouId != null" >
+                baoyou_id,
+            </if>
+            <if test="shoucheId != null" >
+                shouche_id,
+            </if>
+            <if test="xibaoId != null" >
+                xibao_id,
+            </if>
+            <if test="productId != null" >
+                product_id,
+            </if>
+            <if test="quoteId != null" >
+                quote_id,
+            </if>            <if test="picPath != null" >
+                pic_path,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="title != null" >
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null" >
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="pushTo != null" >
+                #{pushTo,jdbcType=VARCHAR},
+            </if>
+            <if test="pushFrom != null" >
+                #{pushFrom,jdbcType=VARCHAR},
+            </if>
+            <if test="contentType != null" >
+                #{contentType,jdbcType=VARCHAR},
+            </if>
+            <if test="enable != null" >
+                #{enable,jdbcType=INTEGER},
+            </if>
+            <if test="pushStatus != null" >
+                #{pushStatus,jdbcType=INTEGER},
+            </if>
+            <if test="taskId != null" >
+                #{taskId,jdbcType=INTEGER},
+            </if>
+            <if test="sxyId != null" >
+                #{sxyId,jdbcType=INTEGER},
+            </if>
+            <if test="roleName != null" >
+                #{roleName,jdbcType=VARCHAR},
+            </if>
+            <if test="mendianId != null" >
+                #{mendianId,jdbcType=INTEGER},
+            </if>
+            <if test="baoyouId != null" >
+                #{baoyouId,jdbcType=INTEGER},
+            </if>
+            <if test="shoucheId != null" >
+                #{shoucheId,jdbcType=INTEGER},
+            </if>
+            <if test="xibaoId != null" >
+                #{xibaoId,jdbcType=INTEGER},
+            </if>
+            <if test="productId != null" >
+                #{productId,jdbcType=INTEGER},
+            </if>
+            <if test="quoteId != null" >
+                #{quoteId,jdbcType=INTEGER},
+            </if>            <if test="picPath != null" >
+                #{picPath,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectByContentType" resultMap="BaseResultMap">
+        <if test="contentTypes!=null and contentTypes.size()>0">
+            select * from carsok_content_push
+            where content_type in
+            <foreach collection="contentTypes" item="contentType" separator="," open="("
+                     close=")">
+                #{contentType}
+            </foreach>
+            and push_to = #{pushTo} AND enable=1
+            <if test="createTime!=null">
+                and create_time>DATE_FORMAT(#{createTime}, '%Y-%m-%d %H:%i:%s')
+            </if>
+            ORDER BY create_time DESC
+        </if>
+    </select>
+
+    <select id="selectByContentTypeOfZjl" resultMap="BaseResultMap">
+        <if test="contentTypes!=null and contentTypes.size()>0">
+            select * from carsok_content_push
+            where content_type in
+            <foreach collection="contentTypes" item="contentType" separator="," open="("
+                     close=")">
+                #{contentType}
+            </foreach>
+            and push_to IN
+            <foreach collection="mobiles" item="mobile" separator="," open="("
+                     close=")">
+                #{mobile}
+            </foreach>
+            <if test="createTime!=null">
+                and create_time>DATE_FORMAT(#{createTime}, '%Y-%m-%d %H:%i:%s')
+            </if>
+            AND enable=1
+            ORDER BY create_time DESC
+        </if>
+    </select>
+    <delete id="deleteCenter">
+        DELETE FROM carsok_content_push
+        where task_id = #{taskId}
+        and role_name = #{roleName}
+    </delete>
+    <delete id="deleteCenterSXY">
+        DELETE FROM carsok_content_push
+        where sxy_id = #{id}
+        and role_name = #{roleName}
+    </delete>
+    <delete id="deleteCenterBytaskId">
+        DELETE FROM carsok_content_push
+        where task_id = #{taskId}
+    </delete>
+    <delete id="deleteMessage">
+        delete from carsok_content_push
+        where push_to=#{pushTo}
+        and content_type=#{contentType}
+    </delete>
+    <select id="selectCountByTime" resultType="java.lang.Integer">
+        select count(*) from carsok_content_push where
+        content_type in
+        <foreach collection="contentTypes" item="contentType" separator="," open="("
+                 close=")">
+            #{contentType}
+        </foreach>
+        and (push_to ='all' or push_to=#{mobile}) and create_time>#{time} and enable=1
+    </select>
+
+    <select id="selectHandleCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_content_push
+        WHERE push_to = #{mobile}
+        AND content_type IN
+        <foreach collection="roleList" item="roleList" separator="," open="("
+                 close=")">
+            #{roleList}
+        </foreach>
+        and enable=1
+    </select>
+    <select id="selectHandleCountByZjl" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM carsok_content_push
+        WHERE push_to IN
+        <foreach collection="mobiles" item="mobile" separator="," open="("
+                 close=")">
+            #{mobile}
+        </foreach>
+        AND content_type IN
+        <foreach collection="roleList" item="roleList" separator="," open="("
+                 close=")">
+            #{roleList}
+        </foreach>
+        and enable=1
+    </select>
+    <select id="selectsxyts"  resultType="com.uton.carsokApi.model.CarsokZbTaskSxyWb" parameterType="java.lang.Integer">
+        select * from carsok_zb_task_sxy_wb
+        where acquisitioncar_id = #{taskId}
+    </select>
+    <update id="updatePushStatusById">
+        UPDATE carsok_content_push
+        SET push_status = #{pushStatus}
+        WHERE id = #{id}
+    </update>
+    <select id="selectByProductId" resultType="java.lang.String">
+        SELECT vehicle_model FROM carsok_evaluations
+        WHERE id = #{Pid}
+    </select>
+</mapper>
