@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+1<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,7 +14,7 @@
         <org.springframework.version>3.1.2.RELEASE</org.springframework.version>
         <jackson.version>1.9.13</jackson.version>
         <fastjson.version>1.1.33</fastjson.version>
-        <spring.version>4.3.0.RELEASE</spring.version>
+        <spring.version>4.3.0.RELEASE123132</spring.version>
         <druid.version>0.2.3</druid.version>
     </properties>
     <dependencyManagement>
